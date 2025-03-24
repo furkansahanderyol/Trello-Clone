@@ -36,6 +36,9 @@ importers:
       eslint:
         specifier: ^9.23.0
         version: 9.23.0
+      eslint-config-google:
+        specifier: ^0.14.0
+        version: 0.14.0(eslint@9.23.0)
       eslint-config-next:
         specifier: 15.2.3
         version: 15.2.3(eslint@9.23.0)(typescript@5.8.2)
@@ -753,6 +756,12 @@ packages:
   escape-string-regexp@4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
+
+  eslint-config-google@0.14.0:
+    resolution: {integrity: sha512-WsbX4WbjuMvTdeVL6+J3rK1RGhCTqjsFjX7UMSMgZiyxxaNLkoJENbrGExzERFeoTpGw3F3FypTiWAP9ZXzkEw==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      eslint: '>=5.16.0'
 
   eslint-config-next@15.2.3:
     resolution: {integrity: sha512-VDQwbajhNMFmrhLWVyUXCqsGPN+zz5G8Ys/QwFubfsxTIrkqdx3N3x3QPW+pERz8bzGPP0IgEm8cNbZcd8PFRQ==}
@@ -2341,6 +2350,10 @@ snapshots:
       is-symbol: 1.1.1
 
   escape-string-regexp@4.0.0: {}
+
+  eslint-config-google@0.14.0(eslint@9.23.0):
+    dependencies:
+      eslint: 9.23.0
 
   eslint-config-next@15.2.3(eslint@9.23.0)(typescript@5.8.2):
     dependencies:
