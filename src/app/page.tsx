@@ -2,7 +2,7 @@ import styles from "./page.module.scss"
 
 export default function Home() {
   return (
-    <main className={styles.container}>
+    <main>
       <div>Hello World!</div>
     </main>
   )
