@@ -1,6 +1,5 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --main: #d40000;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,6 +13,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+.title {
+  font-family: var(--font-domine);
 }
 
 body {
