@@ -1,4 +1,4 @@
-import styles from "./index.module.scss"
+import styles from './index.module.scss';
 
 interface Props {
   children: React.ReactNode
@@ -6,7 +6,7 @@ interface Props {
   formHeader?: string
 }
 
-export default function Form({ children, onSubmit, formHeader }: Props) {
+export default function Form({children, onSubmit, formHeader}: Props) {
   return (
     <div className={styles.container}>
       <div className={styles.formHeader}>{formHeader}</div>
@@ -14,5 +14,5 @@ export default function Form({ children, onSubmit, formHeader }: Props) {
         <div>{children}</div>
       </form>
     </div>
-  )
+  );
 }

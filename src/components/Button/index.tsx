@@ -1,5 +1,5 @@
-import clsx from "clsx"
-import styles from "./index.module.scss"
+import clsx from 'clsx';
+import styles from './index.module.scss';
 
 interface Props {
   onClick: () => void
@@ -7,7 +7,7 @@ interface Props {
   suffix?: React.ReactNode
   text?: string
   className?: string
-  type: "submit" | "button"
+  type: 'submit' | 'button'
 }
 
 export default function Button({
@@ -28,5 +28,5 @@ export default function Button({
       <span className={styles.text}>{text}</span>
       <span className={styles.suffix}>{suffix}</span>
     </button>
-  )
+  );
 }

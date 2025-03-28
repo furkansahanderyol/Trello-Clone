@@ -1,5 +1,5 @@
-import React from "react"
-import { IconType } from "./IconType"
+import React from 'react';
+import {IconType} from './IconType';
 
 export const IconGoogle: React.FC<IconType> = (props) => (
   <svg
@@ -29,4 +29,4 @@ export const IconGoogle: React.FC<IconType> = (props) => (
       <path fill="none" d="M0 0h48v48H0z"></path>
     </g>
   </svg>
-)
+);

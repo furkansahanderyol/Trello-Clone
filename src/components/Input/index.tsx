@@ -1,12 +1,12 @@
-import { ChangeEvent } from "react"
-import styles from "./index.module.scss"
-import clsx from "clsx"
+import {ChangeEvent} from 'react';
+import styles from './index.module.scss';
+import clsx from 'clsx';
 
 interface Props {
   label?: string
   onChange?: (value: string) => void
   className?: string
-  type?: "text" | "password" | "email"
+  type?: 'text' | 'password' | 'email'
   prefix?: React.ReactNode
   suffix?: React.ReactNode
 }
@@ -20,7 +20,7 @@ export default function Input({
   suffix,
 }: Props) {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
-    return onChange?.(event.target.value)
+    return onChange?.(event.target.value);
   }
 
   return (
@@ -32,5 +32,5 @@ export default function Input({
         <div className={styles.suffix}>{suffix}</div>
       </div>
     </div>
-  )
+  );
 }
