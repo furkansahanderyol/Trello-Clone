@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.25rem;
+
+  .label {
+    font-size: 1.2rem;
+    font-family: var(--font-unna);
+  }
+
+  .inputWrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+    position: relative;
+
+    .prefix {
+      position: absolute;
+      pointer-events: none;
+      left: 1rem;
+    }
+
+    .input {
+      font-size: 1rem;
+      font-family: var(--font-unna);
+      border: none;
+      width: 100%;
+      outline: none;
+      padding: 0 2rem;
+    }
+
+    .suffix {
+      position: absolute;
+      pointer-events: none;
+      right: 1rem;
+    }
+  }
+}

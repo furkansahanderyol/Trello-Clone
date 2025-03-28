@@ -1,5 +1,5 @@
-import styles from "./page.module.scss"
+import styles from './page.module.scss';
 
 export default function Register() {
-  return <main>Register Page</main>
+  return <main>Register Page</main>;
 }

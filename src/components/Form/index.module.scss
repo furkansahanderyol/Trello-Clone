@@ -1,0 +1,14 @@
+.container {
+  max-width: 360px;
+  background-color: white;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  width: 100%;
+
+  .formHeader {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: var(--font-domine);
+    padding: 0.5rem 0;
+  }
+}
