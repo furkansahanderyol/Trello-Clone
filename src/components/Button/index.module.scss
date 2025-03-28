@@ -1,0 +1,17 @@
+.button {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  border: 1px solid black;
+  font-size: 1rem;
+  font-family: var(--font-unna);
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  .text {
+    font-size: 1rem;
+  }
+}

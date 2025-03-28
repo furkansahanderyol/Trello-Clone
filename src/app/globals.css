@@ -1,11 +1,10 @@
-:root {
-  --main: #d40000;
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --linear-gradient-maroon: #7d0a0a50;
+    --linear-gradient-red: #bf313190;
+    --primary-red: #d40000;
   }
 }
 

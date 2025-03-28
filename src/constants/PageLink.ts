@@ -1,5 +1,5 @@
 export const PageLink = {
-  home: "/",
-  login: "/auth/login",
-  register: "/auth/register",
-}
+  home: '/',
+  login: '/auth/login',
+  register: '/auth/register',
+};
