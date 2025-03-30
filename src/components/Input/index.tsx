@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react"
+import { ChangeEvent, forwardRef, Ref, RefObject } from "react"
 import styles from "./index.module.scss"
 import clsx from "clsx"
 import { X } from "lucide-react"
@@ -11,6 +11,7 @@ interface Props {
   prefix?: React.ReactNode
   suffix?: React.ReactNode
   errorMessage?: string[]
+  ref?: Ref<HTMLInputElement>
 }
 
 export default function Input({
@@ -21,6 +22,7 @@ export default function Input({
   prefix,
   suffix,
   errorMessage,
+  ref,
 }: Props) {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
     return onChange?.(event.target.value)
@@ -31,7 +33,12 @@ export default function Input({
       {label && <div className={styles.label}>{label}</div>}
       <div className={styles.inputWrapper}>
         {prefix && <div className={styles.prefix}>{prefix}</div>}
-        <input type={type} className={styles.input} onChange={handleOnChange} />
+        <input
+          ref={ref}
+          type={type}
+          className={styles.input}
+          onChange={handleOnChange}
+        />
         {suffix && <div className={styles.suffix}>{suffix}</div>}
       </div>
       {errorMessage && (

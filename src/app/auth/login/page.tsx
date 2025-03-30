@@ -5,72 +5,68 @@ import styles from "./page.module.scss"
 import Form from "@/components/Form"
 import Button from "@/components/Button"
 import { Eye, EyeOff } from "lucide-react"
-import Input from "@/components/Input"
 import Link from "next/link"
 import { PageLink } from "@/constants/PageLink"
 import { IconGoogle } from "@/assets/svg/IconGoogle"
-import { FormEvent, useEffect, useReducer, useState } from "react"
-import { validateEmail } from "@/helpers/validateEmail"
-import { validatePassword } from "@/helpers/validatePassword"
-
-type FormInformation = {
-  email: string
-  password: string
-}
+import { FormEvent, useEffect, useReducer, useRef, useState } from "react"
+import { checkMail, checkPassword } from "@/helpers/validator"
+import Input from "@/components/Input"
 
 type Action =
-  | { type: "email"; email: string }
-  | { type: "password"; password: string }
+  | { type: "email"; value: string[] }
+  | { type: "password"; value: string[] }
 
 type Errors = {
-  email: string[]
-  password: string[]
+  emailErrors: string[]
+  passwordErrors: string[]
 }
 
-function reducer(userInput: FormInformation, action: Action) {
+function reducer(errors: Errors, action: Action) {
   switch (action.type) {
     case "email":
       return {
-        email: action.email,
-        password: userInput.password,
+        emailErrors: action.value,
+        passwordErrors: errors.passwordErrors,
       }
-      break
     case "password":
       return {
-        email: userInput.email,
-        password: action.password,
+        emailErrors: errors.emailErrors,
+        passwordErrors: action.value,
       }
-      break
   }
 }
 
 export default function Login() {
-  const [userInput, dispatch] = useReducer(reducer, {
-    email: "",
-    password: "",
+  const emailRef = useRef<HTMLInputElement | null>(null)
+  const passwordRef = useRef<HTMLInputElement | null>(null)
+  const [errors, dispatch] = useReducer(reducer, {
+    emailErrors: [],
+    passwordErrors: [],
   })
 
-  const [errors, setErrors] = useState<Errors>({
-    email: [],
-    password: [],
-  })
+  const [isFirstSubmit, setIsFirstSubmit] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
 
-    const checkEmail = validateEmail(userInput.email).length < 1
-    const checkPassword = validatePassword(userInput.password).length < 1
+    setIsFirstSubmit(true)
 
-    if (!checkEmail || !checkPassword) {
-      return setErrors({
-        email: !checkEmail ? validateEmail(userInput.email) : [],
-        password: !checkPassword ? validatePassword(userInput.password) : [],
-      })
-    } else {
-      console.log("SUCCESS")
-    }
+    const isMailValid = checkMail(emailRef?.current?.value) as string[]
+    const isPasswordValid = checkPassword(
+      passwordRef?.current?.value
+    ) as string[]
+
+    dispatch({ type: "email", value: isMailValid })
+    dispatch({
+      type: "password",
+      value: isPasswordValid,
+    })
   }
+
+  useEffect(() => {
+    console.log("errors", errors)
+  }, [errors])
 
   return (
     <AuthLayout>
@@ -78,28 +74,21 @@ export default function Login() {
         <div className={styles.formWrapper}>
           <div className={styles.inputSide}>
             <Input
+              ref={emailRef}
+              onChange={(e) => dispatch({ type: "email", value: checkMail(e) })}
               type={"email"}
               label={"Email"}
-              errorMessage={errors.email ? errors.email : []}
-              onChange={(e) => {
-                dispatch({ type: "email", email: e })
-              }}
+              errorMessage={isFirstSubmit ? errors.emailErrors : undefined}
             />
             <div className={styles.passwordInputWrapper}>
               <Input
+                ref={passwordRef}
                 type={showPassword ? "text" : "password"}
-                label={"Password"}
-                errorMessage={
-                  errors.password.length > 0
-                    ? errors.password.map((message) => {
-                        console.log("message", message)
-                        return message
-                      })
-                    : undefined
+                onChange={(e) =>
+                  dispatch({ type: "email", value: checkPassword(e) })
                 }
-                onChange={(e) => {
-                  dispatch({ type: "password", password: e })
-                }}
+                label={"Password"}
+                errorMessage={isFirstSubmit ? errors.passwordErrors : undefined}
                 suffix={
                   showPassword ? (
                     <div onClick={() => setShowPassword(!showPassword)}>

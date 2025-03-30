@@ -3,15 +3,24 @@
 import AuthLayout from "@/layouts/AuthLayout"
 import styles from "./page.module.scss"
 import Form from "@/components/Form"
-import Input from "@/components/Input"
 import Link from "next/link"
 import { PageLink } from "@/constants/PageLink"
 import Button from "@/components/Button"
+import { FormEvent, useState } from "react"
+import Input from "@/components/Input"
 
 export default function Register() {
+  const [isFirstSubmit, setIsFirstSubmit] = useState(false)
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+
+    setIsFirstSubmit(true)
+  }
+
   return (
     <AuthLayout>
-      <Form formHeader={"Sign Up"} onSubmit={(e) => e.preventDefault()}>
+      <Form formHeader={"Sign Up"} onSubmit={handleSubmit}>
         <div className={styles.formWrapper}>
           <div className={styles.inputSide}>
             <Input type={"text"} label={"Name"} />
