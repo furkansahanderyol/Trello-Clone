@@ -62,11 +62,13 @@ export default function Login() {
       type: "password",
       value: isPasswordValid,
     })
-  }
 
-  useEffect(() => {
-    console.log("errors", errors)
-  }, [errors])
+    if (isMailValid.length !== 0 || isPasswordValid.length !== 0) {
+      return
+    } else {
+      alert("Success")
+    }
+  }
 
   return (
     <AuthLayout>
@@ -78,17 +80,17 @@ export default function Login() {
               onChange={(e) => dispatch({ type: "email", value: checkMail(e) })}
               type={"email"}
               label={"Email"}
-              errorMessage={isFirstSubmit ? errors.emailErrors : undefined}
+              errorMessage={isFirstSubmit ? errors.emailErrors : []}
             />
             <div className={styles.passwordInputWrapper}>
               <Input
                 ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 onChange={(e) =>
-                  dispatch({ type: "email", value: checkPassword(e) })
+                  dispatch({ type: "password", value: checkPassword(e) })
                 }
                 label={"Password"}
-                errorMessage={isFirstSubmit ? errors.passwordErrors : undefined}
+                errorMessage={isFirstSubmit ? errors.passwordErrors : []}
                 suffix={
                   showPassword ? (
                     <div onClick={() => setShowPassword(!showPassword)}>
