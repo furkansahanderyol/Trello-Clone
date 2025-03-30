@@ -1,14 +1,16 @@
-import {ChangeEvent} from 'react';
-import styles from './index.module.scss';
-import clsx from 'clsx';
+import { ChangeEvent } from "react"
+import styles from "./index.module.scss"
+import clsx from "clsx"
+import { X } from "lucide-react"
 
 interface Props {
   label?: string
   onChange?: (value: string) => void
   className?: string
-  type?: 'text' | 'password' | 'email'
+  type?: "text" | "password" | "email"
   prefix?: React.ReactNode
   suffix?: React.ReactNode
+  errorMessage?: string[]
 }
 
 export default function Input({
@@ -18,19 +20,34 @@ export default function Input({
   type,
   prefix,
   suffix,
+  errorMessage,
 }: Props) {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
-    return onChange?.(event.target.value);
+    return onChange?.(event.target.value)
   }
 
   return (
     <div className={clsx(className, styles.container)}>
-      <div className={styles.label}>{label}</div>
+      {label && <div className={styles.label}>{label}</div>}
       <div className={styles.inputWrapper}>
-        <div className={styles.prefix}>{prefix}</div>
+        {prefix && <div className={styles.prefix}>{prefix}</div>}
         <input type={type} className={styles.input} onChange={handleOnChange} />
-        <div className={styles.suffix}>{suffix}</div>
+        {suffix && <div className={styles.suffix}>{suffix}</div>}
       </div>
+      {errorMessage && (
+        <div className={styles.errors}>
+          {errorMessage.map((message, index) => {
+            return (
+              <div className={styles.error} key={index}>
+                <span className={styles.icon}>
+                  <X size={12} />
+                </span>
+                {message}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
-  );
+  )
 }
