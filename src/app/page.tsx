@@ -1,6 +1,8 @@
-import Link from 'next/link';
-import styles from './page.module.scss';
-import {PageLink} from '@/constants/PageLink';
+"use client"
+
+import Link from "next/link"
+import styles from "./page.module.scss"
+import { PageLink } from "@/constants/PageLink"
 
 export default function Home() {
   return (
@@ -15,5 +17,5 @@ export default function Home() {
         </Link>
       </div>
     </main>
-  );
+  )
 }
