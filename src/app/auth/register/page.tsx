@@ -14,7 +14,7 @@ import {
   checkName,
   checkPassword,
 } from "@/helpers/validator"
-import { register } from "@/services/authService"
+import { AuthService } from "@/services/authService"
 
 type Action =
   | { type: "name"; value: string[] }
@@ -114,19 +114,13 @@ export default function Register() {
     ) {
       return
     } else {
-      try {
-        register({
-          name: nameRef.current?.value!,
-          surname: surnameRef.current?.value!,
-          email: emailRef.current?.value!,
-          password: passwordRef.current?.value!,
-          passwordConfirm: passwordConfirmRef.current?.value!,
-        }).then((response) => {
-          console.log(response)
-        })
-      } catch (e) {
-        console.error(e)
-      }
+      AuthService.register({
+        name: nameRef.current?.value!,
+        surname: surnameRef.current?.value!,
+        email: emailRef.current?.value!,
+        password: passwordRef.current?.value!,
+        passwordConfirm: passwordConfirmRef.current?.value!,
+      })
     }
   }
 
