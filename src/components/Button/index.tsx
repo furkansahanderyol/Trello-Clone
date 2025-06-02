@@ -8,6 +8,7 @@ interface Props {
   text?: string
   className?: string
   type: "submit" | "button"
+  loading?: boolean
 }
 
 export default function Button({
@@ -17,16 +18,21 @@ export default function Button({
   text,
   className,
   type,
+  loading,
 }: Props) {
   return (
     <button
       type={type}
-      className={clsx(className ? className : styles.button)}
+      className={clsx(
+        className ? className : styles.button,
+        loading && styles.loading
+      )}
       onClick={onClick}
     >
-      <span className={styles.prefix}>{prefix}</span>
+      {loading && <div className={styles.spinner} />}
+      {prefix && <span className={styles.prefix}>{prefix}</span>}
       <span className={styles.text}>{text}</span>
-      <span className={styles.suffix}>{suffix}</span>
+      {suffix && <span className={styles.suffix}>{suffix}</span>}
     </button>
   )
 }

@@ -15,6 +15,9 @@ import {
   checkPassword,
 } from "@/helpers/validator"
 import { AuthService } from "@/services/authService"
+import { toast } from "react-toastify"
+import { useAtom } from "jotai"
+import { loadingAtom } from "@/store"
 
 type Action =
   | { type: "name"; value: string[] }
@@ -67,6 +70,8 @@ export default function Register() {
   const emailRef = useRef<HTMLInputElement | null>(null)
   const passwordRef = useRef<HTMLInputElement | null>(null)
   const passwordConfirmRef = useRef<HTMLInputElement | null>(null)
+
+  const [loading] = useAtom(loadingAtom)
 
   const [errors, dispatch] = useReducer(reducer, {
     nameErrors: [],
@@ -121,6 +126,12 @@ export default function Register() {
         password: passwordRef.current?.value!,
         passwordConfirm: passwordConfirmRef.current?.value!,
       })
+        .then(() => {
+          toast.success("Register completed.")
+        })
+        .catch(() => {
+          toast.error("Error occured.")
+        })
     }
   }
 
@@ -189,6 +200,7 @@ export default function Register() {
           </div>
           <Button
             type={"submit"}
+            loading={loading}
             className={styles.createAccountButton}
             text={"Create Account"}
           />
