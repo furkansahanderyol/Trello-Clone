@@ -1,13 +1,14 @@
-import {ChangeEvent, Ref} from 'react';
-import styles from './index.module.scss';
-import clsx from 'clsx';
-import {X} from 'lucide-react';
+"use client"
+import { ChangeEvent, Ref } from "react"
+import styles from "./index.module.scss"
+import clsx from "clsx"
+import { X } from "lucide-react"
 
 interface Props {
   label?: string
   onChange?: (value: string) => void
   className?: string
-  type?: 'text' | 'password' | 'email'
+  type?: "text" | "password" | "email"
   prefix?: React.ReactNode
   suffix?: React.ReactNode
   errorMessage?: string[]
@@ -25,7 +26,7 @@ export default function Input({
   ref,
 }: Props) {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
-    return onChange?.(event.target.value);
+    return onChange?.(event.target.value)
   }
 
   return (
@@ -51,10 +52,10 @@ export default function Input({
                 </span>
                 {message}
               </div>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

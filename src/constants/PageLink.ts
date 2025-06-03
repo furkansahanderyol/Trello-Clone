@@ -3,4 +3,5 @@ export const PageLink = {
   login: "/auth/login",
   register: "/auth/register",
   dashboard: "/dashboard",
+  registerSuccess: "/auth/register-success",
 }

@@ -21,7 +21,12 @@ export namespace AuthService {
     await axios
       .post("/register", data)
       .then((response) => {
-        handleRedirect(PageLink.dashboard, 200)
+        handleRedirect(
+          `${PageLink.registerSuccess}?email=${encodeURIComponent(
+            response.data.user.email
+          )}`,
+          200
+        )
         return response.data
       })
       .catch((error) => {
@@ -37,5 +42,40 @@ export namespace AuthService {
     const response = await axios.post("/login", { email, password })
 
     return response.data
+  }
+
+  export async function verify(email: string, code: string) {
+    defaultStore.set(loadingAtom, true)
+
+    await axios
+      .post("/register-success", { email, code })
+      .then((response) => {
+        if (response.status) {
+          handleRedirect(PageLink.dashboard, 200)
+          return response.data
+        }
+      })
+      .catch((error) => {
+        console.error("AuthService-Verify -> ", error)
+      })
+      .finally(() => {
+        defaultStore.set(loadingAtom, false)
+      })
+  }
+
+  export async function resendVerification(email: string) {
+    defaultStore.set(loadingAtom, true)
+
+    await axios
+      .post("/resend-verification", { email })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        console.error("AuthService - ResendVerification -> ", error)
+      })
+      .finally(() => {
+        defaultStore.set(loadingAtom, false)
+      })
   }
 }
