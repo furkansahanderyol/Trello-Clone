@@ -20,26 +20,12 @@ export default function RegisterSuccess() {
     if (!email) return
 
     AuthService.verify(email, verificationCode)
-      .then(() => {
-        toast.success("Email verified successfully")
-      })
-      .catch((error) => {
-        toast.error("Something went wrong")
-        console.error("Verification Error -> ", error)
-      })
   }
 
   function handleResendCode() {
     if (!email) return
 
     AuthService.resendVerification(email)
-      .then(() => {
-        toast.success("New verification code sent to your email")
-      })
-      .catch((error) => {
-        toast.error("Something went wrong")
-        console.error("Verification Resend Error -> ", error)
-      })
   }
 
   return (

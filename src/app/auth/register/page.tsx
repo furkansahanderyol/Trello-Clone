@@ -126,12 +126,6 @@ export default function Register() {
         password: passwordRef.current?.value!,
         passwordConfirm: passwordConfirmRef.current?.value!,
       })
-        .then(() => {
-          toast.success("Register completed.")
-        })
-        .catch(() => {
-          toast.error("Error occured.")
-        })
     }
   }
 

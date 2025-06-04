@@ -1,5 +1,7 @@
 import { atom } from "jotai"
 
-export const atomExample = atom(0)
+// Authentication
+export const authVerifyAtom = atom(undefined)
 
+// Global
 export const loadingAtom = atom(false)
