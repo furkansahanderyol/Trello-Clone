@@ -1,7 +1,7 @@
 import { PageLink } from "@/constants/PageLink"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
-import { authVerifyAtom, loadingAtom } from "@/store"
+import { loadingAtom, testAtom } from "@/store"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -20,11 +20,10 @@ export namespace AuthService {
     defaultStore.set(loadingAtom, true)
 
     await axios
-      .post("/register", data)
+      .post("/register", data, { withCredentials: true })
       .then((response) => {
         if (response.status === 201) {
           toast.success(response.data.message)
-          defaultStore.set(authVerifyAtom, response.data.token)
 
           handleRedirect(
             `${PageLink.registerSuccess}?email=${encodeURIComponent(
@@ -48,11 +47,17 @@ export namespace AuthService {
 
   export async function login(email: string, password: string) {
     await axios
-      .post("/login", { email, password })
+      .post(
+        "/login",
+        { email, password },
+        {
+          withCredentials: true,
+        }
+      )
       .then((response) => {
         defaultStore.set(loadingAtom, true)
 
-        if (response.status) {
+        if (response.status === 200) {
           toast.success(response.data.message)
           handleRedirect(PageLink.dashboard, 200)
         }
@@ -71,20 +76,17 @@ export namespace AuthService {
 
   export async function verify(email: string, code: string) {
     defaultStore.set(loadingAtom, true)
-    const verifyToken = defaultStore.get(authVerifyAtom)
 
     await axios
       .post(
         "/register-success",
         { email, code },
         {
-          headers: {
-            Authorization: `Bearer ${verifyToken}`,
-          },
+          withCredentials: true,
         }
       )
       .then((response) => {
-        if (response.status) {
+        if (response.status === 200) {
           toast.success(response.data.message)
           handleRedirect(PageLink.dashboard, 200)
           return response.data
