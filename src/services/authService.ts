@@ -1,7 +1,7 @@
 import { PageLink } from "@/constants/PageLink"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
-import { loadingAtom, testAtom } from "@/store"
+import { loadingAtom } from "@/store"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -116,6 +116,39 @@ export namespace AuthService {
       })
       .finally(() => {
         defaultStore.set(loadingAtom, false)
+      })
+  }
+
+  export async function logout() {
+    defaultStore.set(loadingAtom, true)
+    await axios
+      .post("/logout")
+      .then((response) => {
+        if (response.status === 201) {
+          handleRedirect(PageLink.login, 200)
+          toast.success(response.data.message)
+          return response.data
+        }
+      })
+      .catch((error) => {
+        console.error("AuthService-Logout -> ", error)
+        throw error
+      })
+      .finally(() => {
+        defaultStore.set(loadingAtom, false)
+      })
+  }
+
+  export async function checkVerified() {
+    await axios
+      .get("/check-verified")
+      .then((response) => {
+        handleRedirect(response.data.redirectTo, 0)
+        return response.data.isVerified
+      })
+      .catch((error) => {
+        console.error("AuthService-checkVerified -> ", error)
+        throw error
       })
   }
 }

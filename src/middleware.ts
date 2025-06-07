@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server"
 
 const PUBLIC_PATHS = [PageLink.login, PageLink.register]
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
   const token = req.cookies.get("access-token")?.value
 
