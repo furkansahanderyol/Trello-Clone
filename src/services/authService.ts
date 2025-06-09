@@ -151,4 +151,8 @@ export namespace AuthService {
         throw error
       })
   }
+
+  export function googleAuth() {
+    handleRedirect("http://localhost:8000/auth/google", 0)
+  }
 }

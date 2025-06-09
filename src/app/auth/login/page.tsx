@@ -71,6 +71,8 @@ export default function Login() {
     }
   }
 
+  function onSignIn() {}
+
   return (
     <AuthLayout>
       <Form formHeader={"Login"} onSubmit={handleSubmit}>
@@ -116,10 +118,12 @@ export default function Login() {
               className={styles.submitButton}
             />
             <Button
-              onClick={() => console.log("Submitted")}
-              type={"submit"}
+              onClick={() => {
+                AuthService.googleAuth()
+              }}
+              type={"button"}
               text={"Continue with Google"}
-              className={styles.googleButton}
+              className={"g-singing2"}
               prefix={<IconGoogle width={16} height={16} />}
             />
           </div>
