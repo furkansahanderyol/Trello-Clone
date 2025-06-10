@@ -2,9 +2,13 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --linear-gradient-maroon: #7d0a0a50;
-    --linear-gradient-red: #bf313190;
+    --auth-layout-background: #80808025;
     --primary-red: #d40000;
+    --box-shadow: #808080;
+    --button-blue: #2463eb;
+    --button-blue-hover: #1d4ed8;
+    --button-text: #ffffff;
+    --button-border: #ffffff;
   }
 }
 

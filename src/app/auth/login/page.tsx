@@ -112,18 +112,14 @@ export default function Login() {
             </div>
           </div>
           <div className={styles.buttonSide}>
-            <Button
-              type={"submit"}
-              text={"Login"}
-              className={styles.submitButton}
-            />
+            <Button type={"submit"} text={"Login"} />
             <Button
               onClick={() => {
                 AuthService.googleAuth()
               }}
               type={"button"}
               text={"Continue with Google"}
-              className={"g-singing2"}
+              className={styles.googleButton}
               prefix={<IconGoogle width={16} height={16} />}
             />
           </div>

@@ -23,10 +23,7 @@ export default function Button({
   return (
     <button
       type={type}
-      className={clsx(
-        className ? className : styles.button,
-        loading && styles.loading
-      )}
+      className={clsx(styles.button, className, loading && styles.loading)}
       onClick={onClick}
     >
       {loading && <div className={styles.spinner} />}

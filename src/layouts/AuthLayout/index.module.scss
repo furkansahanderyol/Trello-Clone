@@ -6,9 +6,5 @@
   align-items: center;
   padding: 1rem;
 
-  background: linear-gradient(
-    45deg,
-    var(--linear-gradient-red),
-    var(--linear-gradient-maroon)
-  );
+  background-color: var(--auth-layout-background);
 }
