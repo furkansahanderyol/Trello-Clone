@@ -15,7 +15,6 @@ import {
   checkPassword,
 } from "@/helpers/validator"
 import { AuthService } from "@/services/authService"
-import { toast } from "react-toastify"
 import { useAtom } from "jotai"
 import { loadingAtom } from "@/store"
 

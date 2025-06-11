@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { PageLink } from "@/constants/PageLink"
 import { IconGoogle } from "@/assets/svg/IconGoogle"
-import { FormEvent, useEffect, useReducer, useRef, useState } from "react"
+import { FormEvent, useReducer, useRef, useState } from "react"
 import { checkMail, checkPassword } from "@/helpers/validator"
 import Input from "@/components/Input"
 import { AuthService } from "@/services/authService"
@@ -70,8 +70,6 @@ export default function Login() {
       AuthService.login(email as string, password as string)
     }
   }
-
-  function onSignIn() {}
 
   return (
     <AuthLayout>

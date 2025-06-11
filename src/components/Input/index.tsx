@@ -1,5 +1,5 @@
 "use client"
-import { ChangeEvent, Ref } from "react"
+import { ChangeEvent, Ref, useRef, useState } from "react"
 import styles from "./index.module.scss"
 import clsx from "clsx"
 import { X } from "lucide-react"
@@ -25,6 +25,8 @@ export default function Input({
   errorMessage,
   ref,
 }: Props) {
+  const [isFocused, setIsFocused] = useState(false)
+
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
     return onChange?.(event.target.value)
   }
@@ -32,7 +34,11 @@ export default function Input({
   return (
     <div className={clsx(className, styles.container)}>
       {label && <div className={styles.label}>{label}</div>}
-      <div className={styles.inputWrapper}>
+      <div
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className={clsx(styles.inputWrapper, isFocused && styles.focused)}
+      >
         {prefix && <div className={styles.prefix}>{prefix}</div>}
         <input
           ref={ref}
@@ -40,7 +46,11 @@ export default function Input({
           className={styles.input}
           onChange={handleOnChange}
         />
-        {suffix && <div className={styles.suffix}>{suffix}</div>}
+        {suffix && (
+          <div tabIndex={-1} className={styles.suffix}>
+            {suffix}
+          </div>
+        )}
       </div>
       {errorMessage && (
         <div className={styles.errors}>

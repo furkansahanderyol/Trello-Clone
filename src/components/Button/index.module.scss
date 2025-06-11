@@ -1,7 +1,7 @@
 .button {
   padding: 0.5rem;
   border-radius: 0.3rem;
-  border: 1px solid var(--button-border);
+  border: 1px solid var(--input-border);
   font-size: 1rem;
   font-family: var(--font-unna);
   width: 100%;
@@ -12,10 +12,16 @@
   gap: 0.5rem;
   background-color: var(--button-blue);
   color: var(--button-text);
-  transition: background-color 0.25s linear;
+  transition: all 0.25s linear;
+  outline: none;
 
   &:hover {
     background-color: var(--button-blue-hover);
+    box-shadow: 0 0 5px 0 var(--focus-border);
+  }
+
+  &.focused {
+    box-shadow: 0 0 5px 0 var(--focus-border);
   }
 
   .text {
@@ -52,6 +58,12 @@
         animation: spin 0.5s linear infinite;
       }
     }
+  }
+
+  &.disabled {
+    background-color: #dedede;
+    cursor: not-allowed;
+    opacity: 0.75;
   }
 }
 
