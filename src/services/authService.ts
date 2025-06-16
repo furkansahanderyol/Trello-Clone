@@ -1,7 +1,8 @@
 import { PageLink } from "@/constants/PageLink"
+import getCookie from "@/helpers/getCookie"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
-import { loadingAtom } from "@/store"
+import { loadingAtom, userAtom } from "@/store"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -59,6 +60,7 @@ export namespace AuthService {
 
         if (response.status === 200) {
           toast.success(response.data.message)
+          defaultStore.set(userAtom, response.data.user)
           handleRedirect(PageLink.dashboard, 200)
         }
 
@@ -148,6 +150,21 @@ export namespace AuthService {
       })
       .catch((error) => {
         console.error("AuthService-checkVerified -> ", error)
+        throw error
+      })
+  }
+
+  export async function getUser() {
+    await axios
+      .get("/get-user")
+      .then((response) => {
+        if (response.status === 201) {
+          defaultStore.set(userAtom, response.data.user)
+          handleRedirect(PageLink.dashboard, 0)
+        }
+      })
+      .catch((error) => {
+        console.error("AuthService-getUser -> ", error)
         throw error
       })
   }

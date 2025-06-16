@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Domine, Unna } from "next/font/google"
 import "./globals.css"
 import { ToastContainer } from "react-toastify"
-import StoreProvider from "@/provider"
+import UserLoader from "@/components/UserLoader"
 
 export const metadata: Metadata = {
   title: "Trello Clone",
@@ -27,6 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <UserLoader />
       <body className={`${domine.variable} ${unna.variable}`}>
         {children}
 

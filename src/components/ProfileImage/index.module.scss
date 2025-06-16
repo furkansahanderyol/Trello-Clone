@@ -1,0 +1,17 @@
+.profileImage {
+  padding: 1rem;
+  background-color: var(--input-background);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  max-width: 64px;
+  max-height: 64px;
+
+  .image {
+    width: 1rem;
+    height: 1rem;
+    color: var(--primary-text-color);
+  }
+}

@@ -13,6 +13,7 @@ interface Props {
   suffix?: React.ReactNode
   errorMessage?: string[]
   ref?: Ref<HTMLInputElement>
+  placeholder?: string
 }
 
 export default function Input({
@@ -24,6 +25,7 @@ export default function Input({
   suffix,
   errorMessage,
   ref,
+  placeholder,
 }: Props) {
   const [isFocused, setIsFocused] = useState(false)
 
@@ -43,8 +45,13 @@ export default function Input({
         <input
           ref={ref}
           type={type}
-          className={styles.input}
+          className={clsx(
+            styles.input,
+            prefix && styles.inputWithPrefix,
+            suffix && styles.inputWithSuffix
+          )}
           onChange={handleOnChange}
+          placeholder={placeholder}
         />
         {suffix && (
           <div tabIndex={-1} className={styles.suffix}>

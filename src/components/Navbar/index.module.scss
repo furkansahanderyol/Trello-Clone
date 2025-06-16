@@ -1,0 +1,87 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--main-background);
+
+  .topControls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .searchbar {
+      background-color: var(--input-background);
+      border-radius: 0.3rem;
+      color: var(--primary-text-color);
+
+      .searchLogo {
+        width: 1em;
+        height: 1em;
+        color: var(--primary-text-color);
+      }
+    }
+
+    .test {
+      position: relative;
+      .profileButton {
+        cursor: pointer;
+      }
+
+      .dropdownMenu {
+        position: absolute;
+        border-radius: 0.3rem;
+        bottom: -140px;
+        right: 0;
+        z-index: 10;
+        background-color: var(--main-background);
+        width: fit-content;
+        list-style: none;
+        padding: 0;
+        pointer-events: all;
+        opacity: 100;
+        transition: opacity 0.2s ease-in-out;
+
+        &.hideDropdownMenu {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .menuItem {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 2rem 0.5rem 0.5rem;
+          gap: 1rem;
+          white-space: nowrap;
+          color: var(--primary-text-color);
+          border-radius: 0.3rem;
+          transition: background-color 0.25s linear;
+
+          &:hover {
+            background-color: var(--main-background-hover);
+            cursor: pointer;
+          }
+
+          &:last-child {
+            padding-left: 1.25rem;
+          }
+
+          .user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--primary-text-color);
+
+            .userInformation {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+              align-items: flex-start;
+            }
+          }
+        }
+      }
+    }
+  }
+}
