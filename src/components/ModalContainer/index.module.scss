@@ -1,0 +1,64 @@
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  pointer-events: none;
+
+  &.modalVisible {
+    opacity: 100;
+    pointer-events: all;
+  }
+
+  .overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #00000070;
+  }
+
+  .modal {
+    position: absolute;
+    background-color: var(--card-background);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    min-width: 40%;
+    max-height: 70%;
+    height: 100%;
+
+    .modalHeader {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem;
+
+      .title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-text-color);
+      }
+
+      .closeButton {
+        color: var(--primary-text-color-weak);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: color 0.2s ease-in-out;
+
+        &:hover {
+          color: var(--primary-text-color);
+        }
+      }
+    }
+  }
+}

@@ -14,8 +14,12 @@
     --main-background: #1d2125;
     --main-background-hover: #ffffff20;
     --primary-text-color: #b6c2cf;
+    --primary-text-color-weak: #b6c2cf40;
     --input-background: #8c9bab;
     --input-border: #738496;
+    --border: #ffffff29;
+    --card-background: #22272b;
+    --overlay: #141414;
   }
 }
 

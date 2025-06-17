@@ -16,6 +16,8 @@
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
+    "react-easy-crop": "^5.4.2",
     "react-toastify": "^11.0.5",
     "sass": "^1.86.0"
   },

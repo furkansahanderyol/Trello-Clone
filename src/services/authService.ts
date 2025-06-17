@@ -2,7 +2,7 @@ import { PageLink } from "@/constants/PageLink"
 import getCookie from "@/helpers/getCookie"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
-import { loadingAtom, userAtom } from "@/store"
+import { firstLoadAtom, loadingAtom, userAtom } from "@/store"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -160,7 +160,12 @@ export namespace AuthService {
       .then((response) => {
         if (response.status === 201) {
           defaultStore.set(userAtom, response.data.user)
-          handleRedirect(PageLink.dashboard, 0)
+
+          if (defaultStore.get(firstLoadAtom)) {
+            handleRedirect(PageLink.dashboard, 0)
+          }
+
+          defaultStore.set(firstLoadAtom, false)
         }
       })
       .catch((error) => {

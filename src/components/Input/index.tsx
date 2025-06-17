@@ -8,7 +8,7 @@ interface Props {
   label?: string
   onChange?: (value: string) => void
   className?: string
-  type?: "text" | "password" | "email"
+  type?: "text" | "password" | "email" | "file"
   prefix?: React.ReactNode
   suffix?: React.ReactNode
   errorMessage?: string[]

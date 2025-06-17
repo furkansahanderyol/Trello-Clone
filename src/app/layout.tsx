@@ -3,6 +3,7 @@ import { Domine, Unna } from "next/font/google"
 import "./globals.css"
 import { ToastContainer } from "react-toastify"
 import UserLoader from "@/components/UserLoader"
+import ModalContainer from "@/components/ModalContainer"
 
 export const metadata: Metadata = {
   title: "Trello Clone",
@@ -30,6 +31,8 @@ export default function RootLayout({
       <UserLoader />
       <body className={`${domine.variable} ${unna.variable}`}>
         {children}
+
+        <ModalContainer />
 
         <ToastContainer
           position="top-right"

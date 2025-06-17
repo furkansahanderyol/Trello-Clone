@@ -4,6 +4,10 @@ export const testAtom = atom<string | undefined>(undefined)
 
 // Global
 export const loadingAtom = atom(false)
+export const firstLoadAtom = atom(false)
+export const modalContentAtom = atom<
+  { title: string; content: React.ReactNode } | undefined
+>()
 
 // User
 export const userAtom = atom<
