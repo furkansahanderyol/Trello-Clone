@@ -3,7 +3,7 @@ import { Domine, Unna } from "next/font/google"
 import "./globals.css"
 import { ToastContainer } from "react-toastify"
 import UserLoader from "@/components/UserLoader"
-import ModalContainer from "@/components/ModalContainer"
+import ModalContainer from "@/components/-Modal/ModalContainer"
 
 export const metadata: Metadata = {
   title: "Trello Clone",

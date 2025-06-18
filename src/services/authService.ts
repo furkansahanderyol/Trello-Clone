@@ -1,5 +1,4 @@
 import { PageLink } from "@/constants/PageLink"
-import getCookie from "@/helpers/getCookie"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
 import { firstLoadAtom, loadingAtom, userAtom } from "@/store"
@@ -155,23 +154,24 @@ export namespace AuthService {
   }
 
   export async function getUser() {
-    await axios
-      .get("/get-user")
-      .then((response) => {
-        if (response.status === 201) {
-          defaultStore.set(userAtom, response.data.user)
+    try {
+      const response = await axios.get("/get-user")
 
-          if (defaultStore.get(firstLoadAtom)) {
-            handleRedirect(PageLink.dashboard, 0)
-          }
+      if (response.status === 201) {
+        defaultStore.set(userAtom, response.data.user)
 
-          defaultStore.set(firstLoadAtom, false)
+        if (defaultStore.get(firstLoadAtom)) {
+          handleRedirect(PageLink.dashboard, 0)
         }
-      })
-      .catch((error) => {
-        console.error("AuthService-getUser -> ", error)
-        throw error
-      })
+
+        defaultStore.set(firstLoadAtom, false)
+
+        return response.data.user // Burada return kesin olmalı
+      }
+    } catch (error) {
+      console.error("AuthService-getUser -> ", error)
+      throw error
+    }
   }
 
   export function googleAuth() {

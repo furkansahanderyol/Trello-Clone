@@ -4,7 +4,7 @@ import { Camera } from "lucide-react"
 import styles from "./index.module.scss"
 import { useAtom } from "jotai"
 import { modalContentAtom } from "@/store"
-import UploadImageModal from "../UploadImageModal"
+import UploadImageModal from "../-Modal/UploadImageModal"
 
 export default function SelectImage() {
   const [, setModalContent] = useAtom(modalContentAtom)

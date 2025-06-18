@@ -9,6 +9,13 @@
   max-width: 64px;
   max-height: 64px;
   position: relative;
+  overflow: hidden;
+
+  .imageWrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+  }
 
   .overlay {
     position: absolute;

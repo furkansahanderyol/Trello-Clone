@@ -4,7 +4,7 @@ import Input from "@/components/Input/index"
 import styles from "./index.module.scss"
 import { Power, Search } from "lucide-react"
 import { AuthService } from "@/services/authService"
-import { getDefaultStore } from "jotai"
+import { useAtomValue } from "jotai"
 import { userAtom } from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
@@ -13,7 +13,7 @@ import clsx from "clsx"
 import { PageLink } from "@/constants/PageLink"
 
 export default function Navbar() {
-  const user = getDefaultStore().get(userAtom)
+  const user = useAtomValue(userAtom)
 
   const profileButtonRef = useRef<HTMLDivElement>(null)
   const dropdownMenuRef = useRef<HTMLUListElement>(null)

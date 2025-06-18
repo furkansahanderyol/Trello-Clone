@@ -1,13 +1,15 @@
+"use client"
+
 import DashboardLayout from "@/layouts/DashboardLayout"
 
 import styles from "./page.module.scss"
 import Section from "@/components/Card"
 import ProfileImage from "@/components/ProfileImage"
 import { userAtom } from "@/store"
-import { getDefaultStore } from "jotai"
+import { useAtomValue } from "jotai"
 
 export default function UserProfile() {
-  const user = getDefaultStore().get(userAtom)
+  const user = useAtomValue(userAtom)
 
   return (
     <DashboardLayout>

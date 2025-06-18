@@ -19,8 +19,12 @@ export default function ProfileImage({
     <div className={styles.profileImage}>
       {isUploadAllowed && <SelectImage />}
       {url ? (
-        <div>
-          <Image src={url} alt="Profile image of user." />
+        <div className={styles.imageWrapper}>
+          <Image
+            src={`http://localhost:8000/${url}`}
+            alt="Profile image of user."
+            fill
+          />
         </div>
       ) : (
         <User className={clsx(styles.image, className)} />
