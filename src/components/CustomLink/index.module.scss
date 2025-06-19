@@ -1,0 +1,17 @@
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: var(--button-blue);
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--button-blue-hover);
+  }
+}

@@ -5,4 +5,5 @@ export const PageLink = {
   dashboard: "/dashboard",
   registerSuccess: "/auth/register-success",
   userProfile: "/user/profile",
+  changePassword: "/auth/change-password",
 }

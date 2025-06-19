@@ -30,7 +30,15 @@
   }
 
   .sections {
-    .profileImage {
+    .settings {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .changePassword {
+      margin: 2rem auto;
     }
   }
 }

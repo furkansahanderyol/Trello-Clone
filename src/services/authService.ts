@@ -174,6 +174,31 @@ export namespace AuthService {
     }
   }
 
+  export async function changePassword(
+    currentPassword: string,
+    newPassword: string,
+    newPasswordConfirm: string
+  ) {
+    await axios
+      .post("/change-password", {
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        newPasswordConfirm: newPasswordConfirm,
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success(response.data.message)
+          handleRedirect(PageLink.userProfile, 200)
+          return
+        }
+      })
+      .catch((error) => {
+        console.error("AuthService-changePassword -> ", error)
+        toast.error(error.message)
+        throw error
+      })
+  }
+
   export function googleAuth() {
     handleRedirect("http://localhost:8000/auth/google", 0)
   }

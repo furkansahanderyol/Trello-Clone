@@ -7,6 +7,11 @@ import Section from "@/components/Card"
 import ProfileImage from "@/components/ProfileImage"
 import { userAtom } from "@/store"
 import { useAtomValue } from "jotai"
+import Setting from "@/components/Setting"
+import { CircleUser, Dot, Mail, TreeDeciduous } from "lucide-react"
+import Link from "next/link"
+import CustomLink from "@/components/CustomLink"
+import { PageLink } from "@/constants/PageLink"
 
 export default function UserProfile() {
   const user = useAtomValue(userAtom)
@@ -21,10 +26,29 @@ export default function UserProfile() {
 
         <div className={styles.sections}>
           <Section title={"Profile"}>
-            <ProfileImage
-              isUploadAllowed
-              className={styles.profileImage}
-              url={user?.profileImage}
+            <div className={styles.settings}>
+              <Setting
+                label="Profile Image"
+                value={
+                  <ProfileImage isUploadAllowed url={user?.profileImage} />
+                }
+              />
+              <Setting
+                label="Name"
+                value={user?.name!}
+                suffix={<CircleUser />}
+              />
+              <Setting
+                label="Surname"
+                value={user?.surname!}
+                suffix={<TreeDeciduous />}
+              />
+              <Setting label="Email" value={user?.email!} suffix={<Mail />} />
+            </div>
+            <CustomLink
+              className={styles.changePassword}
+              link={PageLink.changePassword}
+              label="Change Password"
             />
           </Section>
         </div>
