@@ -13,6 +13,7 @@ import styles from "./page.module.scss"
 import { formatTime } from "@/helpers/formatTime"
 import clsx from "clsx"
 import { toast } from "react-toastify"
+import PatternFormatInput from "@/components/PatternFormatInput"
 
 export default function RegisterSuccess() {
   const [verificationCode, setVerificationCode] = useState("")
@@ -41,14 +42,6 @@ export default function RegisterSuccess() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    startTimer()
-
-    if (startCountdown && countdown !== 0) {
-      toast.error(
-        "Please wait until the current countdown ends before requesting new code."
-      )
-      return
-    }
 
     if (!email) return
 
@@ -75,16 +68,21 @@ export default function RegisterSuccess() {
     setCountdown(120)
   }
 
+  useEffect(() => {
+    console.log("verificationCode", verificationCode)
+  }, [verificationCode])
+
   return (
     <AuthLayout>
       <Form formHeader="Verification Code" onSubmit={handleSubmit}>
         <div className={styles.wrapper}>
-          <Input
-            onChange={(e) => setVerificationCode(e)}
+          <PatternFormatInput
+            format={"### ###"}
             label="Please enter your verification code."
+            onChange={(e) => setVerificationCode(e)}
           />
           <div className={styles.buttons}>
-            <Button type="submit" text="Send" disabled={startCountdown} />
+            <Button type="submit" text="Send" />
             <Button
               onClick={handleResendCode}
               type="button"
