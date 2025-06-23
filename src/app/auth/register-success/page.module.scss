@@ -36,7 +36,7 @@
           var(--button-blue) var(--angle),
           #ededed 0deg
         );
-        animation: fill 120s linear forwards;
+        animation: fill linear forwards;
 
         &::before {
           content: "";

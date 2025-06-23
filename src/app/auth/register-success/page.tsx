@@ -2,7 +2,6 @@
 
 import Button from "@/components/Button"
 import Form from "@/components/Form"
-import Input from "@/components/Input"
 import { PageLink } from "@/constants/PageLink"
 import AuthLayout from "@/layouts/AuthLayout"
 import { AuthService } from "@/services/authService"
@@ -14,11 +13,15 @@ import { formatTime } from "@/helpers/formatTime"
 import clsx from "clsx"
 import { toast } from "react-toastify"
 import PatternFormatInput from "@/components/PatternFormatInput"
+import { useAtom } from "jotai"
+import { sendCodeAnimationTimerAtom, sendCodeTimerAtom } from "@/store"
 
 export default function RegisterSuccess() {
   const [verificationCode, setVerificationCode] = useState("")
   const [startCountdown, setStartCountdown] = useState(false)
-  const [countdown, setCountdown] = useState(120)
+  const [countdown, setCountdown] = useAtom(sendCodeTimerAtom)
+  // Animation timer set on another state to preventing re-rendering animation on every state update
+  const [animationTimer] = useAtom(sendCodeAnimationTimerAtom)
   const searchParams = useSearchParams()
   const email = searchParams.get("email")
 
@@ -33,8 +36,13 @@ export default function RegisterSuccess() {
       return
     }
 
+    // Timer for countdown
     const timer = setInterval(() => {
-      setCountdown((prev) => prev - 1)
+      if (countdown && countdown === 0) {
+        return clearInterval(timer)
+      } else if (countdown) {
+        setCountdown(countdown - 1)
+      }
     }, 1000)
 
     return () => clearInterval(timer)
@@ -65,12 +73,9 @@ export default function RegisterSuccess() {
 
   function startTimer() {
     setStartCountdown(true)
+    // Sets countdown value immediately for countdown to start.
     setCountdown(120)
   }
-
-  useEffect(() => {
-    console.log("verificationCode", verificationCode)
-  }, [verificationCode])
 
   return (
     <AuthLayout>
@@ -94,12 +99,15 @@ export default function RegisterSuccess() {
             </Link>
             {startCountdown && (
               <div
+                style={{
+                  animationDuration: `${animationTimer}s`,
+                }}
                 className={clsx(
                   styles.progressBar,
                   startCountdown && styles.progress
                 )}
               >
-                <div className={styles.countdown}>{formatTime(countdown)}</div>
+                <div className={styles.countdown}>{formatTime(countdown!)}</div>
               </div>
             )}
           </div>

@@ -1,7 +1,13 @@
 import { PageLink } from "@/constants/PageLink"
 import { handleRedirect } from "@/helpers/handleRedirect"
 import axios from "@/lib/axios"
-import { firstLoadAtom, loadingAtom, userAtom } from "@/store"
+import {
+  firstLoadAtom,
+  loadingAtom,
+  sendCodeAnimationTimerAtom,
+  sendCodeTimerAtom,
+  userAtom,
+} from "@/store"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -108,10 +114,17 @@ export namespace AuthService {
     await axios
       .post("/resend-verification", { email })
       .then((response) => {
+        console.log("response", response)
+
         toast.success(response.data.message)
         return response.data
       })
       .catch((error) => {
+        defaultStore.set(sendCodeTimerAtom, error.response.data.remainingTime)
+        defaultStore.set(
+          sendCodeAnimationTimerAtom,
+          error.response.data.remainingTime
+        )
         toast.error(error.message)
         console.error("AuthService - ResendVerification -> ", error)
       })

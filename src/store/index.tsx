@@ -19,3 +19,5 @@ export const userAtom = atom<
     }
   | undefined
 >(undefined)
+export const sendCodeTimerAtom = atom<number | undefined>(undefined)
+export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
