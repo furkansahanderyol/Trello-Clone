@@ -27,8 +27,7 @@ export default function ModalContainer() {
             <X />
           </div>
         </div>
-
-        {modalContent?.content}
+        <div className={styles.content}>{modalContent?.content}</div>
       </div>
     </div>
   )

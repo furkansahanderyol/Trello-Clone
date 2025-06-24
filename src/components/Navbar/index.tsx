@@ -42,7 +42,9 @@ export default function Navbar() {
 
   return (
     <nav className={styles.container}>
-      <div className={styles.logo}>Logo</div>
+      <Link href={PageLink.dashboard} className={styles.logo}>
+        Logo
+      </Link>
 
       <div className={styles.topControls}>
         <Input

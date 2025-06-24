@@ -1,0 +1,17 @@
+.form {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  position: relative;
+
+  .input {
+    color: var(--primary-text-color);
+  }
+
+  .button {
+    width: 40%;
+    margin: 0 auto;
+    position: sticky;
+    bottom: 1rem;
+  }
+}

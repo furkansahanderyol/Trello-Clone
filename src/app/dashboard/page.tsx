@@ -1,17 +1,48 @@
 "use client"
 
-import Button from "@/components/Button"
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { AuthService } from "@/services/authService"
+import styles from "./page.module.scss"
+import { WorkspaceService } from "@/services/workspaceService"
+import { useEffect } from "react"
+import { useAtom, useAtomValue } from "jotai"
+import { allWorkspacesAtom, modalContentAtom } from "@/store"
+import EmptyLayout from "@/layouts/EmptyLayout"
+import { Presentation } from "lucide-react"
+import CreateNewWorkspaceModal from "@/components/-Modal/CreateNewWorkspaceModal"
 
 export default function Dashboard() {
-  function handleVerifyPageRedirect() {
-    AuthService.checkVerified()
+  const workspaces = useAtomValue(allWorkspacesAtom)
+  const [, setModalContent] = useAtom(modalContentAtom)
+
+  // function handleVerifyPageRedirect() {
+  //   AuthService.checkVerified()
+  // }
+
+  useEffect(() => {
+    WorkspaceService.getAllWorkspaces()
+  }, [])
+
+  function handleCreateNewWorkspace() {
+    setModalContent({
+      title: "Create your new workspace",
+      content: <CreateNewWorkspaceModal />,
+    })
   }
 
   return (
     <DashboardLayout>
-      <div>Dashboard</div>
+      {workspaces.length === 0 ? (
+        <EmptyLayout
+          title="No workspace yet"
+          description="You don't have any workspace created. Start by creating your first workspace!"
+          icon={<Presentation className={styles.emptyIcon} size={32} />}
+          buttonText="Create new workspace"
+          onClick={handleCreateNewWorkspace}
+        />
+      ) : (
+        <div className={styles.container}>Dashboard</div>
+      )}
     </DashboardLayout>
   )
 }

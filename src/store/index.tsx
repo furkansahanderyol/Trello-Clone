@@ -8,6 +8,7 @@ export const firstLoadAtom = atom(false)
 export const modalContentAtom = atom<
   { title: string; content: React.ReactNode } | undefined
 >()
+export const pageLoadingAtom = atom(false)
 
 // User
 export const userAtom = atom<
@@ -21,3 +22,6 @@ export const userAtom = atom<
 >(undefined)
 export const sendCodeTimerAtom = atom<number | undefined>(undefined)
 export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
+
+// Boards
+export const allWorkspacesAtom = atom([])
