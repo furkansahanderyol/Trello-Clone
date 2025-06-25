@@ -114,8 +114,6 @@ export namespace AuthService {
     await axios
       .post("/resend-verification", { email })
       .then((response) => {
-        console.log("response", response)
-
         toast.success(response.data.message)
         return response.data
       })

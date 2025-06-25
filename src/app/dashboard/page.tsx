@@ -1,7 +1,6 @@
 "use client"
 
 import DashboardLayout from "@/layouts/DashboardLayout"
-import { AuthService } from "@/services/authService"
 import styles from "./page.module.scss"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useEffect } from "react"
@@ -10,6 +9,8 @@ import { allWorkspacesAtom, modalContentAtom } from "@/store"
 import EmptyLayout from "@/layouts/EmptyLayout"
 import { Presentation } from "lucide-react"
 import CreateNewWorkspaceModal from "@/components/-Modal/CreateNewWorkspaceModal"
+import WorkspaceCard from "@/components/-Card/WorkspaceCard"
+import Button from "@/components/Button"
 
 export default function Dashboard() {
   const workspaces = useAtomValue(allWorkspacesAtom)
@@ -41,7 +42,21 @@ export default function Dashboard() {
           onClick={handleCreateNewWorkspace}
         />
       ) : (
-        <div className={styles.container}>Dashboard</div>
+        <div className={styles.container}>
+          {workspaces.map((workspace, index) => {
+            return <WorkspaceCard key={index} {...workspace.workspace} />
+          })}
+          <Button
+            text="Create"
+            type="button"
+            onClick={() =>
+              setModalContent({
+                title: "Create your new workspace",
+                content: <CreateNewWorkspaceModal />,
+              })
+            }
+          />
+        </div>
       )}
     </DashboardLayout>
   )

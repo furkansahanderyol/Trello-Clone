@@ -26,6 +26,7 @@ export default function ColorPicker({
           {colors.map((color, index) => {
             return (
               <div
+                key={index}
                 onClick={() => onSelect(color)}
                 style={{ background: color }}
                 className={clsx(

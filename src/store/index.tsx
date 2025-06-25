@@ -1,4 +1,5 @@
 import { atom } from "jotai"
+import { AllWorkspacesType, WorkspaceType } from "./types"
 
 export const testAtom = atom<string | undefined>(undefined)
 
@@ -23,5 +24,5 @@ export const userAtom = atom<
 export const sendCodeTimerAtom = atom<number | undefined>(undefined)
 export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
 
-// Boards
-export const allWorkspacesAtom = atom([])
+// Workspaces
+export const allWorkspacesAtom = atom<AllWorkspacesType[]>([])

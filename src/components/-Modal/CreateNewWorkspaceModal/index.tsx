@@ -4,6 +4,8 @@ import Button from "@/components/Button"
 import { FormEvent, useState } from "react"
 import ColorPicker from "@/components/ColorPicker"
 import { WorkspaceService } from "@/services/workspaceService"
+import { useAtom } from "jotai"
+import { modalContentAtom } from "@/store"
 
 const colors = [
   "#3b82f6",
@@ -23,12 +25,14 @@ const gradientColors = [
 ]
 
 export default function CreateNewWorkspaceModal() {
+  const [, setModalContent] = useAtom(modalContentAtom)
   const [selectedColor, setSelectedColor] = useState(colors[0])
   const [workspaceName, setWorkspaceName] = useState("")
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
 
+    setModalContent(undefined)
     WorkspaceService.createWorkspace(workspaceName, selectedColor)
   }
 

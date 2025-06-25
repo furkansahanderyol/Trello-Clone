@@ -31,7 +31,12 @@ export namespace WorkspaceService {
         color,
       })
       .then((response) => {
-        console.log(response)
+        const newWorkspace = response.data.workspace
+
+        defaultStore.set(allWorkspacesAtom, (prev) => [
+          ...prev,
+          newWorkspace[0],
+        ])
       })
       .catch((error) => {
         console.error("WorkspaceService - createWorkspace -> ", error)
