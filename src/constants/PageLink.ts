@@ -6,4 +6,5 @@ export const PageLink = {
   registerSuccess: "/auth/register-success",
   userProfile: "/user/profile",
   changePassword: "/auth/change-password",
+  workspace: "/workspace",
 }

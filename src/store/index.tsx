@@ -26,3 +26,4 @@ export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
 
 // Workspaces
 export const allWorkspacesAtom = atom<AllWorkspacesType[]>([])
+export const selectedWorkspaceAtom = atom<WorkspaceType | undefined>()

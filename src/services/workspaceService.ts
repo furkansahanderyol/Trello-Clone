@@ -1,5 +1,9 @@
 import axios from "@/lib/axios"
-import { allWorkspacesAtom, pageLoadingAtom } from "@/store"
+import {
+  allWorkspacesAtom,
+  pageLoadingAtom,
+  selectedWorkspaceAtom,
+} from "@/store"
 import { getDefaultStore } from "jotai"
 
 const defaultStore = getDefaultStore()
@@ -41,6 +45,25 @@ export namespace WorkspaceService {
       .catch((error) => {
         console.error("WorkspaceService - createWorkspace -> ", error)
         throw error
+      })
+  }
+
+  export async function getWorkspace(id: string) {
+    defaultStore.set(pageLoadingAtom, true)
+
+    await axios
+      .get(`/get-workspace/${id}`)
+      .then((response) => {
+        defaultStore.set(selectedWorkspaceAtom, response.data)
+
+        return response.data
+      })
+      .catch((error) => {
+        console.error("WorkspaceService - getWorkspace -> ", error)
+        throw error
+      })
+      .finally(() => {
+        return defaultStore.set(pageLoadingAtom, false)
       })
   }
 }
