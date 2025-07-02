@@ -1,23 +1,21 @@
 "use client"
 
-import DashboardLayout from "@/layouts/DashboardLayout"
-
 import styles from "./page.module.scss"
 import Section from "@/components/Card"
 import ProfileImage from "@/components/ProfileImage"
 import { userAtom } from "@/store"
 import { useAtomValue } from "jotai"
 import Setting from "@/components/Setting"
-import { CircleUser, Dot, Mail, TreeDeciduous } from "lucide-react"
-import Link from "next/link"
+import { CircleUser, Mail, TreeDeciduous } from "lucide-react"
 import CustomLink from "@/components/CustomLink"
 import { PageLink } from "@/constants/PageLink"
+import SettingsLayout from "@/layouts/SettingsLayout"
 
 export default function UserProfile() {
   const user = useAtomValue(userAtom)
 
   return (
-    <DashboardLayout>
+    <SettingsLayout>
       <div className={styles.container}>
         <div className={styles.titleWrapper}>
           <h1 className={styles.title}>Profile</h1>
@@ -53,6 +51,6 @@ export default function UserProfile() {
           </Section>
         </div>
       </div>
-    </DashboardLayout>
+    </SettingsLayout>
   )
 }

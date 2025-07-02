@@ -9,7 +9,7 @@ import UploadImageModal from "../-Modal/UploadImageModal"
 export default function SelectImage() {
   const [, setModalContent] = useAtom(modalContentAtom)
 
-  function handleTest() {
+  function openModal() {
     setModalContent({
       title: "Select Photo",
       content: <UploadImageModal />,
@@ -17,7 +17,7 @@ export default function SelectImage() {
   }
 
   return (
-    <div onClick={handleTest} className={styles.container}>
+    <div onClick={openModal} className={styles.container}>
       <Camera className={styles.camera} />
     </div>
   )

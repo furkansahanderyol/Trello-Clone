@@ -1,5 +1,37 @@
 .container {
   width: 200px;
   height: 200px;
+  border-radius: 0.3rem;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 1rem;
   background-color: red;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay);
+    left: 0;
+    top: 0;
+    border-radius: 0.3rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 0.4;
+  }
+
+  .name {
+    color: var(--foreground);
+    font-size: 1.25rem;
+    font-weight: 700;
+    z-index: 1;
+  }
 }

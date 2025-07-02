@@ -31,6 +31,8 @@ export default function Dashboard() {
     })
   }
 
+  console.log("workspaces", workspaces)
+
   return (
     <DashboardLayout>
       {workspaces.length === 0 ? (
@@ -43,19 +45,11 @@ export default function Dashboard() {
         />
       ) : (
         <div className={styles.container}>
-          {workspaces.map((workspace, index) => {
-            return <WorkspaceCard key={index} {...workspace.workspace} />
-          })}
-          <Button
-            text="Create"
-            type="button"
-            onClick={() =>
-              setModalContent({
-                title: "Create your new workspace",
-                content: <CreateNewWorkspaceModal />,
-              })
-            }
-          />
+          <div className={styles.workspaces}>
+            {workspaces.map((workspace, index) => {
+              return <WorkspaceCard key={index} {...workspace.workspace} />
+            })}
+          </div>
         </div>
       )}
     </DashboardLayout>

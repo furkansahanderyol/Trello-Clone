@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from "./index.module.scss"
 import Dropzone from "react-dropzone"
 import { CloudUpload } from "lucide-react"
@@ -43,6 +43,7 @@ export default function UploadImageModal() {
     const image = await createImage(imageSrc)
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
+
     if (!ctx) return null
 
     canvas.width = croppedAreaPixels.width
@@ -72,7 +73,7 @@ export default function UploadImageModal() {
       <div className={styles.wrapper}>
         {imageUrl ? (
           <div className={styles.selectedImage}>
-            <Image src={imageUrl} fill alt="Selected profile image." />
+            <img src={imageUrl} alt="Selected profile image." />
           </div>
         ) : (
           <Dropzone maxFiles={1} accept={{ "image/*": [] }} onDrop={handleDrop}>
@@ -118,9 +119,9 @@ export default function UploadImageModal() {
           image={imageUrl}
           style={{
             containerStyle: {
+              width: "100%",
+              height: "500px",
               position: "relative",
-              width: "60%",
-              height: "60%",
             },
           }}
           onCropComplete={async (_, croppedAreaPixels) => {
