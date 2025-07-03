@@ -36,4 +36,6 @@
 body {
   margin: 0;
   background-color: var(--main-background);
+  overflow: hidden;
+  overflow-y: auto;
 }

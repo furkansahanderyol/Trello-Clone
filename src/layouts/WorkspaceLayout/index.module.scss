@@ -1,8 +1,16 @@
 .container {
   background-color: var(--main-background);
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 96px);
+  height: 400px;
   position: relative;
+  display: flex;
+  align-items: flex-start;
+
+  .content {
+    flex: 1;
+    height: 100%;
+  }
 
   .loading {
     position: absolute;
