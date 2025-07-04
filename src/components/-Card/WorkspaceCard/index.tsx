@@ -11,7 +11,6 @@ export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
     try {
       WorkspaceService.getWorkspace(id)
       router.push(`${PageLink.workspace}/${id}`)
-      console.log(`${PageLink.workspace}/${id}`)
     } catch (error) {
       console.error(error)
     }

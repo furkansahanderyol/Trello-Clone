@@ -26,6 +26,17 @@
       min-width: max-content;
       height: 100%;
 
+      .items {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .droppable {
+        width: 400px;
+        height: 400px;
+        background-color: red;
+      }
+
       .item {
         align-self: stretch;
         height: 100%;
