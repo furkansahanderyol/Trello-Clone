@@ -1,32 +1,29 @@
 "use client"
 
-import Draggable from "@/components/Draggable"
 import styles from "./page.module.scss"
 import WorkspaceLayout from "@/layouts/WorkspaceLayout"
 import { selectedWorkspaceAtom } from "@/store"
 import {
-  defaultDropAnimation,
-  defaultDropAnimationSideEffects,
+  closestCorners,
   DndContext,
   DragEndEvent,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
   UniqueIdentifier,
-  useDraggable,
-  useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { act, useEffect, useState } from "react"
-import Droppable from "@/components/Droppable"
+import { useState } from "react"
 import {
   arrayMove,
+  horizontalListSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
+import SortableCard from "@/components/-DnD/SortableCard"
+import SortableCardItem from "@/components/-DnD/SortableCardItem"
 
 export default function Workspace() {
   const [selectedWorkspace] = useAtom(selectedWorkspaceAtom)
@@ -36,11 +33,11 @@ export default function Workspace() {
     {
       listId: "list-1",
       tasks: [
-        { id: "task-1", content: "task-1" },
-        { id: "task-2", content: "task-2" },
+        { id: "task-1", title: "task-1" },
+        { id: "task-2", title: "task-2" },
       ],
     },
-    { listId: "list-2", tasks: [{ id: "task-3", content: "task-3" }] },
+    { listId: "list-2", tasks: [{ id: "task-3", title: "task-3" }] },
     { listId: "list-3", tasks: [] },
   ])
 
@@ -51,50 +48,95 @@ export default function Workspace() {
     })
   )
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    const activeId = active.id
-    const overTaskId = data
-      .flatMap((list) => list.tasks)
-      .find((task) => task.id === over?.id)?.id
+  function handleDragEnd(e: DragEndEvent) {
+    const { active, over } = e
 
-    let sourceListId
+    if (!over || active.id === over.id) return
 
-    sourceListId = data.find((lists) => {
-      return lists.tasks.find((task) => {
-        return task.id === active.id
-      })
-    })?.listId
+    const activeListIndex = data.findIndex((list) => list.listId === active.id)
+    const overListIndex = data.findIndex((list) => list.listId === over.id)
 
-    // If its on same list
-    if (!overTaskId && sourceListId === over?.id) {
-      setData((lists) => {
-        return lists.map((list) => {
-          if (list.listId === sourceListId) {
-            const tasks = list.tasks
-
-            const oldIndex = tasks.findIndex((task) => task.id === activeId)
-            const newIndex = tasks.findIndex((task) => task.id === over?.id)
-
-            const newTasks = arrayMove(tasks, oldIndex, newIndex)
-
-            return { listId: list.listId, tasks: newTasks }
-          } else {
-            return list
-          }
-        })
-      })
-    } else {
+    // Changes order of the lists
+    if (activeListIndex !== -1 && overListIndex !== -1) {
+      const newList = arrayMove(data, activeListIndex, overListIndex)
+      setData(newList)
+      return
     }
 
-    if (over && active.id !== over.id) {
-      // setData((items) => {
-      //   // return arrayMove(items, oldIndex, newIndex)
-      // })
+    const activeTaskListIndex = data.findIndex((list) =>
+      list.tasks.some((task) => task.id === active.id)
+    )
+
+    const overTaskListIndex = data.findIndex((list) =>
+      list.tasks.some((task) => task.id === over.id)
+    )
+    // Aborts when task or target task cannot be found
+    if (activeTaskListIndex === -1) return
+
+    // If task carried to the new list
+    if (overTaskListIndex === -1) {
+      const overListOnlyIndex = data.findIndex(
+        (list) => list.listId === over.id
+      )
+      if (overListOnlyIndex !== -1) {
+        const activeList = data[activeTaskListIndex]
+        const taskToMove = activeList.tasks.find(
+          (task) => task.id === active.id
+        )!
+
+        const newActiveTasks = activeList.tasks.filter(
+          (task) => task.id !== active.id
+        )
+
+        const newData = [...data]
+        newData[activeTaskListIndex] = { ...activeList, tasks: newActiveTasks }
+
+        const newOverTasks = [...newData[overListOnlyIndex].tasks, taskToMove]
+
+        newData[overListOnlyIndex] = {
+          ...newData[overListOnlyIndex],
+          tasks: newOverTasks,
+        }
+
+        setData(newData)
+        return
+      }
+    }
+
+    // If task is in the same list
+    if (activeTaskListIndex === overTaskListIndex) {
+      const list = data[activeTaskListIndex]
+      const oldIndex = list.tasks.findIndex((task) => task.id === active.id)
+      const newIndex = list.tasks.findIndex((task) => task.id === over.id)
+
+      const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
+      const newData = [...data]
+      newData[activeTaskListIndex] = { ...list, tasks: newTasks }
+      setData(newData)
+    } else {
+      // If task is in another list
+      const activeList = data[activeTaskListIndex]
+      const overList = data[overTaskListIndex]
+
+      const task = activeList.tasks.filter((task) => task.id === active.id)
+      const oldTasks = activeList.tasks.filter((task) => task.id !== active.id)
+
+      const newIndex = overList.tasks.findIndex((task) => task.id === over.id)
+
+      const newTasks = [...overList.tasks]
+      newTasks.splice(newIndex, 0, task[0])
+
+      const newData = [...data]
+      newData[activeTaskListIndex] = { ...activeList, tasks: oldTasks }
+      newData[overTaskListIndex] = { ...overList, tasks: newTasks }
+
+      setData(newData)
     }
   }
 
-  function findList(id: string) {}
+  function isActiveIdTask() {
+    return data.some((list) => list.tasks.some((task) => task.id === activeId))
+  }
 
   return (
     <WorkspaceLayout>
@@ -112,81 +154,28 @@ export default function Workspace() {
                 handleDragEnd(e)
                 setActiveId(null)
               }}
-              onDragOver={handleDragEnd}
+              collisionDetection={closestCorners}
             >
-              {data.map((lists) => {
-                return (
-                  <SortableContext
-                    key={lists.listId}
-                    id={lists.listId}
-                    items={lists.tasks}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <Droppable id={lists.listId}>
-                      <div className={styles.items}>
-                        {lists.tasks.map((item) => (
-                          <Draggable
-                            key={item.id}
-                            id={item.id}
-                            content={item.content}
-                          />
-                        ))}
-                      </div>
-                    </Droppable>
-                    <DragOverlay
-                      dropAnimation={{
-                        ...defaultDropAnimation,
-                        sideEffects: defaultDropAnimationSideEffects({
-                          styles: {
-                            active: {
-                              opacity: "1",
-                            },
-                          },
-                        }),
-                      }}
-                    >
-                      {activeId ? (
-                        <Draggable
-                          id={activeId}
-                          content={
-                            data
-                              .flatMap((list) => list.tasks)
-                              .find((t) => t.id === activeId)?.content ?? ""
-                          }
-                        />
-                      ) : null}
-                    </DragOverlay>
-                  </SortableContext>
-                )
-              })}
-              {/* <SortableContext
-                id="sortable-1"
-                items={items}
-                strategy={verticalListSortingStrategy}
-              >
-                <Droppable id={"x-1"}>
-                  <div className={styles.items}>
-                    {items.map((item) => {
-                      return (
-                        <Draggable
-                          key={item.id}
-                          id={item.id}
-                          content={item.content}
-                        />
-                      )
-                    })}
-                  </div>
-                </Droppable>
-              </SortableContext>
               <SortableContext
-                id="sortable-2"
-                items={[]}
-                strategy={verticalListSortingStrategy}
+                items={data.map((list) => list.listId)}
+                strategy={horizontalListSortingStrategy}
               >
-                <Droppable id={"x-2"}>
-                  <div className={styles.items}></div>
-                </Droppable>
-              </SortableContext> */}
+                {data.map((list) => {
+                  return (
+                    <SortableCard
+                      key={list.listId}
+                      id={list.listId}
+                      cardHeader={list.listId}
+                      cardItems={list.tasks}
+                    />
+                  )
+                })}
+                <DragOverlay>
+                  {activeId && isActiveIdTask() ? (
+                    <SortableCardItem id={activeId} title={""} />
+                  ) : null}
+                </DragOverlay>
+              </SortableContext>
             </DndContext>
           </div>
         </div>
