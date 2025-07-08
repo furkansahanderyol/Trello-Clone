@@ -31,8 +31,6 @@ export default function Dashboard() {
     })
   }
 
-  console.log("workspaces", workspaces)
-
   return (
     <DashboardLayout>
       {workspaces.length === 0 ? (

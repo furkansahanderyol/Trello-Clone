@@ -24,6 +24,8 @@ import {
 } from "@dnd-kit/sortable"
 import SortableCard from "@/components/-DnD/SortableCard"
 import SortableCardItem from "@/components/-DnD/SortableCardItem"
+import { BoardService } from "@/services/boardService"
+import { useParams } from "next/navigation"
 
 export default function Workspace() {
   const [selectedWorkspace] = useAtom(selectedWorkspaceAtom)
@@ -42,7 +44,9 @@ export default function Workspace() {
   ])
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 20 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })

@@ -36,11 +36,13 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
         >
           {cardHeader}
         </div>
-        {cardItems.map((item) => {
-          return (
-            <SortableCardItem key={item.id} id={item.id} title={item.title} />
-          )
-        })}
+        <div className={styles.tasks}>
+          {cardItems.map((item) => {
+            return (
+              <SortableCardItem key={item.id} id={item.id} title={item.title} />
+            )
+          })}
+        </div>
       </div>
     </SortableContext>
   )
