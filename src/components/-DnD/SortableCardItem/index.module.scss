@@ -6,8 +6,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: black;
-  color: white;
+  background-color: #2a2f35;
+  color: #e4ecf4;
+  border: 1px solid #40464e;
+  pointer-events: auto;
+
+  &:hover {
+    background-color: #33393f;
+    cursor: pointer;
+  }
+
+  &.active {
+    pointer-events: none;
+    background-color: #00000050;
+  }
 
   .createBoard {
     display: flex;

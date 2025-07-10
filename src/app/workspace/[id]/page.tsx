@@ -2,7 +2,7 @@
 
 import styles from "./page.module.scss"
 import WorkspaceLayout from "@/layouts/WorkspaceLayout"
-import { selectedWorkspaceAtom } from "@/store"
+import { activeIdAtom, dragActiveAtom } from "@/store"
 import {
   closestCorners,
   DndContext,
@@ -24,13 +24,11 @@ import {
 } from "@dnd-kit/sortable"
 import SortableCard from "@/components/-DnD/SortableCard"
 import SortableCardItem from "@/components/-DnD/SortableCardItem"
-import { BoardService } from "@/services/boardService"
-import { useParams } from "next/navigation"
 
 export default function Workspace() {
-  const [selectedWorkspace] = useAtom(selectedWorkspaceAtom)
+  const [, setDragActive] = useAtom(dragActiveAtom)
 
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
+  const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [data, setData] = useState([
     {
       listId: "list-1",
@@ -82,6 +80,7 @@ export default function Workspace() {
       const overListOnlyIndex = data.findIndex(
         (list) => list.listId === over.id
       )
+
       if (overListOnlyIndex !== -1) {
         const activeList = data[activeTaskListIndex]
         const taskToMove = activeList.tasks.find(
@@ -121,13 +120,25 @@ export default function Workspace() {
       // If task is in another list
       const activeList = data[activeTaskListIndex]
       const overList = data[overTaskListIndex]
+      const activeRect = active.rect.current?.translated
+      const overRect = over.rect
 
       const task = activeList.tasks.filter((task) => task.id === active.id)
       const oldTasks = activeList.tasks.filter((task) => task.id !== active.id)
 
-      const newIndex = overList.tasks.findIndex((task) => task.id === over.id)
+      if (!activeRect || !overRect) return
+      const activeItemCenterY = activeRect.top + activeRect.height / 2
+      const overItemCenterY = overRect.top + overRect.height / 2
+      const isAbove = activeItemCenterY < overItemCenterY
+
+      const overItemIndex = overList.tasks.findIndex(
+        (task) => task.id === over.id
+      )
 
       const newTasks = [...overList.tasks]
+
+      const newIndex = isAbove ? overItemIndex : overItemIndex + 1
+
       newTasks.splice(newIndex, 0, task[0])
 
       const newData = [...data]
@@ -153,10 +164,14 @@ export default function Workspace() {
           <div className={styles.lists}>
             <DndContext
               sensors={sensors}
-              onDragStart={(e) => setActiveId(e?.active?.id)}
+              onDragStart={(e) => {
+                setActiveId(e?.active?.id)
+                setDragActive(true)
+              }}
               onDragEnd={(e) => {
                 handleDragEnd(e)
                 setActiveId(null)
+                setDragActive(false)
               }}
               collisionDetection={closestCorners}
             >

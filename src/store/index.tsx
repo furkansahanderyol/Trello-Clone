@@ -1,5 +1,6 @@
 import { atom } from "jotai"
 import { AllWorkspacesType, WorkspaceType } from "./types"
+import { UniqueIdentifier } from "@dnd-kit/core"
 
 export const testAtom = atom<string | undefined>(undefined)
 
@@ -27,3 +28,5 @@ export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
 // Workspaces
 export const allWorkspacesAtom = atom<AllWorkspacesType[]>([])
 export const selectedWorkspaceAtom = atom<WorkspaceType | undefined>()
+export const dragActiveAtom = atom(false)
+export const activeIdAtom = atom<UniqueIdentifier | null>(null)

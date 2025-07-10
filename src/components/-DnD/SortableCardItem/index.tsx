@@ -12,9 +12,10 @@ import clsx from "clsx"
 interface IProps {
   id: UniqueIdentifier
   title: string
+  isActive?: boolean
 }
 
-export default function SortableCardItem({ id, title }: IProps) {
+export default function SortableCardItem({ id, title, isActive }: IProps) {
   const boardNameRef = useRef<HTMLTextAreaElement | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [checkboxVisible, setCheckboxVisible] = useState(false)
@@ -45,7 +46,7 @@ export default function SortableCardItem({ id, title }: IProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={styles.container}
+      className={clsx(styles.container, isActive && styles.active)}
     >
       {editMode ? (
         <div className={styles.createBoard}>

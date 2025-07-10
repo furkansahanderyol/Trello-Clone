@@ -7,6 +7,8 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
+import { useAtom } from "jotai"
+import { activeIdAtom } from "@/store"
 
 interface IProps {
   id: UniqueIdentifier
@@ -15,8 +17,9 @@ interface IProps {
 }
 
 export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
+  const { attributes, listeners, setNodeRef, transform, transition, isOver } =
     useSortable({ id: id })
+  const [activeId] = useAtom(activeIdAtom)
 
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
 
@@ -39,7 +42,12 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
         <div className={styles.tasks}>
           {cardItems.map((item) => {
             return (
-              <SortableCardItem key={item.id} id={item.id} title={item.title} />
+              <SortableCardItem
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                isActive={item.id === activeId}
+              />
             )
           })}
         </div>

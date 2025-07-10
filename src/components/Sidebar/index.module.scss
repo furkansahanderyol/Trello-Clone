@@ -5,4 +5,9 @@
   background-color: var(--main-background);
   padding: 1rem 2rem;
   border-right: 1px solid var(--border);
+  transition: background-color 0.25s ease-in-out;
+
+  &.dragActive {
+    background-color: var(--main-background-overlay);
+  }
 }

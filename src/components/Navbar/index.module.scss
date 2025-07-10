@@ -5,6 +5,12 @@
   padding: 1rem;
   background-color: var(--main-background);
   border-bottom: 1px solid var(--border);
+  transition: background-color 0.25s ease-in-out;
+
+  &.dragActive {
+    background-color: var(--main-background-overlay);
+    cursor: not-allowed;
+  }
 
   .topControls {
     display: flex;

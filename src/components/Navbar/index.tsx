@@ -4,8 +4,8 @@ import Input from "@/components/Input/index"
 import styles from "./index.module.scss"
 import { Power, Search } from "lucide-react"
 import { AuthService } from "@/services/authService"
-import { useAtomValue } from "jotai"
-import { userAtom } from "@/store"
+import { useAtom, useAtomValue } from "jotai"
+import { dragActiveAtom, userAtom } from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
 import { useEffect, useRef, useState } from "react"
@@ -14,6 +14,7 @@ import { PageLink } from "@/constants/PageLink"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
+  const [dragActive] = useAtom(dragActiveAtom)
 
   const profileButtonRef = useRef<HTMLDivElement>(null)
   const dropdownMenuRef = useRef<HTMLUListElement>(null)
@@ -41,7 +42,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className={styles.container}>
+    <nav className={clsx(styles.container, dragActive && styles.dragActive)}>
       <Link href={PageLink.dashboard} className={styles.logo}>
         Logo
       </Link>
