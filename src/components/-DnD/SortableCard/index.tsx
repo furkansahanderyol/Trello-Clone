@@ -8,7 +8,8 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom } from "@/store"
+import { activeIdAtom, overTaskItemAtom } from "@/store"
+import clsx from "clsx"
 
 interface IProps {
   id: UniqueIdentifier
@@ -20,6 +21,7 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isOver } =
     useSortable({ id: id })
   const [activeId] = useAtom(activeIdAtom)
+  const [overTaskItem] = useAtom(overTaskItemAtom)
 
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
 
@@ -40,17 +42,28 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
           {cardHeader}
         </div>
         <div className={styles.tasks}>
-          {cardItems.map((item) => {
+          {cardItems.map((item, index) => {
             return (
-              <SortableCardItem
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                isActive={item.id === activeId}
-              />
+              <div key={item.id}>
+                {item.id === overTaskItem?.id && overTaskItem.isAbove && (
+                  <div className={clsx(styles.shadow, styles.marginBottom)} />
+                )}
+                <SortableCardItem
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  isActive={item.id === activeId}
+                />
+                {item.id === overTaskItem?.id &&
+                  !overTaskItem.isAbove &&
+                  cardItems.length - 1 === index && (
+                    <div className={clsx(styles.shadow, styles.marginTop)} />
+                  )}
+              </div>
             )
           })}
         </div>
+        <div className={styles.addTask}>Add Task</div>
       </div>
     </SortableContext>
   )

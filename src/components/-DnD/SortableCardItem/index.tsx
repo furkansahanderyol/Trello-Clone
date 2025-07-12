@@ -8,7 +8,6 @@ import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
 import { useParams } from "next/navigation"
 import clsx from "clsx"
-
 interface IProps {
   id: UniqueIdentifier
   title: string
@@ -51,11 +50,18 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
       {editMode ? (
         <div className={styles.createBoard}>
           <textarea ref={boardNameRef}></textarea>
-          <Button
-            type="button"
-            text="Save"
-            onClick={() => setEditMode(false)}
-          />
+          <div className={styles.buttons}>
+            <Button
+              type="button"
+              text="Save"
+              onClick={() => setEditMode(false)}
+            />
+            <Button
+              type="button"
+              text="Cancel"
+              onClick={() => setEditMode(false)}
+            />
+          </div>
         </div>
       ) : (
         <div

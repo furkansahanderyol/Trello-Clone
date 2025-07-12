@@ -2,15 +2,15 @@
 
 import styles from "./page.module.scss"
 import WorkspaceLayout from "@/layouts/WorkspaceLayout"
-import { activeIdAtom, dragActiveAtom } from "@/store"
+import { activeIdAtom, dragActiveAtom, overTaskItemAtom } from "@/store"
 import {
   closestCorners,
   DndContext,
   DragEndEvent,
+  DragMoveEvent,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
@@ -27,6 +27,7 @@ import SortableCardItem from "@/components/-DnD/SortableCardItem"
 
 export default function Workspace() {
   const [, setDragActive] = useAtom(dragActiveAtom)
+  const [, setOverTaskItem] = useAtom(overTaskItemAtom)
 
   const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [data, setData] = useState([
@@ -70,8 +71,11 @@ export default function Workspace() {
     )
 
     const overTaskListIndex = data.findIndex((list) =>
-      list.tasks.some((task) => task.id === over.id)
+      list.tasks.some((task) => {
+        return task.id === over.id
+      })
     )
+
     // Aborts when task or target task cannot be found
     if (activeTaskListIndex === -1) return
 
@@ -153,6 +157,42 @@ export default function Workspace() {
     return data.some((list) => list.tasks.some((task) => task.id === activeId))
   }
 
+  function checkMove(e: DragMoveEvent) {
+    const { active, over } = e
+
+    if (!over) return
+
+    const activeTaskListIndex = data.findIndex((list) =>
+      list.tasks.some((task) => task.id === active.id)
+    )
+
+    const overTaskListIndex = data.findIndex((list) =>
+      list.tasks.some((task) => {
+        return task.id === over.id
+      })
+    )
+
+    const activeList = data[activeTaskListIndex]
+    const overList = data[overTaskListIndex]
+
+    const activeRect = active.rect.current?.translated
+    const overRect = over.rect
+    if (!activeRect || !overRect) return
+    const activeItemCenterY = activeRect.top + activeRect.height / 2
+    const overItemCenterY = overRect.top + overRect.height / 2
+    const isAbove = activeItemCenterY < overItemCenterY
+
+    const findOverTask = data.findIndex((list) =>
+      list.tasks.some((task) => {
+        return task.id === over.id
+      })
+    )
+
+    if (findOverTask >= 0 && activeList.listId !== overList.listId) {
+      setOverTaskItem({ id: over.id, isAbove: isAbove })
+    }
+  }
+
   return (
     <WorkspaceLayout>
       <div className={styles.container}>
@@ -168,10 +208,12 @@ export default function Workspace() {
                 setActiveId(e?.active?.id)
                 setDragActive(true)
               }}
+              onDragMove={checkMove}
               onDragEnd={(e) => {
                 handleDragEnd(e)
                 setActiveId(null)
                 setDragActive(false)
+                setOverTaskItem(undefined)
               }}
               collisionDetection={closestCorners}
             >
