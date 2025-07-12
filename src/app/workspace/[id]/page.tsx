@@ -24,6 +24,9 @@ import {
 } from "@dnd-kit/sortable"
 import SortableCard from "@/components/-DnD/SortableCard"
 import SortableCardItem from "@/components/-DnD/SortableCardItem"
+import Textarea from "@/components/Textarea"
+import { Plus } from "lucide-react"
+import Button from "@/components/Button"
 
 export default function Workspace() {
   const [, setDragActive] = useAtom(dragActiveAtom)
@@ -41,6 +44,7 @@ export default function Workspace() {
     { listId: "list-2", tasks: [{ id: "task-3", title: "task-3" }] },
     { listId: "list-3", tasks: [] },
   ])
+  const [addNewList, setAddNewList] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -231,6 +235,32 @@ export default function Workspace() {
                     />
                   )
                 })}
+                <div className={styles.addNewList}>
+                  {addNewList ? (
+                    <div className={styles.newListTextareaWrapper}>
+                      <Textarea />
+                      <div className={styles.buttons}>
+                        <Button
+                          type="button"
+                          text="Save"
+                          onClick={() => setAddNewList(false)}
+                        />
+                        <Button
+                          type="button"
+                          text="Cancel"
+                          onClick={() => setAddNewList(false)}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => setAddNewList(true)}
+                      className={styles.addNewListText}
+                    >
+                      <Plus /> Add new list{" "}
+                    </div>
+                  )}
+                </div>
                 <DragOverlay>
                   {activeId && isActiveIdTask() ? (
                     <SortableCardItem id={activeId} title={""} />

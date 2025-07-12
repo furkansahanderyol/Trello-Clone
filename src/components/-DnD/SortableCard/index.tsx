@@ -10,6 +10,11 @@ import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
 import { activeIdAtom, overTaskItemAtom } from "@/store"
 import clsx from "clsx"
+import { useRef, useState } from "react"
+import Textarea from "@/components/Textarea"
+import Button from "@/components/Button"
+import { Plus } from "lucide-react"
+import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 
 interface IProps {
   id: UniqueIdentifier
@@ -20,8 +25,10 @@ interface IProps {
 export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isOver } =
     useSortable({ id: id })
+  const addTaskModeRef = useRef(null)
   const [activeId] = useAtom(activeIdAtom)
   const [overTaskItem] = useAtom(overTaskItemAtom)
+  const [addTaskMode, setAddTaskMode] = useState(false)
 
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
 
@@ -29,6 +36,8 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
     transform: CSS.Transform.toString(restrictedTransform),
     transition,
   }
+
+  useOnClickOutside(addTaskModeRef, () => setAddTaskMode(false))
 
   return (
     <SortableContext items={cardItems} strategy={verticalListSortingStrategy}>
@@ -41,7 +50,7 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
         >
           {cardHeader}
         </div>
-        <div className={styles.tasks}>
+        <div className={clsx(styles.tasks, addTaskMode && styles.extend)}>
           {cardItems.map((item, index) => {
             return (
               <div key={item.id}>
@@ -63,7 +72,35 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
             )
           })}
         </div>
-        <div className={styles.addTask}>Add Task</div>
+        <div
+          className={clsx(styles.addTask, addTaskMode && styles.addTaskActive)}
+        >
+          {addTaskMode ? (
+            <div ref={addTaskModeRef} className={styles.wrapper}>
+              <Textarea onChange={(e) => console.log(e)} />
+              <div className={styles.buttons}>
+                <Button
+                  type="button"
+                  text="Save"
+                  onClick={() => setAddTaskMode(false)}
+                />
+                <Button
+                  type="button"
+                  text="Cancel"
+                  onClick={() => setAddTaskMode(false)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className={styles.addTaskText}
+              onClick={() => setAddTaskMode(true)}
+            >
+              <Plus />
+              Add task
+            </div>
+          )}
+        </div>
       </div>
     </SortableContext>
   )

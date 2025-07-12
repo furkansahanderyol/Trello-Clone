@@ -11,6 +11,7 @@ import ProfileImage from "../ProfileImage"
 import { useEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import { PageLink } from "@/constants/PageLink"
+import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
@@ -20,22 +21,7 @@ export default function Navbar() {
   const dropdownMenuRef = useRef<HTMLUListElement>(null)
   const [dropdownActive, setDropdownActive] = useState(false)
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownMenuRef.current &&
-        !dropdownMenuRef.current.contains(event.target as Node) &&
-        profileButtonRef.current &&
-        !profileButtonRef.current.contains(event.target as Node)
-      ) {
-        setDropdownActive(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+  useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
 
   async function logout() {
     AuthService.logout()

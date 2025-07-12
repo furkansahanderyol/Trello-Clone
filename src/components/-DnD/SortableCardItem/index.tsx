@@ -8,6 +8,8 @@ import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
 import { useParams } from "next/navigation"
 import clsx from "clsx"
+import Textarea from "@/components/Textarea"
+import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 interface IProps {
   id: UniqueIdentifier
   title: string
@@ -39,6 +41,8 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
     }
   }
 
+  useOnClickOutside(boardNameRef, () => setEditMode(false))
+
   return (
     <div
       ref={setNodeRef}
@@ -49,7 +53,7 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
     >
       {editMode ? (
         <div className={styles.createBoard}>
-          <textarea ref={boardNameRef}></textarea>
+          <Textarea className={styles.textArea} ref={boardNameRef} />
           <div className={styles.buttons}>
             <Button
               type="button"
