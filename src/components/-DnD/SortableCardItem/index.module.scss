@@ -9,7 +9,8 @@
   background-color: #2a2f35;
   color: #e4ecf4;
   border: 1px solid #40464e;
-  pointer-events: auto;
+
+  position: relative;
 
   &:hover {
     background-color: #33393f;
@@ -27,14 +28,26 @@
     gap: 0.25rem;
     width: 100%;
 
+    &.createBoardActive {
+      z-index: 50;
+    }
+
     .textArea {
       border-radius: 0.3rem;
+
+      &:focus {
+        outline: 1px solid var(--button-blue);
+      }
     }
 
     .buttons {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      position: absolute;
+      right: 0;
+      bottom: -2.5rem;
+
+      button {
+        width: 4rem;
+      }
     }
   }
 
@@ -56,6 +69,20 @@
         &.checkboxVisible {
           width: 40px;
         }
+      }
+    }
+
+    .editButton {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.25rem;
+      border-radius: 0.3rem;
+      transition: background-color 0.3s ease-in-out;
+
+      &:hover {
+        background-color: var(--button-blue-hover);
+        cursor: pointer;
       }
     }
   }

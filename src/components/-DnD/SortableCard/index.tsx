@@ -41,7 +41,13 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
 
   return (
     <SortableContext items={cardItems} strategy={verticalListSortingStrategy}>
-      <div style={style} className={styles.container}>
+      <div
+        style={style}
+        className={clsx(
+          styles.container,
+          cardItems.length > 0 && styles.containerPadding
+        )}
+      >
         <div
           ref={setNodeRef}
           {...attributes}

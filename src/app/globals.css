@@ -20,9 +20,11 @@
     --input-border: #738496;
     --border: #ffffff29;
     --card-background: #22272b;
-    --overlay: #141414;
     --board-background: #b6c2cf;
     --shadow: #00000050;
+    --task-list-background: #2c3136;
+    --task-list-border: #42474e;
+    --task-list-header-background: #121619;
   }
 }
 

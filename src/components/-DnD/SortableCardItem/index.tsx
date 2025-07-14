@@ -10,6 +10,8 @@ import { useParams } from "next/navigation"
 import clsx from "clsx"
 import Textarea from "@/components/Textarea"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import { useAtom } from "jotai"
+import { dragActiveAtom, editTaskActiveAtom } from "@/store"
 interface IProps {
   id: UniqueIdentifier
   title: string
@@ -17,6 +19,9 @@ interface IProps {
 }
 
 export default function SortableCardItem({ id, title, isActive }: IProps) {
+  const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
+  const [, setDragActive] = useAtom(dragActiveAtom)
+  const editTaskRef = useRef(null)
   const boardNameRef = useRef<HTMLTextAreaElement | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [checkboxVisible, setCheckboxVisible] = useState(false)
@@ -41,7 +46,11 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
     }
   }
 
-  useOnClickOutside(boardNameRef, () => setEditMode(false))
+  useOnClickOutside(editTaskRef, () => {
+    setEditMode(false)
+    setEditTaskActive(false)
+    setDragActive(false)
+  })
 
   return (
     <div
@@ -52,18 +61,23 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
       className={clsx(styles.container, isActive && styles.active)}
     >
       {editMode ? (
-        <div className={styles.createBoard}>
-          <Textarea className={styles.textArea} ref={boardNameRef} />
+        <div
+          ref={editTaskRef}
+          className={clsx(
+            styles.createBoard,
+            editMode && styles.createBoardActive
+          )}
+        >
+          <Textarea className={styles.textArea} />
           <div className={styles.buttons}>
             <Button
               type="button"
               text="Save"
-              onClick={() => setEditMode(false)}
-            />
-            <Button
-              type="button"
-              text="Cancel"
-              onClick={() => setEditMode(false)}
+              onClick={() => {
+                setEditMode(false)
+                setEditTaskActive(false)
+                setDragActive(false)
+              }}
             />
           </div>
         </div>
@@ -85,14 +99,12 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
           </div>
 
           <div
-            onMouseDown={() => setEditMode(true)}
-            style={{
-              backgroundColor: "red",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 50,
+            onMouseDown={() => {
+              setEditMode(true)
+              setEditTaskActive(true)
+              setDragActive(true)
             }}
+            className={styles.editButton}
           >
             <SquarePen />
           </div>

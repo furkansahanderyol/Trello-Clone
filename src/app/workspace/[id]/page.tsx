@@ -2,7 +2,13 @@
 
 import styles from "./page.module.scss"
 import WorkspaceLayout from "@/layouts/WorkspaceLayout"
-import { activeIdAtom, dragActiveAtom, overTaskItemAtom } from "@/store"
+import {
+  activeIdAtom,
+  boardsAtom,
+  dragActiveAtom,
+  editTaskActiveAtom,
+  overTaskItemAtom,
+} from "@/store"
 import {
   closestCorners,
   DndContext,
@@ -14,8 +20,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
-import { useAtom } from "jotai"
-import { useState } from "react"
+import { useAtom, useAtomValue } from "jotai"
+import { useEffect, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -27,24 +33,34 @@ import SortableCardItem from "@/components/-DnD/SortableCardItem"
 import Textarea from "@/components/Textarea"
 import { Plus } from "lucide-react"
 import Button from "@/components/Button"
+import clsx from "clsx"
+import { BoardService } from "@/services/boardService"
+import { toast } from "react-toastify"
+import { useParams } from "next/navigation"
 
 export default function Workspace() {
+  const [boards, setBoards] = useAtom(boardsAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const [, setOverTaskItem] = useAtom(overTaskItemAtom)
-
+  const [editTaskActive] = useAtom(editTaskActiveAtom)
   const [activeId, setActiveId] = useAtom(activeIdAtom)
-  const [data, setData] = useState([
-    {
-      listId: "list-1",
-      tasks: [
-        { id: "task-1", title: "task-1" },
-        { id: "task-2", title: "task-2" },
-      ],
-    },
-    { listId: "list-2", tasks: [{ id: "task-3", title: "task-3" }] },
-    { listId: "list-3", tasks: [] },
-  ])
+  // const [data, setData] = useState([
+  //   {
+  //     listId: "list-1",
+  //     tasks: [
+  //       { id: "task-1", title: "task-1" },
+  //       { id: "task-2", title: "task-2" },
+  //     ],
+  //   },
+  //   { listId: "list-2", tasks: [{ id: "task-3", title: "task-3" }] },
+  //   { listId: "list-3", tasks: [] },
+  // ])
+  // const [data, setData] = useState<
+  //   { listId: string; tasks: { id: string; title: string }[] }[]
+  // >([])
   const [addNewList, setAddNewList] = useState(false)
+  const [newListName, setNewListName] = useState("")
+  const params = useParams()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -55,26 +71,30 @@ export default function Workspace() {
     })
   )
 
+  useEffect(() => {
+    BoardService.getAllBoards(params.id as string)
+  }, [])
+
   function handleDragEnd(e: DragEndEvent) {
     const { active, over } = e
 
     if (!over || active.id === over.id) return
 
-    const activeListIndex = data.findIndex((list) => list.listId === active.id)
-    const overListIndex = data.findIndex((list) => list.listId === over.id)
+    const activeListIndex = boards.findIndex((list) => list.id === active.id)
+    const overListIndex = boards.findIndex((list) => list.id === over.id)
 
     // Changes order of the lists
     if (activeListIndex !== -1 && overListIndex !== -1) {
-      const newList = arrayMove(data, activeListIndex, overListIndex)
-      setData(newList)
+      const newList = arrayMove(boards, activeListIndex, overListIndex)
+      setBoards(newList)
       return
     }
 
-    const activeTaskListIndex = data.findIndex((list) =>
+    const activeTaskListIndex = boards.findIndex((list) =>
       list.tasks.some((task) => task.id === active.id)
     )
 
-    const overTaskListIndex = data.findIndex((list) =>
+    const overTaskListIndex = boards.findIndex((list) =>
       list.tasks.some((task) => {
         return task.id === over.id
       })
@@ -85,12 +105,10 @@ export default function Workspace() {
 
     // If task carried to the new list
     if (overTaskListIndex === -1) {
-      const overListOnlyIndex = data.findIndex(
-        (list) => list.listId === over.id
-      )
+      const overListOnlyIndex = boards.findIndex((list) => list.id === over.id)
 
       if (overListOnlyIndex !== -1) {
-        const activeList = data[activeTaskListIndex]
+        const activeList = boards[activeTaskListIndex]
         const taskToMove = activeList.tasks.find(
           (task) => task.id === active.id
         )!
@@ -99,7 +117,7 @@ export default function Workspace() {
           (task) => task.id !== active.id
         )
 
-        const newData = [...data]
+        const newData = [...boards]
         newData[activeTaskListIndex] = { ...activeList, tasks: newActiveTasks }
 
         const newOverTasks = [...newData[overListOnlyIndex].tasks, taskToMove]
@@ -109,25 +127,25 @@ export default function Workspace() {
           tasks: newOverTasks,
         }
 
-        setData(newData)
+        setBoards(newData)
         return
       }
     }
 
     // If task is in the same list
     if (activeTaskListIndex === overTaskListIndex) {
-      const list = data[activeTaskListIndex]
+      const list = boards[activeTaskListIndex]
       const oldIndex = list.tasks.findIndex((task) => task.id === active.id)
       const newIndex = list.tasks.findIndex((task) => task.id === over.id)
 
       const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
-      const newData = [...data]
+      const newData = [...boards]
       newData[activeTaskListIndex] = { ...list, tasks: newTasks }
-      setData(newData)
+      setBoards(newData)
     } else {
       // If task is in another list
-      const activeList = data[activeTaskListIndex]
-      const overList = data[overTaskListIndex]
+      const activeList = boards[activeTaskListIndex]
+      const overList = boards[overTaskListIndex]
       const activeRect = active.rect.current?.translated
       const overRect = over.rect
 
@@ -149,16 +167,18 @@ export default function Workspace() {
 
       newTasks.splice(newIndex, 0, task[0])
 
-      const newData = [...data]
+      const newData = [...boards]
       newData[activeTaskListIndex] = { ...activeList, tasks: oldTasks }
       newData[overTaskListIndex] = { ...overList, tasks: newTasks }
 
-      setData(newData)
+      setBoards(newData)
     }
   }
 
   function isActiveIdTask() {
-    return data.some((list) => list.tasks.some((task) => task.id === activeId))
+    return boards.some((list) =>
+      list.tasks.some((task) => task.id === activeId)
+    )
   }
 
   function checkMove(e: DragMoveEvent) {
@@ -166,18 +186,18 @@ export default function Workspace() {
 
     if (!over) return
 
-    const activeTaskListIndex = data.findIndex((list) =>
+    const activeTaskListIndex = boards.findIndex((list) =>
       list.tasks.some((task) => task.id === active.id)
     )
 
-    const overTaskListIndex = data.findIndex((list) =>
+    const overTaskListIndex = boards.findIndex((list) =>
       list.tasks.some((task) => {
         return task.id === over.id
       })
     )
 
-    const activeList = data[activeTaskListIndex]
-    const overList = data[overTaskListIndex]
+    const activeList = boards[activeTaskListIndex]
+    const overList = boards[overTaskListIndex]
 
     const activeRect = active.rect.current?.translated
     const overRect = over.rect
@@ -186,14 +206,39 @@ export default function Workspace() {
     const overItemCenterY = overRect.top + overRect.height / 2
     const isAbove = activeItemCenterY < overItemCenterY
 
-    const findOverTask = data.findIndex((list) =>
+    const findOverTask = boards.findIndex((list) =>
       list.tasks.some((task) => {
         return task.id === over.id
       })
     )
 
-    if (findOverTask >= 0 && activeList.listId !== overList.listId) {
+    if (findOverTask >= 0 && activeList.id !== overList.id) {
       setOverTaskItem({ id: over.id, isAbove: isAbove })
+    }
+  }
+
+  function handleCreateBoard() {
+    setAddNewList(false)
+
+    if (newListName === "") {
+      return toast.error("List name must be provided.")
+    }
+
+    if (params.id) {
+      BoardService.createBoard(params.id as string, newListName)
+      setBoards((prev) => {
+        return [
+          ...prev,
+          {
+            title: newListName,
+            id: "",
+            createdAt: "",
+            tasks: [],
+            workspaceId: "",
+            members: [],
+          },
+        ]
+      })
     }
   }
 
@@ -222,15 +267,15 @@ export default function Workspace() {
               collisionDetection={closestCorners}
             >
               <SortableContext
-                items={data.map((list) => list.listId)}
+                items={boards.map((list) => list.id)}
                 strategy={horizontalListSortingStrategy}
               >
-                {data.map((list) => {
+                {boards.map((list) => {
                   return (
                     <SortableCard
-                      key={list.listId}
-                      id={list.listId}
-                      cardHeader={list.listId}
+                      key={list.id}
+                      id={list.id}
+                      cardHeader={list.title}
                       cardItems={list.tasks}
                     />
                   )
@@ -238,17 +283,17 @@ export default function Workspace() {
                 <div className={styles.addNewList}>
                   {addNewList ? (
                     <div className={styles.newListTextareaWrapper}>
-                      <Textarea />
+                      <Textarea onChange={(e) => setNewListName(e)} />
                       <div className={styles.buttons}>
-                        <Button
-                          type="button"
-                          text="Save"
-                          onClick={() => setAddNewList(false)}
-                        />
                         <Button
                           type="button"
                           text="Cancel"
                           onClick={() => setAddNewList(false)}
+                        />
+                        <Button
+                          type="button"
+                          text="Save"
+                          onClick={handleCreateBoard}
                         />
                       </div>
                     </div>
@@ -270,6 +315,12 @@ export default function Workspace() {
             </DndContext>
           </div>
         </div>
+        <div
+          className={clsx(
+            styles.overlay,
+            editTaskActive && styles.overlayVisible
+          )}
+        />
       </div>
     </WorkspaceLayout>
   )

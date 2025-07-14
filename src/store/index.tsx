@@ -1,5 +1,5 @@
-import { atom } from "jotai"
-import { AllWorkspacesType, WorkspaceType } from "./types"
+import { atom, useAtom } from "jotai"
+import { AllWorkspacesType, BoardType, WorkspaceType } from "./types"
 import { UniqueIdentifier } from "@dnd-kit/core"
 
 export const testAtom = atom<string | undefined>(undefined)
@@ -33,3 +33,7 @@ export const activeIdAtom = atom<UniqueIdentifier | null>(null)
 export const overTaskItemAtom = atom<
   { id: string | number | undefined; isAbove: boolean } | undefined
 >(undefined)
+export const editTaskActiveAtom = atom(false)
+
+// Boards
+export const boardsAtom = atom<BoardType>([])
