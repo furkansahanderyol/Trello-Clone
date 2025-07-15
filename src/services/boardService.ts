@@ -17,6 +17,7 @@ export namespace BoardService {
         }
       })
       .catch((error) => {
+        toast.error(error.message)
         console.error("BoardService - getAllBoards", error)
       })
       .finally(() => {

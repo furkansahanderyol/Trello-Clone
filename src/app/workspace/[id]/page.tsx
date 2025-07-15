@@ -37,6 +37,7 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
+import { io } from "socket.io-client"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -73,6 +74,35 @@ export default function Workspace() {
 
   useEffect(() => {
     BoardService.getAllBoards(params.id as string)
+  }, [])
+
+  useEffect(() => {
+    const socket = io("http://localhost:8000")
+    if (socket.connected) {
+      console.log("Already connected.")
+    }
+
+    function onConnect() {
+      console.log("Connection successful", socket.id)
+
+      socket.emit("send_text", "Hello World!")
+      socket.on("receive_text", (message) => {
+        console.log("Message from another browser:", message)
+      })
+    }
+
+    function onDisconnect() {
+      console.log("Connection disconnected")
+    }
+
+    socket.on("connect", onConnect)
+
+    socket.on("disconnect", onDisconnect)
+
+    return () => {
+      socket.off("connect", onConnect)
+      socket.off("disconnect", onDisconnect)
+    }
   }, [])
 
   function handleDragEnd(e: DragEndEvent) {
