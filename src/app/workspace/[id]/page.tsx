@@ -21,7 +21,7 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom, useAtomValue } from "jotai"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -37,30 +37,18 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
-import { io } from "socket.io-client"
+import { io, Socket } from "socket.io-client"
 
 export default function Workspace() {
+  const socketRef = useRef<Socket | null>(null)
   const [boards, setBoards] = useAtom(boardsAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const [, setOverTaskItem] = useAtom(overTaskItemAtom)
   const [editTaskActive] = useAtom(editTaskActiveAtom)
   const [activeId, setActiveId] = useAtom(activeIdAtom)
-  // const [data, setData] = useState([
-  //   {
-  //     listId: "list-1",
-  //     tasks: [
-  //       { id: "task-1", title: "task-1" },
-  //       { id: "task-2", title: "task-2" },
-  //     ],
-  //   },
-  //   { listId: "list-2", tasks: [{ id: "task-3", title: "task-3" }] },
-  //   { listId: "list-3", tasks: [] },
-  // ])
-  // const [data, setData] = useState<
-  //   { listId: string; tasks: { id: string; title: string }[] }[]
-  // >([])
   const [addNewList, setAddNewList] = useState(false)
   const [newListName, setNewListName] = useState("")
+  const [trackBoardsChange, setTrackBoardsChange] = useState(false)
   const params = useParams()
 
   const sensors = useSensors(
@@ -78,32 +66,28 @@ export default function Workspace() {
 
   useEffect(() => {
     const socket = io("http://localhost:8000")
+    socketRef.current = socket
+
     if (socket.connected) {
       console.log("Already connected.")
     }
 
-    function onConnect() {
-      console.log("Connection successful", socket.id)
-
-      socket.emit("send_text", "Hello World!")
-      socket.on("receive_text", (message) => {
-        console.log("Message from another browser:", message)
-      })
-    }
-
-    function onDisconnect() {
-      console.log("Connection disconnected")
-    }
-
-    socket.on("connect", onConnect)
-
-    socket.on("disconnect", onDisconnect)
-
     return () => {
-      socket.off("connect", onConnect)
-      socket.off("disconnect", onDisconnect)
+      socket.disconnect()
     }
   }, [])
+
+  useEffect(() => {}, [trackBoardsChange])
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.emit("update_board", JSON.stringify(boards))
+
+      socketRef.current.on("board_updated", (updatedBoards) => {
+        setBoards([...updatedBoards])
+      })
+    }
+  }, [trackBoardsChange])
 
   function handleDragEnd(e: DragEndEvent) {
     const { active, over } = e
@@ -268,6 +252,13 @@ export default function Workspace() {
             members: [],
           },
         ]
+      })
+      setTrackBoardsChange(!trackBoardsChange)
+    }
+
+    if (socketRef.current) {
+      socketRef.current.on("board_updated", (updatedBoards) => {
+        setBoards([...updatedBoards])
       })
     }
   }

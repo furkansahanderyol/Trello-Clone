@@ -10,7 +10,6 @@ import EmptyLayout from "@/layouts/EmptyLayout"
 import { Presentation } from "lucide-react"
 import CreateNewWorkspaceModal from "@/components/-Modal/CreateNewWorkspaceModal"
 import WorkspaceCard from "@/components/-Card/WorkspaceCard"
-import Button from "@/components/Button"
 
 export default function Dashboard() {
   const workspaces = useAtomValue(allWorkspacesAtom)
