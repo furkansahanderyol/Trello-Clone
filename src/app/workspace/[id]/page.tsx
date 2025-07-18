@@ -8,6 +8,7 @@ import {
   dragActiveAtom,
   editTaskActiveAtom,
   overTaskItemAtom,
+  trackBoardsChangeAtom,
 } from "@/store"
 import {
   closestCorners,
@@ -20,8 +21,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
-import { useAtom, useAtomValue } from "jotai"
-import { useEffect, useRef, useState } from "react"
+import { useAtom } from "jotai"
+import { useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -37,10 +38,8 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
-import { io, Socket } from "socket.io-client"
 
 export default function Workspace() {
-  const socketRef = useRef<Socket | null>(null)
   const [boards, setBoards] = useAtom(boardsAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const [, setOverTaskItem] = useAtom(overTaskItemAtom)
@@ -48,7 +47,9 @@ export default function Workspace() {
   const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [addNewList, setAddNewList] = useState(false)
   const [newListName, setNewListName] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useState(false)
+  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
+    trackBoardsChangeAtom
+  )
   const params = useParams()
 
   const sensors = useSensors(
@@ -59,35 +60,6 @@ export default function Workspace() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
-
-  useEffect(() => {
-    BoardService.getAllBoards(params.id as string)
-  }, [])
-
-  useEffect(() => {
-    const socket = io("http://localhost:8000")
-    socketRef.current = socket
-
-    if (socket.connected) {
-      console.log("Already connected.")
-    }
-
-    return () => {
-      socket.disconnect()
-    }
-  }, [])
-
-  useEffect(() => {}, [trackBoardsChange])
-
-  useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.emit("update_board", JSON.stringify(boards))
-
-      socketRef.current.on("board_updated", (updatedBoards) => {
-        setBoards([...updatedBoards])
-      })
-    }
-  }, [trackBoardsChange])
 
   function handleDragEnd(e: DragEndEvent) {
     const { active, over } = e
@@ -240,26 +212,7 @@ export default function Workspace() {
 
     if (params.id) {
       BoardService.createBoard(params.id as string, newListName)
-      setBoards((prev) => {
-        return [
-          ...prev,
-          {
-            title: newListName,
-            id: "",
-            createdAt: "",
-            tasks: [],
-            workspaceId: "",
-            members: [],
-          },
-        ]
-      })
       setTrackBoardsChange(!trackBoardsChange)
-    }
-
-    if (socketRef.current) {
-      socketRef.current.on("board_updated", (updatedBoards) => {
-        setBoards([...updatedBoards])
-      })
     }
   }
 

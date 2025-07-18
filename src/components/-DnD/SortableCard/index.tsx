@@ -8,13 +8,16 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, overTaskItemAtom } from "@/store"
+import { activeIdAtom, overTaskItemAtom, trackBoardsChangeAtom } from "@/store"
 import clsx from "clsx"
-import { useRef, useState } from "react"
+import { FormEvent, useRef, useState } from "react"
 import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
 import { Plus } from "lucide-react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import { BoardService } from "@/services/boardService"
+import { toast } from "react-toastify"
+import { Socket } from "socket.io-client"
 
 interface IProps {
   id: UniqueIdentifier
@@ -29,6 +32,10 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
   const [activeId] = useAtom(activeIdAtom)
   const [overTaskItem] = useAtom(overTaskItemAtom)
   const [addTaskMode, setAddTaskMode] = useState(false)
+  const [taskTitle, setTaskTitle] = useState("")
+  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
+    trackBoardsChangeAtom
+  )
 
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
 
@@ -38,6 +45,19 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
   }
 
   useOnClickOutside(addTaskModeRef, () => setAddTaskMode(false))
+
+  function handleAddTask(e: FormEvent) {
+    e.preventDefault()
+
+    if (taskTitle.length <= 0) {
+      return toast.error("Task title must be provided.")
+    }
+
+    BoardService.addTask(taskTitle, id as string)
+    setTrackBoardsChange(!trackBoardsChange)
+    setTaskTitle("")
+    setAddTaskMode(false)
+  }
 
   return (
     <SortableContext items={cardItems} strategy={verticalListSortingStrategy}>
@@ -82,21 +102,21 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
           className={clsx(styles.addTask, addTaskMode && styles.addTaskActive)}
         >
           {addTaskMode ? (
-            <div ref={addTaskModeRef} className={styles.wrapper}>
-              <Textarea onChange={(e) => console.log(e)} />
+            <form
+              onSubmit={handleAddTask}
+              ref={addTaskModeRef}
+              className={styles.wrapper}
+            >
+              <Textarea onChange={(e) => setTaskTitle(e)} />
               <div className={styles.buttons}>
-                <Button
-                  type="button"
-                  text="Save"
-                  onClick={() => setAddTaskMode(false)}
-                />
+                <Button type="submit" text="Save" />
                 <Button
                   type="button"
                   text="Cancel"
                   onClick={() => setAddTaskMode(false)}
                 />
               </div>
-            </div>
+            </form>
           ) : (
             <div
               className={styles.addTaskText}

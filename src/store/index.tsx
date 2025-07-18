@@ -37,3 +37,4 @@ export const editTaskActiveAtom = atom(false)
 
 // Boards
 export const boardsAtom = atom<BoardType>([])
+export const trackBoardsChangeAtom = atom(false)

@@ -2,7 +2,7 @@ import { UniqueIdentifier } from "@dnd-kit/core"
 import styles from "./index.module.scss"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { useRef, useState } from "react"
+import { FormEvent, useRef, useState } from "react"
 import { SquarePen } from "lucide-react"
 import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
@@ -11,7 +11,11 @@ import clsx from "clsx"
 import Textarea from "@/components/Textarea"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { useAtom } from "jotai"
-import { dragActiveAtom, editTaskActiveAtom } from "@/store"
+import {
+  dragActiveAtom,
+  editTaskActiveAtom,
+  trackBoardsChangeAtom,
+} from "@/store"
 interface IProps {
   id: UniqueIdentifier
   title: string
@@ -22,11 +26,12 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
   const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const editTaskRef = useRef(null)
-  const boardNameRef = useRef<HTMLTextAreaElement | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [checkboxVisible, setCheckboxVisible] = useState(false)
-
-  const params = useParams()
+  const [newTitle, setNewTitle] = useState("")
+  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
+    trackBoardsChangeAtom
+  )
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id })
@@ -36,21 +41,18 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
     transition,
   }
 
-  function handleCreateBoard() {
-    if (boardNameRef.current) {
-      const newBoardName = boardNameRef.current.value
-
-      if (newBoardName === "" || !params.id) return
-
-      BoardService.createBoard(params.id as string, newBoardName)
-    }
-  }
-
   useOnClickOutside(editTaskRef, () => {
     setEditMode(false)
     setEditTaskActive(false)
     setDragActive(false)
   })
+
+  function handleEditTaskName(e: FormEvent) {
+    e.preventDefault()
+
+    BoardService.updateTaskName(newTitle, id as string)
+    setTrackBoardsChange(!trackBoardsChange)
+  }
 
   return (
     <div
@@ -61,26 +63,30 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
       className={clsx(styles.container, isActive && styles.active)}
     >
       {editMode ? (
-        <div
+        <form
+          onSubmit={handleEditTaskName}
           ref={editTaskRef}
           className={clsx(
             styles.createBoard,
             editMode && styles.createBoardActive
           )}
         >
-          <Textarea className={styles.textArea} />
+          <Textarea
+            className={styles.textArea}
+            onChange={(e) => setNewTitle(e)}
+          />
           <div className={styles.buttons}>
             <Button
-              type="button"
+              type="submit"
               text="Save"
-              onClick={() => {
-                setEditMode(false)
-                setEditTaskActive(false)
-                setDragActive(false)
-              }}
+              // onClick={() => {
+              //   setEditMode(false)
+              //   setEditTaskActive(false)
+              //   setDragActive(false)
+              // }}
             />
           </div>
-        </div>
+        </form>
       ) : (
         <div
           className={styles.wrapper}

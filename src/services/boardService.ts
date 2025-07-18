@@ -1,5 +1,6 @@
 import axios from "@/lib/axios"
 import { boardsAtom, loadingAtom } from "@/store"
+import { BoardType } from "@/store/types"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -37,6 +38,45 @@ export namespace BoardService {
       .catch((error) => {
         console.error("BoardService - createBoard -> ", error)
         throw error
+      })
+  }
+
+  export async function updateBoard(workspaceId: string, boards: BoardType) {
+    axios
+      .patch("/create-board", {
+        workspaceId,
+      })
+      .then((response) => {})
+      .catch((error) => {
+        console.error("BoardService - updateBoard -> ", error)
+
+        throw error
+      })
+  }
+
+  export async function addTask(title: string, boardId: string) {
+    axios
+      .post("/add-task", {
+        title,
+        boardId,
+      })
+      .then((response) => {})
+      .catch((error) => {
+        console.error("BoardService - updateBoard -> ", error)
+
+        throw error
+      })
+  }
+
+  export async function updateTaskName(title: string, id: string) {
+    axios
+      .patch("/update-task", {
+        title: title,
+        id: id,
+      })
+      .then((response) => {})
+      .catch((error) => {
+        console.error("BoardService - updateTaskName -> ", error)
       })
   }
 }
