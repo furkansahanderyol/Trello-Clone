@@ -18,11 +18,12 @@ import {
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
+  UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -61,105 +62,115 @@ export default function Workspace() {
     })
   )
 
-  function handleDragEnd(e: DragEndEvent) {
-    const { active, over } = e
+  const handleDragEnd = useCallback(
+    (e: DragEndEvent) => {
+      const { active, over } = e
 
-    if (!over || active.id === over.id) return
+      if (!over || active.id === over.id) return
 
-    const activeListIndex = boards.findIndex((list) => list.id === active.id)
-    const overListIndex = boards.findIndex((list) => list.id === over.id)
+      const activeListIndex = boards.findIndex((list) => list.id === active.id)
+      const overListIndex = boards.findIndex((list) => list.id === over.id)
 
-    // Changes order of the lists
-    if (activeListIndex !== -1 && overListIndex !== -1) {
-      const newList = arrayMove(boards, activeListIndex, overListIndex)
-      setBoards(newList)
-      return
-    }
+      // Changes order of the lists
+      if (activeListIndex !== -1 && overListIndex !== -1) {
+        const newList = arrayMove(boards, activeListIndex, overListIndex)
+        setBoards(newList)
+        return
+      }
 
-    const activeTaskListIndex = boards.findIndex((list) =>
-      list.tasks.some((task) => task.id === active.id)
-    )
+      const activeTaskListIndex = boards.findIndex((list) =>
+        list.tasks.some((task) => task.id === active.id)
+      )
 
-    const overTaskListIndex = boards.findIndex((list) =>
-      list.tasks.some((task) => {
-        return task.id === over.id
-      })
-    )
+      const overTaskListIndex = boards.findIndex((list) =>
+        list.tasks.some((task) => {
+          return task.id === over.id
+        })
+      )
 
-    // Aborts when task or target task cannot be found
-    if (activeTaskListIndex === -1) return
+      // Aborts when task or target task cannot be found
+      if (activeTaskListIndex === -1) return
 
-    // If task carried to the new list
-    if (overTaskListIndex === -1) {
-      const overListOnlyIndex = boards.findIndex((list) => list.id === over.id)
+      // If task carried to the new list
+      if (overTaskListIndex === -1) {
+        const overListOnlyIndex = boards.findIndex(
+          (list) => list.id === over.id
+        )
 
-      if (overListOnlyIndex !== -1) {
+        if (overListOnlyIndex !== -1) {
+          const activeList = boards[activeTaskListIndex]
+          const taskToMove = activeList.tasks.find(
+            (task) => task.id === active.id
+          )!
+
+          const newActiveTasks = activeList.tasks.filter(
+            (task) => task.id !== active.id
+          )
+
+          const newData = [...boards]
+          newData[activeTaskListIndex] = {
+            ...activeList,
+            tasks: newActiveTasks,
+          }
+
+          const newOverTasks = [...newData[overListOnlyIndex].tasks, taskToMove]
+
+          newData[overListOnlyIndex] = {
+            ...newData[overListOnlyIndex],
+            tasks: newOverTasks,
+          }
+
+          setBoards(newData)
+          return
+        }
+      }
+
+      // If task is in the same list
+      if (activeTaskListIndex === overTaskListIndex) {
+        const list = boards[activeTaskListIndex]
+        const oldIndex = list.tasks.findIndex((task) => task.id === active.id)
+        const newIndex = list.tasks.findIndex((task) => task.id === over.id)
+
+        const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
+        const newData = [...boards]
+        newData[activeTaskListIndex] = { ...list, tasks: newTasks }
+        setBoards(newData)
+      } else {
+        // If task is in another list
         const activeList = boards[activeTaskListIndex]
-        const taskToMove = activeList.tasks.find(
-          (task) => task.id === active.id
-        )!
+        const overList = boards[overTaskListIndex]
+        const activeRect = active.rect.current?.translated
+        const overRect = over.rect
 
-        const newActiveTasks = activeList.tasks.filter(
+        const task = activeList.tasks.filter((task) => task.id === active.id)
+        const oldTasks = activeList.tasks.filter(
           (task) => task.id !== active.id
         )
 
+        if (!activeRect || !overRect) return
+        const activeItemCenterY = activeRect.top + activeRect.height / 2
+        const overItemCenterY = overRect.top + overRect.height / 2
+        const isAbove = activeItemCenterY < overItemCenterY
+
+        const overItemIndex = overList.tasks.findIndex(
+          (task) => task.id === over.id
+        )
+
+        const newTasks = [...overList.tasks]
+
+        const newIndex = isAbove ? overItemIndex : overItemIndex + 1
+
+        newTasks.splice(newIndex, 0, task[0])
+
         const newData = [...boards]
-        newData[activeTaskListIndex] = { ...activeList, tasks: newActiveTasks }
-
-        const newOverTasks = [...newData[overListOnlyIndex].tasks, taskToMove]
-
-        newData[overListOnlyIndex] = {
-          ...newData[overListOnlyIndex],
-          tasks: newOverTasks,
-        }
+        newData[activeTaskListIndex] = { ...activeList, tasks: oldTasks }
+        newData[overTaskListIndex] = { ...overList, tasks: newTasks }
 
         setBoards(newData)
-        return
       }
-    }
-
-    // If task is in the same list
-    if (activeTaskListIndex === overTaskListIndex) {
-      const list = boards[activeTaskListIndex]
-      const oldIndex = list.tasks.findIndex((task) => task.id === active.id)
-      const newIndex = list.tasks.findIndex((task) => task.id === over.id)
-
-      const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
-      const newData = [...boards]
-      newData[activeTaskListIndex] = { ...list, tasks: newTasks }
-      setBoards(newData)
-    } else {
-      // If task is in another list
-      const activeList = boards[activeTaskListIndex]
-      const overList = boards[overTaskListIndex]
-      const activeRect = active.rect.current?.translated
-      const overRect = over.rect
-
-      const task = activeList.tasks.filter((task) => task.id === active.id)
-      const oldTasks = activeList.tasks.filter((task) => task.id !== active.id)
-
-      if (!activeRect || !overRect) return
-      const activeItemCenterY = activeRect.top + activeRect.height / 2
-      const overItemCenterY = overRect.top + overRect.height / 2
-      const isAbove = activeItemCenterY < overItemCenterY
-
-      const overItemIndex = overList.tasks.findIndex(
-        (task) => task.id === over.id
-      )
-
-      const newTasks = [...overList.tasks]
-
-      const newIndex = isAbove ? overItemIndex : overItemIndex + 1
-
-      newTasks.splice(newIndex, 0, task[0])
-
-      const newData = [...boards]
-      newData[activeTaskListIndex] = { ...activeList, tasks: oldTasks }
-      newData[overTaskListIndex] = { ...overList, tasks: newTasks }
-
-      setBoards(newData)
-    }
-  }
+    },
+    [boards, setBoards, arrayMove]
+  )
 
   function isActiveIdTask() {
     return boards.some((list) =>
@@ -167,41 +178,44 @@ export default function Workspace() {
     )
   }
 
-  function checkMove(e: DragMoveEvent) {
-    const { active, over } = e
+  const checkMove = useCallback(
+    (e: DragMoveEvent) => {
+      const { active, over } = e
 
-    if (!over) return
+      if (!over) return
 
-    const activeTaskListIndex = boards.findIndex((list) =>
-      list.tasks.some((task) => task.id === active.id)
-    )
+      const activeTaskListIndex = boards.findIndex((list) =>
+        list.tasks.some((task) => task.id === active.id)
+      )
 
-    const overTaskListIndex = boards.findIndex((list) =>
-      list.tasks.some((task) => {
-        return task.id === over.id
-      })
-    )
+      const overTaskListIndex = boards.findIndex((list) =>
+        list.tasks.some((task) => {
+          return task.id === over.id
+        })
+      )
 
-    const activeList = boards[activeTaskListIndex]
-    const overList = boards[overTaskListIndex]
+      const activeList = boards[activeTaskListIndex]
+      const overList = boards[overTaskListIndex]
 
-    const activeRect = active.rect.current?.translated
-    const overRect = over.rect
-    if (!activeRect || !overRect) return
-    const activeItemCenterY = activeRect.top + activeRect.height / 2
-    const overItemCenterY = overRect.top + overRect.height / 2
-    const isAbove = activeItemCenterY < overItemCenterY
+      const activeRect = active.rect.current?.translated
+      const overRect = over.rect
+      if (!activeRect || !overRect) return
+      const activeItemCenterY = activeRect.top + activeRect.height / 2
+      const overItemCenterY = overRect.top + overRect.height / 2
+      const isAbove = activeItemCenterY < overItemCenterY
 
-    const findOverTask = boards.findIndex((list) =>
-      list.tasks.some((task) => {
-        return task.id === over.id
-      })
-    )
+      const findOverTask = boards.findIndex((list) =>
+        list.tasks.some((task) => {
+          return task.id === over.id
+        })
+      )
 
-    if (findOverTask >= 0 && activeList.id !== overList.id) {
-      setOverTaskItem({ id: over.id, isAbove: isAbove })
-    }
-  }
+      if (findOverTask >= 0 && activeList.id !== overList.id) {
+        setOverTaskItem({ id: over.id, isAbove: isAbove })
+      }
+    },
+    [boards, setOverTaskItem]
+  )
 
   function handleCreateBoard() {
     setAddNewList(false)
@@ -215,6 +229,10 @@ export default function Workspace() {
       setTrackBoardsChange(!trackBoardsChange)
     }
   }
+
+  const activeTask = useMemo(() => {
+    return <SortableCardItem id={activeId as UniqueIdentifier} title={""} />
+  }, [activeId, setActiveId])
 
   return (
     <WorkspaceLayout>
@@ -281,9 +299,7 @@ export default function Workspace() {
                   )}
                 </div>
                 <DragOverlay>
-                  {activeId && isActiveIdTask() ? (
-                    <SortableCardItem id={activeId} title={""} />
-                  ) : null}
+                  {activeId && isActiveIdTask() ? activeTask : null}
                 </DragOverlay>
               </SortableContext>
             </DndContext>
