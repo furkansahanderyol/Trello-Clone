@@ -6,7 +6,6 @@ import { FormEvent, useRef, useState } from "react"
 import { SquarePen } from "lucide-react"
 import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
-import { useParams } from "next/navigation"
 import clsx from "clsx"
 import Textarea from "@/components/Textarea"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
@@ -76,15 +75,7 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
             onChange={(e) => setNewTitle(e)}
           />
           <div className={styles.buttons}>
-            <Button
-              type="submit"
-              text="Save"
-              // onClick={() => {
-              //   setEditMode(false)
-              //   setEditTaskActive(false)
-              //   setDragActive(false)
-              // }}
-            />
+            <Button type="submit" text="Save" />
           </div>
         </form>
       ) : (

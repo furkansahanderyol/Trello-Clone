@@ -7,7 +7,6 @@ import {
   boardsAtom,
   dragActiveAtom,
   editTaskActiveAtom,
-  overTaskItemAtom,
   trackBoardsChangeAtom,
 } from "@/store"
 import {
@@ -43,7 +42,6 @@ import { useParams } from "next/navigation"
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
-  const [, setOverTaskItem] = useAtom(overTaskItemAtom)
   const [editTaskActive] = useAtom(editTaskActiveAtom)
   const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [addNewList, setAddNewList] = useState(false)
@@ -55,7 +53,7 @@ export default function Workspace() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 20 },
+      activationConstraint: { distance: 10 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -178,45 +176,6 @@ export default function Workspace() {
     )
   }
 
-  const checkMove = useCallback(
-    (e: DragMoveEvent) => {
-      const { active, over } = e
-
-      if (!over) return
-
-      const activeTaskListIndex = boards.findIndex((list) =>
-        list.tasks.some((task) => task.id === active.id)
-      )
-
-      const overTaskListIndex = boards.findIndex((list) =>
-        list.tasks.some((task) => {
-          return task.id === over.id
-        })
-      )
-
-      const activeList = boards[activeTaskListIndex]
-      const overList = boards[overTaskListIndex]
-
-      const activeRect = active.rect.current?.translated
-      const overRect = over.rect
-      if (!activeRect || !overRect) return
-      const activeItemCenterY = activeRect.top + activeRect.height / 2
-      const overItemCenterY = overRect.top + overRect.height / 2
-      const isAbove = activeItemCenterY < overItemCenterY
-
-      const findOverTask = boards.findIndex((list) =>
-        list.tasks.some((task) => {
-          return task.id === over.id
-        })
-      )
-
-      if (findOverTask >= 0 && activeList.id !== overList.id) {
-        setOverTaskItem({ id: over.id, isAbove: isAbove })
-      }
-    },
-    [boards, setOverTaskItem]
-  )
-
   function handleCreateBoard() {
     setAddNewList(false)
 
@@ -231,7 +190,7 @@ export default function Workspace() {
   }
 
   const activeTask = useMemo(() => {
-    return <SortableCardItem id={activeId as UniqueIdentifier} title={""} />
+    return <SortableCardItem id={activeId as UniqueIdentifier} title="" />
   }, [activeId, setActiveId])
 
   return (
@@ -249,12 +208,10 @@ export default function Workspace() {
                 setActiveId(e?.active?.id)
                 setDragActive(true)
               }}
-              onDragMove={checkMove}
               onDragEnd={(e) => {
                 handleDragEnd(e)
                 setActiveId(null)
                 setDragActive(false)
-                setOverTaskItem(undefined)
               }}
               collisionDetection={closestCorners}
             >

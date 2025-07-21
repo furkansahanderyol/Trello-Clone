@@ -30,9 +30,6 @@ export const allWorkspacesAtom = atom<AllWorkspacesType[]>([])
 export const selectedWorkspaceAtom = atom<WorkspaceType | undefined>()
 export const dragActiveAtom = atom(false)
 export const activeIdAtom = atom<UniqueIdentifier | null>(null)
-export const overTaskItemAtom = atom<
-  { id: string | number | undefined; isAbove: boolean } | undefined
->(undefined)
 export const editTaskActiveAtom = atom(false)
 
 // Boards

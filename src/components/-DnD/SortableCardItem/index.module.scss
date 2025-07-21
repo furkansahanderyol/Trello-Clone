@@ -22,6 +22,10 @@
     background-color: #00000050;
   }
 
+  &.dragOver {
+    width: 5px;
+  }
+
   .createBoard {
     display: flex;
     flex-direction: column;
