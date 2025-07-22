@@ -10,21 +10,36 @@ import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
 import { activeIdAtom, trackBoardsChangeAtom } from "@/store"
 import clsx from "clsx"
-import { FormEvent, useCallback, useRef, useState } from "react"
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
 import { Plus } from "lucide-react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
+import { useMouseMove } from "@/hooks/useMouseMove"
+import { BoardMemberType, BoardType, TaskType } from "@/store/types"
 
 interface IProps {
   id: UniqueIdentifier
   cardHeader: string
   cardItems: { id: UniqueIdentifier; title: string; boardId: string }[]
+  data: BoardType
 }
 
-export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
+export default function SortableCard({
+  id,
+  cardHeader,
+  cardItems,
+  data,
+}: IProps) {
   const {
     attributes,
     listeners,
@@ -42,6 +57,7 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
     trackBoardsChangeAtom
   )
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
+  const [mouseY, setMouseY] = useState<number | undefined>(undefined)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
@@ -63,11 +79,33 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
     setAddTaskMode(false)
   }
 
-  const checkSameList = useCallback(() => {
-    const findListId = cardItems.find((item) => item.id === active?.id)
+  useMouseMove((e) => {
+    if (!over) return
+    return setMouseY(e.clientY)
+  })
 
-    return findListId?.boardId == id
+  const checkSameList = useMemo(() => {
+    const isSameList = data
+      .filter((board) => board.id === id)[0]
+      .tasks.find((item) => item.id === active?.id)
+
+    return isSameList
   }, [id, active, cardItems])
+
+  const checkIsAbove = useMemo(() => {
+    const activeItemY = active?.rect.current.translated?.top
+    const overItemY = over?.rect.top
+
+    if (!activeItemY || !overItemY) return
+
+    if (overItemY < activeItemY) {
+      return true
+    }
+
+    if (overItemY > activeItemY) {
+      return false
+    }
+  }, [over, active, mouseY])
 
   return (
     <SortableContext items={cardItems} strategy={verticalListSortingStrategy}>
@@ -94,13 +132,14 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
                   <div className={clsx(styles.shadow, styles.marginBottom)} />
                 )} */}
 
-                {!checkSameList() &&
+                {!checkSameList &&
                   item.id === over?.id &&
-                  cardItems.length - 1 === index && (
+                  cardItems.length - 1 === index &&
+                  !checkIsAbove && (
                     <div className={clsx(styles.shadow, styles.marginBottom)} />
                   )}
 
-                {!checkSameList() &&
+                {!checkSameList &&
                   item.id === over?.id &&
                   activeId !== over.id &&
                   cardItems.length - 1 !== index && (
@@ -114,9 +153,10 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
                   isActive={item.id === activeId}
                 />
 
-                {!checkSameList() &&
+                {!checkSameList &&
                   item.id === over?.id &&
-                  cardItems.length - 1 === index && (
+                  cardItems.length - 1 === index &&
+                  checkIsAbove && (
                     <div className={clsx(styles.shadow, styles.marginTop)} />
                   )}
               </div>

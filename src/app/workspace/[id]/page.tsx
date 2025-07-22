@@ -17,6 +17,7 @@ import {
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
+  pointerWithin,
   UniqueIdentifier,
   useSensor,
   useSensors,
@@ -226,6 +227,7 @@ export default function Workspace() {
                       id={list.id}
                       cardHeader={list.title}
                       cardItems={list.tasks}
+                      data={boards}
                     />
                   )
                 })}
