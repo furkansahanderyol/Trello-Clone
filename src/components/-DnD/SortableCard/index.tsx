@@ -8,36 +8,56 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, overTaskItemAtom, trackBoardsChangeAtom } from "@/store"
+import { activeIdAtom, trackBoardsChangeAtom } from "@/store"
 import clsx from "clsx"
-import { FormEvent, useRef, useState } from "react"
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
 import { Plus } from "lucide-react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
-import { Socket } from "socket.io-client"
+import { useMouseMove } from "@/hooks/useMouseMove"
+import { BoardMemberType, BoardType, TaskType } from "@/store/types"
 
 interface IProps {
   id: UniqueIdentifier
   cardHeader: string
-  cardItems: { id: UniqueIdentifier; title: string }[]
+  cardItems: { id: UniqueIdentifier; title: string; boardId: string }[]
+  data: BoardType
 }
 
-export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isOver } =
-    useSortable({ id: id })
+export default function SortableCard({
+  id,
+  cardHeader,
+  cardItems,
+  data,
+}: IProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    active,
+    over,
+  } = useSortable({ id: id })
   const addTaskModeRef = useRef(null)
   const [activeId] = useAtom(activeIdAtom)
-  const [overTaskItem] = useAtom(overTaskItemAtom)
   const [addTaskMode, setAddTaskMode] = useState(false)
   const [taskTitle, setTaskTitle] = useState("")
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
-
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
+  const [mouseY, setMouseY] = useState<number | undefined>(undefined)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
@@ -58,6 +78,34 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
     setTaskTitle("")
     setAddTaskMode(false)
   }
+
+  useMouseMove((e) => {
+    if (!over) return
+    return setMouseY(e.clientY)
+  })
+
+  const checkSameList = useMemo(() => {
+    const isSameList = data
+      .filter((board) => board.id === id)[0]
+      .tasks.find((item) => item.id === active?.id)
+
+    return isSameList
+  }, [id, active, cardItems])
+
+  const checkIsAbove = useMemo(() => {
+    const activeItemY = active?.rect.current.translated?.top
+    const overItemY = over?.rect.top
+
+    if (!activeItemY || !overItemY) return
+
+    if (overItemY < activeItemY) {
+      return true
+    }
+
+    if (overItemY > activeItemY) {
+      return false
+    }
+  }, [over, active, mouseY])
 
   return (
     <SortableContext items={cardItems} strategy={verticalListSortingStrategy}>
@@ -80,18 +128,35 @@ export default function SortableCard({ id, cardHeader, cardItems }: IProps) {
           {cardItems.map((item, index) => {
             return (
               <div key={item.id}>
-                {item.id === overTaskItem?.id && overTaskItem.isAbove && (
+                {/* {isEmptyList && (
                   <div className={clsx(styles.shadow, styles.marginBottom)} />
-                )}
+                )} */}
+
+                {!checkSameList &&
+                  item.id === over?.id &&
+                  cardItems.length - 1 === index &&
+                  !checkIsAbove && (
+                    <div className={clsx(styles.shadow, styles.marginBottom)} />
+                  )}
+
+                {!checkSameList &&
+                  item.id === over?.id &&
+                  activeId !== over.id &&
+                  cardItems.length - 1 !== index && (
+                    <div className={clsx(styles.shadow, styles.marginBottom)} />
+                  )}
+
                 <SortableCardItem
                   key={item.id}
                   id={item.id}
                   title={item.title}
                   isActive={item.id === activeId}
                 />
-                {item.id === overTaskItem?.id &&
-                  !overTaskItem.isAbove &&
-                  cardItems.length - 1 === index && (
+
+                {!checkSameList &&
+                  item.id === over?.id &&
+                  cardItems.length - 1 === index &&
+                  checkIsAbove && (
                     <div className={clsx(styles.shadow, styles.marginTop)} />
                   )}
               </div>
