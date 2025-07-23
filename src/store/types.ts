@@ -21,6 +21,7 @@ export type BoardType = {
   workspaceId: string
   tasks: TaskType[]
   members: BoardMemberType[]
+  order: number
 }[]
 
 export type TaskType = {
@@ -30,6 +31,7 @@ export type TaskType = {
   updatedAt: string
   boardId: string
   assignedToId: string
+  order: number
 }
 
 export type BoardMemberType = {
