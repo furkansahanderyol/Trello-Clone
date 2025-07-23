@@ -23,7 +23,7 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -50,6 +50,7 @@ export default function Workspace() {
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
+  const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
 
   const sensors = useSensors(
@@ -202,7 +203,7 @@ export default function Workspace() {
           <div>Header Left</div>
         </div>
         <div className={styles.body}>
-          <div className={styles.lists}>
+          <div ref={listRef} className={styles.lists}>
             <DndContext
               sensors={sensors}
               onDragStart={(e) => {
@@ -215,6 +216,7 @@ export default function Workspace() {
                 setDragActive(false)
               }}
               collisionDetection={closestCorners}
+              autoScroll={true}
             >
               <SortableContext
                 items={boards.map((list) => list.id)}
