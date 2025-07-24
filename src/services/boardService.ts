@@ -41,10 +41,16 @@ export namespace BoardService {
       })
   }
 
-  export async function updateBoard(workspaceId: string, boards: BoardType) {
+  export async function updateBoard(
+    workspaceId: string,
+    updatedBoards: [...BoardType]
+  ) {
+    console.log("updateBoardsReq", updatedBoards)
+
     axios
-      .patch("/create-board", {
+      .patch("/update-board", {
         workspaceId,
+        updatedBoards,
       })
       .then((response) => {})
       .catch((error) => {
