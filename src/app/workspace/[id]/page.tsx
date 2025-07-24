@@ -126,6 +126,11 @@ export default function Workspace() {
           }
 
           setBoards(newData)
+
+          BoardService.updateBoard(params.id as string, [
+            newData[activeTaskListIndex],
+            newData[overListOnlyIndex],
+          ])
           return
         }
       }
