@@ -44,7 +44,6 @@ export namespace BoardService {
 
   export async function updateBoard(
     workspaceId: string,
-
     taskId: string,
     previousBoardId: string,
     newBoardId: string,
