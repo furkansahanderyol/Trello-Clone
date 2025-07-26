@@ -42,7 +42,7 @@ export namespace BoardService {
       })
   }
 
-  export async function updateBoard(
+  export async function updateBoardTasks(
     workspaceId: string,
     taskId: string,
     previousBoardId: string,
@@ -51,7 +51,7 @@ export namespace BoardService {
     newIndex: number
   ) {
     axios
-      .patch("/update-board", {
+      .patch("/update-board-tasks", {
         workspaceId,
         taskId,
         previousBoardId,
@@ -90,6 +90,22 @@ export namespace BoardService {
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateTaskName -> ", error)
+      })
+  }
+
+  export async function updateBoardOrders(
+    workspaceId: string,
+    boardId: string,
+    newOrder: number
+  ) {
+    axios
+      .patch("/update-board-orders", { workspaceId, boardId, newOrder })
+      .then((response) => {
+        console.log("response", response)
+      })
+      .catch((error) => {
+        console.error("BoardService - updateBoardOrders ->", error)
+        throw error
       })
   }
 }

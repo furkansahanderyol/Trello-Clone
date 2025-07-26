@@ -17,13 +17,12 @@ import {
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  pointerWithin,
   UniqueIdentifier,
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { act, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -40,7 +39,6 @@ import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
 import { calculateOrder } from "@/helpers/calculateOrder"
-import { TaskType } from "@/store/types"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -64,6 +62,10 @@ export default function Workspace() {
     })
   )
 
+  useEffect(() => {
+    console.log("boards", boards)
+  }, [boards])
+
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
       const { active, over } = e
@@ -74,9 +76,16 @@ export default function Workspace() {
 
       // Changes order of the lists
       if (activeListIndex !== -1 && overListIndex !== -1) {
+        const boardId = boards.filter((board) => board.id === active.id)[0].id
         const newList = arrayMove(boards, activeListIndex, overListIndex)
-        const orderedNewList = calculateOrder(newList)
+        const orderedNewList = newList
         setBoards(orderedNewList)
+        BoardService.updateBoardOrders(
+          params.id as string,
+          boardId,
+          overListIndex
+        )
+        setTrackBoardsChange(!trackBoardsChange)
         return
       }
 
@@ -115,10 +124,7 @@ export default function Workspace() {
             tasks: newActiveTasks,
           }
 
-          const newOverTasks = calculateOrder([
-            ...newData[overListOnlyIndex].tasks,
-            taskToMove,
-          ])
+          const newOverTasks = [...newData[overListOnlyIndex].tasks, taskToMove]
 
           newData[overListOnlyIndex] = {
             ...newData[overListOnlyIndex],
@@ -126,11 +132,16 @@ export default function Workspace() {
           }
 
           setBoards(newData)
+          BoardService.updateBoardTasks(
+            params.id as string,
+            taskToMove.id,
+            newData[activeTaskListIndex].id,
+            over.id as string,
+            overListOnlyIndex,
+            0
+          )
+          setTrackBoardsChange(!trackBoardsChange)
 
-          BoardService.updateBoard(params.id as string, [
-            newData[activeTaskListIndex],
-            newData[overListOnlyIndex],
-          ])
           return
         }
       }
@@ -138,17 +149,30 @@ export default function Workspace() {
       // If task is in the same list
       if (activeTaskListIndex === overTaskListIndex) {
         const list = boards[activeTaskListIndex]
+        const selectedTask = active.id as string
         const oldIndex = list.tasks.filter((task) => task.id === active.id)[0]
           .order
         const newIndex = list.tasks.filter((task) => task.id === over.id)[0]
           .order
 
+        console.log("list", list.tasks)
+
         const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
-        const orderedList = calculateOrder(newTasks)
+        const orderedList = newTasks
         const newData = [...boards]
         newData[activeTaskListIndex] = { ...list, tasks: orderedList }
 
+        BoardService.updateBoardTasks(
+          params.id as string,
+          selectedTask,
+          list.id,
+          list.id,
+          oldIndex,
+          newIndex
+        )
+
         setBoards(newData)
+        setTrackBoardsChange(!trackBoardsChange)
       } else {
         // If task is in another list
         const activeList = boards[activeTaskListIndex]
@@ -157,6 +181,7 @@ export default function Workspace() {
         const overRect = over.rect
 
         const task = activeList.tasks.filter((task) => task.id === active.id)
+        const movedItemOldIndex = task[0].order
         const oldTasks = activeList.tasks.filter(
           (task) => task.id !== active.id
         )
@@ -180,15 +205,26 @@ export default function Workspace() {
 
         newData[activeTaskListIndex] = {
           ...activeList,
-          tasks: calculateOrder(oldTasks),
+          tasks: oldTasks,
         }
         newData[overTaskListIndex] = {
           ...overList,
-          tasks: calculateOrder(newTasks),
+          tasks: newTasks,
         }
 
         setBoards(newData)
+        BoardService.updateBoardTasks(
+          params.id as string,
+          task[0].id,
+          activeList.id,
+          overList.id,
+          movedItemOldIndex,
+          newIndex
+        )
       }
+
+      setTrackBoardsChange(!trackBoardsChange)
+      return
     },
     [boards, setBoards, arrayMove]
   )
