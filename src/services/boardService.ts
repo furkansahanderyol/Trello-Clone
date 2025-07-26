@@ -12,6 +12,7 @@ export namespace BoardService {
     axios
       .get(`/boards/${workspaceId}`)
       .then((response) => {
+        console.log("response", response.data)
         if (response.status === 200) {
           defaultStore.set(boardsAtom, response.data.boards)
           return response.data
@@ -41,16 +42,22 @@ export namespace BoardService {
       })
   }
 
-  export async function updateBoard(
+  export async function updateBoardTasks(
     workspaceId: string,
-    updatedBoards: [...BoardType]
+    taskId: string,
+    previousBoardId: string,
+    newBoardId: string,
+    oldIndex: number,
+    newIndex: number
   ) {
-    console.log("updateBoardsReq", updatedBoards)
-
     axios
-      .patch("/update-board", {
+      .patch("/update-board-tasks", {
         workspaceId,
-        updatedBoards,
+        taskId,
+        previousBoardId,
+        newBoardId,
+        oldIndex,
+        newIndex,
       })
       .then((response) => {})
       .catch((error) => {
@@ -83,6 +90,22 @@ export namespace BoardService {
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateTaskName -> ", error)
+      })
+  }
+
+  export async function updateBoardOrders(
+    workspaceId: string,
+    boardId: string,
+    newOrder: number
+  ) {
+    axios
+      .patch("/update-board-orders", { workspaceId, boardId, newOrder })
+      .then((response) => {
+        console.log("response", response)
+      })
+      .catch((error) => {
+        console.error("BoardService - updateBoardOrders ->", error)
+        throw error
       })
   }
 }
