@@ -1,3 +1,9 @@
+## 🚧 This project is under active development
+
+Please note that this project is currently in development. New features, improvements, and bug fixes are being added regularly.
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
