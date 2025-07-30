@@ -13,8 +13,10 @@ import { useAtom } from "jotai"
 import {
   dragActiveAtom,
   editTaskActiveAtom,
+  modalContentAtom,
   trackBoardsChangeAtom,
 } from "@/store"
+import TaskModal from "@/components/-Modal/TaskModal"
 interface IProps {
   id: UniqueIdentifier
   title: string
@@ -31,6 +33,7 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
+  const [, setModalContent] = useAtom(modalContentAtom)
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id })
@@ -51,6 +54,17 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
 
     BoardService.updateTaskName(newTitle, id as string)
     setTrackBoardsChange(!trackBoardsChange)
+    setEditMode(false)
+    setEditTaskActive(false)
+    setDragActive(false)
+  }
+
+  function handleTaskModal() {
+    setModalContent({
+      title: title,
+      content: <TaskModal title={title} />,
+      size: "l",
+    })
   }
 
   return (
@@ -84,7 +98,7 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
           onMouseEnter={() => setCheckboxVisible(true)}
           onMouseLeave={() => setCheckboxVisible(false)}
         >
-          <div className={styles.boardNameSide}>
+          <div onClick={handleTaskModal} className={styles.boardNameSide}>
             <input
               className={clsx(
                 styles.checkbox,

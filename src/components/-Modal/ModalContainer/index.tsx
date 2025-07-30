@@ -17,7 +17,15 @@ export default function ModalContainer() {
         onClick={() => setModalContent(undefined)}
         className={styles.overlay}
       />
-      <div className={styles.modal}>
+      <div
+        className={clsx(
+          styles.modal,
+          modalContent?.size === "s" && styles.modalSmall,
+          modalContent?.size === "m" && styles.modalMedium,
+          modalContent?.size === "l" && styles.modalLarge,
+          modalContent?.size === "xl" && styles.modalExtraLarge
+        )}
+      >
         <div className={styles.modalHeader}>
           <div className={styles.title}>{modalContent?.title}</div>
           <div
