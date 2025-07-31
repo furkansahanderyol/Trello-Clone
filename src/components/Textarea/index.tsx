@@ -9,6 +9,7 @@ interface IProps {
   className?: string
   defaultValue?: string
   onClick?: () => void
+  placeholder?: string
 }
 
 export default function Textarea({
@@ -18,6 +19,7 @@ export default function Textarea({
   className,
   defaultValue,
   onClick,
+  placeholder,
 }: IProps) {
   function handleOnChange(e: ChangeEvent<HTMLTextAreaElement>) {
     return onChange?.(e.target.value)
@@ -32,6 +34,7 @@ export default function Textarea({
         className={clsx(styles.textarea, className)}
         defaultValue={defaultValue}
         onClick={onClick}
+        placeholder={placeholder}
       />
     </div>
   )

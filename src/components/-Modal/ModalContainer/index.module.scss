@@ -77,9 +77,8 @@
     }
 
     .content {
-      overflow: hidden;
-      overflow-y: auto;
       max-height: 600px;
+      overflow: visible;
     }
   }
 }
