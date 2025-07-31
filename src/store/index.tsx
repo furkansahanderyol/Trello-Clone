@@ -8,7 +8,8 @@ export const testAtom = atom<string | undefined>(undefined)
 export const loadingAtom = atom(false)
 export const firstLoadAtom = atom(false)
 export const modalContentAtom = atom<
-  { title: string; content: React.ReactNode } | undefined
+  | { title: string; content: React.ReactNode; size: "s" | "m" | "l" | "xl" }
+  | undefined
 >()
 export const pageLoadingAtom = atom(false)
 

@@ -3,6 +3,9 @@
   height: 100%;
   padding: 1rem;
   position: relative;
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 600px;
 
   .input {
     color: var(--primary-text-color);
@@ -12,6 +15,6 @@
     width: 40%;
     margin: 0 auto;
     position: sticky;
-    bottom: 1rem;
+    bottom: 0.5rem;
   }
 }

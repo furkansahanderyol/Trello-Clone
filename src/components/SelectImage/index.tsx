@@ -13,6 +13,7 @@ export default function SelectImage() {
     setModalContent({
       title: "Select Photo",
       content: <UploadImageModal />,
+      size: "m",
     })
   }
 

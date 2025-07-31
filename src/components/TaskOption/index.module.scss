@@ -1,0 +1,24 @@
+.container {
+  position: relative;
+
+  .label {
+    border-radius: 0.3rem;
+    background-color: var(--input-border);
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dropdown {
+    position: absolute;
+    left: 0;
+    bottom: calc(-100% - 3rem);
+    width: 360px;
+    padding: 1rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--input-border);
+    border-radius: 0.3rem;
+    z-index: 100;
+  }
+}

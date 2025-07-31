@@ -12,7 +12,6 @@ export namespace BoardService {
     axios
       .get(`/boards/${workspaceId}`)
       .then((response) => {
-        console.log("response", response.data)
         if (response.status === 200) {
           defaultStore.set(boardsAtom, response.data.boards)
           return response.data
@@ -100,9 +99,7 @@ export namespace BoardService {
   ) {
     axios
       .patch("/update-board-orders", { workspaceId, boardId, newOrder })
-      .then((response) => {
-        console.log("response", response)
-      })
+      .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateBoardOrders ->", error)
         throw error

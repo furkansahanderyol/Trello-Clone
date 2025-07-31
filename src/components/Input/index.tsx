@@ -14,6 +14,7 @@ interface Props {
   errorMessage?: string[]
   ref?: Ref<HTMLInputElement>
   placeholder?: string
+  defaultValue?: string
 }
 
 export default function Input({
@@ -26,6 +27,7 @@ export default function Input({
   errorMessage,
   ref,
   placeholder,
+  defaultValue,
 }: Props) {
   const [isFocused, setIsFocused] = useState(false)
 
@@ -34,7 +36,7 @@ export default function Input({
   }
 
   return (
-    <div className={clsx(className, styles.container)}>
+    <div className={clsx(styles.container, className)}>
       {label && <div className={styles.label}>{label}</div>}
       <div
         onFocus={() => setIsFocused(true)}
@@ -52,6 +54,7 @@ export default function Input({
           )}
           onChange={handleOnChange}
           placeholder={placeholder}
+          defaultValue={defaultValue}
         />
         {suffix && (
           <div tabIndex={-1} className={styles.suffix}>

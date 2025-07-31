@@ -26,6 +26,7 @@ export default function DashboardLayout({ children }: IProps) {
               setModalContent({
                 title: "Create your new workspace",
                 content: <CreateNewWorkspaceModal />,
+                size: "m",
               })
             }
           />

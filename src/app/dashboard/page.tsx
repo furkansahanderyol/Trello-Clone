@@ -27,6 +27,7 @@ export default function Dashboard() {
     setModalContent({
       title: "Create your new workspace",
       content: <CreateNewWorkspaceModal />,
+      size: "m",
     })
   }
 

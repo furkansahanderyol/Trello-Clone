@@ -62,10 +62,6 @@ export default function Workspace() {
     })
   )
 
-  useEffect(() => {
-    console.log("boards", boards)
-  }, [boards])
-
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
       const { active, over } = e
@@ -154,8 +150,6 @@ export default function Workspace() {
           .order
         const newIndex = list.tasks.filter((task) => task.id === over.id)[0]
           .order
-
-        console.log("list", list.tasks)
 
         const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
         const orderedList = newTasks
