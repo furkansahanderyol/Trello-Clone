@@ -1,0 +1,75 @@
+.container {
+  background-color: var(--task-list-background);
+  width: 100%;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+
+  .wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    position: relative;
+    padding: 0.5rem 1rem;
+
+    .headings {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      & svg {
+        color: var(--primary-text-color);
+      }
+
+      .options {
+        border: 1px solid var(--border);
+        border-radius: 0.3rem;
+        position: absolute;
+        background-color: var(--task-list-background);
+        display: flex;
+        align-items: center;
+        top: -2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+
+        &.optionsVisible {
+          opacity: 100;
+          pointer-events: auto;
+        }
+      }
+    }
+
+    .button {
+      width: fit-content;
+      padding: 0.25rem 0.5rem;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      font-size: 0.75rem;
+      background: none;
+      outline: none;
+      border: none;
+      text-align: center;
+      background-color: transparent;
+      border-radius: 0.3rem;
+      transition: background-color 0.3s ease-in-out;
+
+      &:hover {
+        background-color: var(--button-blue-hover);
+      }
+
+      &.active {
+        background-color: var(--button-blue);
+        color: var(--text-weak-blue);
+      }
+
+      .icon {
+        width: 1rem;
+        height: 1rem;
+        color: var(--primary-text-color);
+      }
+    }
+  }
+}

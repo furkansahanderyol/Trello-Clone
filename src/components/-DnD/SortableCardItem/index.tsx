@@ -21,9 +21,15 @@ interface IProps {
   id: UniqueIdentifier
   title: string
   isActive?: boolean
+  boardId: string
 }
 
-export default function SortableCardItem({ id, title, isActive }: IProps) {
+export default function SortableCardItem({
+  id,
+  title,
+  isActive,
+  boardId,
+}: IProps) {
   const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const editTaskRef = useRef(null)
@@ -62,7 +68,9 @@ export default function SortableCardItem({ id, title, isActive }: IProps) {
   function handleTaskModal() {
     setModalContent({
       title: title,
-      content: <TaskModal title={title} />,
+      content: (
+        <TaskModal title={title} taskId={id as string} boardId={boardId} />
+      ),
       size: "l",
     })
   }

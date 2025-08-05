@@ -1,25 +1,55 @@
 import styles from "./index.module.scss"
-import Textarea from "@/components/Textarea"
-import { FormEvent, useEffect, useRef, useState } from "react"
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import clsx from "clsx"
 import { PersonStandingIcon, Plus } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
-import MDEditor, {
-  commands,
-  ICommand,
-  TextAreaTextApi,
-} from "@uiw/react-md-editor"
+import { TaskService } from "@/services/taskService"
+import { useParams } from "next/navigation"
+import { UploadImageResponse } from "@/services/type"
+import { EditorContent, useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import MenuBar from "@/components/-Tiptap/MenuBar"
 
 interface IProps {
   title: string
+  taskId: string
+  boardId: string
 }
 
-export default function TaskModal({ title }: IProps) {
+export default function TaskModal({ title, boardId, taskId }: IProps) {
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
-  const [focus, setFocus] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [focus, setFocus] = useState(true)
   const [description, setDescription] = useState("")
+  const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
+  const params = useParams()
+  const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
+  const [uploadedImages, setUploadedImages] = useState<File[] | undefined>(
+    undefined
+  )
+
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: "",
+    immediatelyRender: false,
+    onUpdate({ editor }) {
+      // setEditorContent(editor.getHTML())
+    },
+    editorProps: {
+      handleDrop(view, event) {
+        console.log("view", view)
+        console.log("event", event)
+      },
+    },
+  })
 
   const taskOptions = [
     {
@@ -46,6 +76,7 @@ export default function TaskModal({ title }: IProps) {
 
   useOnClickOutside(descriptionAreaRef, () => {
     setFocus(false)
+    setDescription("")
   })
 
   function handleSubmit(e: FormEvent) {
@@ -53,35 +84,37 @@ export default function TaskModal({ title }: IProps) {
     console.log("FORM SUBMITTED")
   }
 
-  const insertImage: ICommand = {
-    name: "image-upload",
-    keyCommand: "image-upload",
-    buttonProps: { "aria-label": "Insert Image" },
-    icon: <span>🖼️</span>,
-    execute: (state, api) => {
-      const input = document.createElement("input")
-      input.type = "file"
-      input.accept = "image/*"
-      input.style.display = "none"
+  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+    const files = event.dataTransfer?.files
+    const uploadedFiles = [...files]
+    setUploadedImages(uploadedFiles)
 
-      input.onchange = async () => {
-        const file = input.files?.[0]
-        if (!file) return
+    TaskService.uploadImage(
+      params.id as string,
+      boardId,
+      taskId,
+      uploadedFiles
+    ).then((response) => {
+      console.log("response", response)
 
-        const reader = new FileReader()
-        reader.onload = () => {
-          const imageDataUrl = reader.result
-          const markdownImage = `![](${imageDataUrl})`
+      setTaskImage(response)
 
-          api.replaceSelection(markdownImage)
-        }
-        reader.readAsDataURL(file)
+      if (response) {
+        setDescription((prev) => {
+          const urls = response.images.map((image) => {
+            return `![test](http://localhost:8000${image.url})`
+          })
+
+          console.log("urls", urls)
+          return prev + `${urls.map((url) => `<br /> ${url}`)}`
+        })
       }
+    })
+  }
 
-      document.body.appendChild(input)
-      input.click()
-      document.body.removeChild(input)
-    },
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    console.log("e", e)
   }
 
   return (
@@ -92,37 +125,28 @@ export default function TaskModal({ title }: IProps) {
         className={styles.taskDetails}
       >
         {focus ? (
-          <MDEditor
-            className={clsx(
-              styles.description,
-              focus && styles.textareaFocused
-            )}
-            value={description}
-            onChange={(e) => {
-              e ? setDescription(e) : setDescription("")
-            }}
-            fullscreen={false}
-            preview={"edit"}
-            commands={[...commands.getCommands(), insertImage]}
-            onDrop={() => console.log("dropped")}
-            visibleDragbar={false}
-            draggable={false}
-            height={200}
-            extraCommands={[]}
-            textareaProps={{
-              placeholder: "Add more detailed description...",
-            }}
-          />
-        ) : (
-          <div onClick={() => setFocus(true)}>
-            <MDEditor.Markdown
-              className={styles.markdown}
-              source={
-                description ? description : "Add more detailed description..."
-              }
-              style={{ whiteSpace: "pre-wrap" }}
-            />
+          <div className={styles.markdownArea}>
+            <div
+              onClick={() => editor?.commands.focus()}
+              className={styles.editor}
+            >
+              {editor && <MenuBar editor={editor} />}
+              <EditorContent
+                className={styles.editorContent}
+                onChange={(e) => console.log(e)}
+                editor={editor}
+              />
+            </div>
+            <div className={styles.dropzone}>
+              <input
+                ref={inputRef}
+                type="file"
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
           </div>
+        ) : (
+          <div onClick={() => setFocus(true)}></div>
         )}
 
         <div className={styles.options}>

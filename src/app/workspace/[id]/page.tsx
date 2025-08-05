@@ -38,7 +38,6 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
-import { calculateOrder } from "@/helpers/calculateOrder"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -243,7 +242,13 @@ export default function Workspace() {
   }
 
   const activeTask = useMemo(() => {
-    return <SortableCardItem id={activeId as UniqueIdentifier} title="" />
+    return (
+      <SortableCardItem
+        boardId={""}
+        id={activeId as UniqueIdentifier}
+        title=""
+      />
+    )
   }, [activeId, setActiveId])
 
   return (
