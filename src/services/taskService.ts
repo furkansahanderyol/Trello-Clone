@@ -20,7 +20,7 @@ export namespace TaskService {
 
     try {
       const response = await axios.post(
-        `/upload-task-image?taskId=${taskId}`,
+        `/upload-task-image?boardId=${boardId}`,
         data,
         {
           headers: {

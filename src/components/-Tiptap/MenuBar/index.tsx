@@ -182,10 +182,9 @@ export default function MenuBar({ editor }: { editor: Editor }) {
         >
           <ListOrdered className={styles.icon} />
         </button>
-        {/* <div className={styles.button}>
+        <div className={styles.button}>
           <Image className={styles.icon} />
-          <button>Set image</button>
-        </div> */}
+        </div>
       </div>
     </div>
   )

@@ -17,7 +17,7 @@ import { UploadImageResponse } from "@/services/type"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
-
+import Image from "@tiptap/extension-image"
 interface IProps {
   title: string
   taskId: string
@@ -27,20 +27,22 @@ interface IProps {
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const [focus, setFocus] = useState(true)
-  const [description, setDescription] = useState("")
+  const [focus, setFocus] = useState(false)
+  const [description, setDescription] = useState("Default description.")
   const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
   const params = useParams()
   const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
-  const [uploadedImages, setUploadedImages] = useState<File[] | undefined>(
+  const [uploadedImages, setUploadedImages] = useState<string[] | undefined>(
     undefined
   )
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Image],
     content: "",
     immediatelyRender: false,
     onUpdate({ editor }) {
+      const deleted = getDeletedImages()
+
       // setEditorContent(editor.getHTML())
     },
     editorProps: {
@@ -76,7 +78,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
   useOnClickOutside(descriptionAreaRef, () => {
     setFocus(false)
-    setDescription("")
   })
 
   function handleSubmit(e: FormEvent) {
@@ -88,7 +89,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     event.preventDefault()
     const files = event.dataTransfer?.files
     const uploadedFiles = [...files]
-    setUploadedImages(uploadedFiles)
 
     TaskService.uploadImage(
       params.id as string,
@@ -96,25 +96,53 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       taskId,
       uploadedFiles
     ).then((response) => {
-      console.log("response", response)
-
       setTaskImage(response)
 
       if (response) {
-        setDescription((prev) => {
-          const urls = response.images.map((image) => {
-            return `![test](http://localhost:8000${image.url})`
-          })
-
-          console.log("urls", urls)
-          return prev + `${urls.map((url) => `<br /> ${url}`)}`
+        const imageUrls = response.images.map((image) => image.url)
+        setUploadedImages((prev) => {
+          return prev ? [...prev, ...imageUrls] : [...imageUrls]
         })
+
+        const chain = editor
+          ?.chain()
+          .focus()
+          .insertContent(
+            imageUrls.map((url) => {
+              return {
+                type: "image",
+                attrs: {
+                  src: `${url}`,
+                },
+              }
+            })
+          )
+
+        chain?.run()
       }
     })
   }
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log("e", e)
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {}
+
+  function getDeletedImages() {
+    const html = editor?.getHTML()
+    const parser = new DOMParser()
+
+    if (!html) return
+
+    const doc = parser.parseFromString(html, "text/html")
+
+    const currentImages = Array.from(doc.querySelectorAll("img")).map((image) =>
+      image.getAttribute("src")
+    )
+
+    const deletedImages = uploadedImages?.filter(
+      (image) => !currentImages.includes(image)
+    )
+    // console.log(deletedImages)
+
+    return deletedImages
   }
 
   return (
@@ -132,6 +160,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
             >
               {editor && <MenuBar editor={editor} />}
               <EditorContent
+                onDrop={handleDrop}
                 className={styles.editorContent}
                 onChange={(e) => console.log(e)}
                 editor={editor}
@@ -146,7 +175,9 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
             </div>
           </div>
         ) : (
-          <div onClick={() => setFocus(true)}></div>
+          <div className={styles.preview} onClick={() => setFocus(true)}>
+            {description}
+          </div>
         )}
 
         <div className={styles.options}>
