@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
-import clsx from "clsx"
 import { PersonStandingIcon, Plus } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
@@ -41,9 +40,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     content: "",
     immediatelyRender: false,
     onUpdate({ editor }) {
-      const deleted = getDeletedImages()
-
-      // setEditorContent(editor.getHTML())
+      const uploadedImages = currentImages()
     },
     editorProps: {
       handleDrop(view, event) {
@@ -89,6 +86,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     event.preventDefault()
     const files = event.dataTransfer?.files
     const uploadedFiles = [...files]
+    const pos = editor?.state.doc.content.size
 
     TaskService.uploadImage(
       params.id as string,
@@ -107,7 +105,8 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
         const chain = editor
           ?.chain()
           .focus()
-          .insertContent(
+          .insertContentAt(
+            pos ? pos : 0,
             imageUrls.map((url) => {
               return {
                 type: "image",
@@ -123,9 +122,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     })
   }
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {}
-
-  function getDeletedImages() {
+  function currentImages() {
     const html = editor?.getHTML()
     const parser = new DOMParser()
 
@@ -137,12 +134,48 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       image.getAttribute("src")
     )
 
-    const deletedImages = uploadedImages?.filter(
-      (image) => !currentImages.includes(image)
-    )
-    // console.log(deletedImages)
+    return currentImages
+  }
 
-    return deletedImages
+  function handleUploadImage(e: ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files) return
+
+    const uploadedFiles = [...files]
+    const pos = editor?.state.doc.content.size
+
+    TaskService.uploadImage(
+      params.id as string,
+      boardId,
+      taskId,
+      uploadedFiles
+    ).then((response) => {
+      setTaskImage(response)
+
+      if (response) {
+        const imageUrls = response.images.map((image) => image.url)
+        setUploadedImages((prev) => {
+          return prev ? [...prev, ...imageUrls] : [...imageUrls]
+        })
+
+        const chain = editor
+          ?.chain()
+          .focus()
+          .insertContentAt(
+            pos ? pos : 0,
+            imageUrls.map((url) => {
+              return {
+                type: "image",
+                attrs: {
+                  src: `${url}`,
+                },
+              }
+            })
+          )
+
+        chain?.run()
+      }
+    })
   }
 
   return (
@@ -158,19 +191,14 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
               onClick={() => editor?.commands.focus()}
               className={styles.editor}
             >
-              {editor && <MenuBar editor={editor} />}
+              {editor && (
+                <MenuBar editor={editor} onFileChange={handleUploadImage} />
+              )}
               <EditorContent
                 onDrop={handleDrop}
                 className={styles.editorContent}
                 onChange={(e) => console.log(e)}
                 editor={editor}
-              />
-            </div>
-            <div className={styles.dropzone}>
-              <input
-                ref={inputRef}
-                type="file"
-                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>

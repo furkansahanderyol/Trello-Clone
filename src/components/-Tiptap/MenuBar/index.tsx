@@ -15,12 +15,17 @@ import {
   List,
   ListOrdered,
   TypeOutline,
-  WrapText,
 } from "lucide-react"
-import { useRef, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import Input from "@/components/Input"
 
-export default function MenuBar({ editor }: { editor: Editor }) {
+interface IProps {
+  editor: Editor
+  onFileChange: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+export default function MenuBar({ editor, onFileChange }: IProps) {
   const optionsRef = useRef<HTMLDivElement | null>(null)
   const [optionsVisible, setOptionsVisible] = useState(false)
   const editorState = useEditorState({
@@ -182,7 +187,14 @@ export default function MenuBar({ editor }: { editor: Editor }) {
         >
           <ListOrdered className={styles.icon} />
         </button>
-        <div className={styles.button}>
+        <div className={styles.uploadImageWrapper}>
+          <input
+            type="file"
+            name="files[]"
+            multiple={true}
+            className={styles.uploadImageButton}
+            onChange={(e) => onFileChange(e)}
+          />
           <Image className={styles.icon} />
         </div>
       </div>
