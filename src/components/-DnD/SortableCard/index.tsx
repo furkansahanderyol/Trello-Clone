@@ -25,7 +25,7 @@ import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useMouseMove } from "@/hooks/useMouseMove"
-import { BoardMemberType, BoardType, TaskType } from "@/store/types"
+import { BoardType } from "@/store/types"
 
 interface IProps {
   id: UniqueIdentifier
@@ -149,6 +149,7 @@ export default function SortableCard({
                 <SortableCardItem
                   key={item.id}
                   id={item.id}
+                  boardId={id as string}
                   title={item.title}
                   isActive={item.id === activeId}
                 />

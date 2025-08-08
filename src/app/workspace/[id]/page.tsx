@@ -38,7 +38,6 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
-import { calculateOrder } from "@/helpers/calculateOrder"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -61,10 +60,6 @@ export default function Workspace() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
-
-  useEffect(() => {
-    console.log("boards", boards)
-  }, [boards])
 
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
@@ -154,8 +149,6 @@ export default function Workspace() {
           .order
         const newIndex = list.tasks.filter((task) => task.id === over.id)[0]
           .order
-
-        console.log("list", list.tasks)
 
         const newTasks = arrayMove(list.tasks, oldIndex, newIndex)
         const orderedList = newTasks
@@ -249,7 +242,13 @@ export default function Workspace() {
   }
 
   const activeTask = useMemo(() => {
-    return <SortableCardItem id={activeId as UniqueIdentifier} title="" />
+    return (
+      <SortableCardItem
+        boardId={""}
+        id={activeId as UniqueIdentifier}
+        title=""
+      />
+    )
   }, [activeId, setActiveId])
 
   return (

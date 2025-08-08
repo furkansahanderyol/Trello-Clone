@@ -9,7 +9,6 @@
     --button-blue-hover: #1d4ed8;
     --button-text: #ffffff;
     --button-border: #ffffff;
-    --input-border: #d1d5db;
     --focus-border: #60a5fa;
     --main-background: #1d2125;
     --main-background-hover: #ffffff20;
@@ -25,6 +24,7 @@
     --task-list-background: #2c3136;
     --task-list-border: #42474e;
     --task-list-header-background: #121619;
+    --text-weak-blue: #579dff;
   }
 }
 
@@ -43,4 +43,21 @@ body {
   background-color: var(--main-background);
   overflow: hidden;
   overflow-y: auto;
+}
+
+/* Overwrites the default Tiptap styles */
+.ProseMirror {
+  color: var(--primary-text-color);
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.ProseMirror:focus {
+  outline: none;
+  color: var(--primary-text-color);
 }
