@@ -46,6 +46,17 @@ body {
 }
 
 /* Overwrites the default Tiptap styles */
+.ProseMirror {
+  color: var(--primary-text-color);
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+
+  p {
+    margin: 0;
+  }
+}
+
 .ProseMirror:focus {
   outline: none;
   color: var(--primary-text-color);

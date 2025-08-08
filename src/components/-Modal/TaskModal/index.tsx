@@ -13,7 +13,7 @@ import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
 import { UploadImageResponse } from "@/services/type"
-import { EditorContent, useEditor } from "@tiptap/react"
+import { Editor, EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
@@ -35,12 +35,27 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     undefined
   )
 
-  const editor = useEditor({
+  const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
-    content: "",
+    content: description ? description : "Enter more detailed description...",
     immediatelyRender: false,
     onUpdate({ editor }) {
-      const uploadedImages = currentImages()
+      const uploadedImages = currentImages(editor)
+    },
+    editorProps: {
+      handleDrop(view, event) {
+        console.log("view", view)
+        console.log("event", event)
+      },
+    },
+  })
+
+  const commentEditor = useEditor({
+    extensions: [StarterKit, Image],
+    content: description ? description : "Enter more detailed description...",
+    immediatelyRender: false,
+    onUpdate({ editor }) {
+      const uploadedImages = currentImages(editor)
     },
     editorProps: {
       handleDrop(view, event) {
@@ -73,16 +88,19 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     },
   ]
 
-  useOnClickOutside(descriptionAreaRef, () => {
-    setFocus(false)
-  })
+  // useOnClickOutside(descriptionAreaRef, () => {
+  //   setFocus(false)
+  // })
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     console.log("FORM SUBMITTED")
   }
 
-  function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+  function handleDrop(
+    event: React.DragEvent<HTMLDivElement>,
+    editor: Editor | null
+  ) {
     event.preventDefault()
     const files = event.dataTransfer?.files
     const uploadedFiles = [...files]
@@ -122,7 +140,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     })
   }
 
-  function currentImages() {
+  function currentImages(editor: Editor) {
     const html = editor?.getHTML()
     const parser = new DOMParser()
 
@@ -137,7 +155,10 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     return currentImages
   }
 
-  function handleUploadImage(e: ChangeEvent<HTMLInputElement>) {
+  function handleUploadImage(
+    e: ChangeEvent<HTMLInputElement>,
+    editor: Editor | null
+  ) {
     const files = e.target.files
     if (!files) return
 
@@ -188,17 +209,20 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
         {focus ? (
           <div className={styles.markdownArea}>
             <div
-              onClick={() => editor?.commands.focus()}
+              onClick={() => descriptionEditor?.commands.focus()}
               className={styles.editor}
             >
-              {editor && (
-                <MenuBar editor={editor} onFileChange={handleUploadImage} />
+              {descriptionEditor && (
+                <MenuBar
+                  editor={descriptionEditor}
+                  onFileChange={(e) => handleUploadImage(e, descriptionEditor)}
+                />
               )}
               <EditorContent
-                onDrop={handleDrop}
+                onDrop={(e) => handleDrop(e, descriptionEditor)}
                 className={styles.editorContent}
                 onChange={(e) => console.log(e)}
-                editor={editor}
+                editor={descriptionEditor}
               />
             </div>
           </div>
@@ -227,7 +251,30 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
           </div>
         )}
       </form>
-      <div className={styles.commentSection}></div>
+      <div className={styles.commentSection}>
+        <div className={styles.commentSectionHeader}>
+          Comments and activities
+        </div>
+        <div>
+          <div
+            onClick={() => commentEditor?.commands.focus()}
+            className={styles.editor}
+          >
+            {commentEditor && (
+              <MenuBar
+                editor={commentEditor}
+                onFileChange={(e) => handleUploadImage(e, commentEditor)}
+              />
+            )}
+            <EditorContent
+              onDrop={(e) => handleDrop(e, commentEditor)}
+              className={styles.editorContent}
+              onChange={(e) => console.log(e)}
+              editor={commentEditor}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
