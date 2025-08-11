@@ -1,11 +1,5 @@
 import styles from "./index.module.scss"
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { ChangeEvent, FormEvent, useRef, useState } from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { PersonStandingIcon, Plus } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
@@ -13,10 +7,17 @@ import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
 import { UploadImageResponse } from "@/services/type"
-import { Editor, EditorContent, useEditor } from "@tiptap/react"
+import {
+  Editor,
+  EditorContent,
+  generateJSON,
+  JSONContent,
+  useEditor,
+} from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
+import { generateHTML } from "@tiptap/react"
 interface IProps {
   title: string
   taskId: string
@@ -26,21 +27,29 @@ interface IProps {
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const [focus, setFocus] = useState(false)
-  const [description, setDescription] = useState("Default description.")
+  const [focus, setFocus] = useState(true)
+  const [description, setDescription] = useState<JSONContent>()
   const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
   const params = useParams()
   const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
-  const [uploadedImages, setUploadedImages] = useState<string[] | undefined>(
-    undefined
-  )
+  const [uploadedImages, setUploadedImages] = useState<
+    (string | null)[] | undefined
+  >(undefined)
 
   const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
-    content: description ? description : "Enter more detailed description...",
+    content: description
+      ? generateHTML(description, [StarterKit, Image])
+      : "Enter more detailed description...",
     immediatelyRender: false,
+    onCreate({ editor }) {},
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
+      setUploadedImages(uploadedImages)
+
+      const json = editor.getJSON()
+
+      setDescription(json)
     },
     editorProps: {
       handleDrop(view, event) {
@@ -56,12 +65,8 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     immediatelyRender: false,
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
-    },
-    editorProps: {
-      handleDrop(view, event) {
-        console.log("view", view)
-        console.log("event", event)
-      },
+
+      setUploadedImages(uploadedImages)
     },
   })
 
@@ -228,7 +233,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
           </div>
         ) : (
           <div className={styles.preview} onClick={() => setFocus(true)}>
-            {description}
+            {generateHTML(description!, [StarterKit, Image])}
           </div>
         )}
 
@@ -246,6 +251,15 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
               text="Save"
               onClick={() => {
                 setFocus(false)
+
+                if (description) {
+                  TaskService.uploadDescription(
+                    params.id as string,
+                    boardId,
+                    taskId,
+                    description
+                  )
+                }
               }}
             />
           </div>
