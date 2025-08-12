@@ -27,6 +27,7 @@ export type BoardType = {
 export type TaskType = {
   id: string
   title: string
+  description: string
   createdAt: string
   updatedAt: string
   boardId: string

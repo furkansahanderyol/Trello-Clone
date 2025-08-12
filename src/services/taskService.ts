@@ -2,6 +2,26 @@ import axios from "@/lib/axios"
 import { UploadImageResponse } from "./type"
 import { JSONContent } from "@tiptap/react"
 export namespace TaskService {
+  export async function getTaskData(
+    workspaceId: string,
+    boardId: string,
+    taskId: string
+  ) {
+    try {
+      const response = await axios.post("/get-task-data", {
+        workspaceId,
+        boardId,
+        taskId,
+      })
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - getTaskData ->", error)
+      throw error
+    }
+  }
+
   export async function uploadImage(
     workspaceId: string,
     boardId: string,
