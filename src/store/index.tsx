@@ -1,5 +1,11 @@
 import { atom, useAtom } from "jotai"
-import { AllWorkspacesType, BoardType, TaskType, WorkspaceType } from "./types"
+import {
+  AllWorkspacesType,
+  BoardType,
+  TaskType,
+  UserType,
+  WorkspaceType,
+} from "./types"
 import { UniqueIdentifier } from "@dnd-kit/core"
 
 export const testAtom = atom<string | undefined>(undefined)
@@ -14,15 +20,7 @@ export const modalContentAtom = atom<
 export const pageLoadingAtom = atom(false)
 
 // User
-export const userAtom = atom<
-  | {
-      name: string
-      surname: string
-      email: string
-      profileImage: string | undefined
-    }
-  | undefined
->(undefined)
+export const userAtom = atom<UserType | undefined>(undefined)
 export const sendCodeTimerAtom = atom<number | undefined>(undefined)
 export const sendCodeAnimationTimerAtom = atom<number | undefined>(undefined)
 

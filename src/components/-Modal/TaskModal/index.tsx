@@ -25,7 +25,7 @@ import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
 import { generateHTML } from "@tiptap/react"
 import { useAtom } from "jotai"
-import { taskAtom } from "@/store"
+import { taskAtom, userAtom } from "@/store"
 
 interface IProps {
   title: string
@@ -39,12 +39,14 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [focus, setFocus] = useState(false)
   const [description, setDescription] = useState<JSONContent>()
+  const [comment, setComment] = useState<JSONContent>()
   const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
   const params = useParams()
   const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
   const [uploadedImages, setUploadedImages] = useState<
     (string | null)[] | undefined
   >(undefined)
+  const [user] = useAtom(userAtom)
 
   const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
@@ -72,8 +74,9 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     immediatelyRender: false,
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
-
+      const json = editor.getJSON()
       setUploadedImages(uploadedImages)
+      setComment(json)
     },
   })
 
@@ -317,6 +320,22 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
               onChange={(e) => console.log(e)}
               editor={commentEditor}
             />
+            <div>
+              <Button
+                type="button"
+                text="Save"
+                onClick={() => {
+                  if (!comment || !user) return
+                  TaskService.taskComment(
+                    params.id as string,
+                    boardId,
+                    taskId,
+                    comment,
+                    user
+                  )
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

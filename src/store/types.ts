@@ -41,3 +41,10 @@ export type BoardMemberType = {
   boardId: string
   role: string
 }
+
+export type UserType = {
+  name: string
+  surname: string
+  email: string
+  profileImage: string | undefined
+}

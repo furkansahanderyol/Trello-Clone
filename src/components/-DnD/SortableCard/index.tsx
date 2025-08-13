@@ -8,7 +8,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, trackBoardsChangeAtom } from "@/store"
+import { activeIdAtom, trackBoardsChangeAtom, userAtom } from "@/store"
 import clsx from "clsx"
 import {
   FormEvent,
@@ -58,6 +58,7 @@ export default function SortableCard({
   )
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
   const [mouseY, setMouseY] = useState<number | undefined>(undefined)
+  const [user] = useAtom(userAtom)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
@@ -73,7 +74,11 @@ export default function SortableCard({
       return toast.error("Task title must be provided.")
     }
 
-    BoardService.addTask(taskTitle, id as string)
+    if (!user) {
+      return toast.error("User cannot be found.")
+    }
+
+    BoardService.addTask(taskTitle, id as string, user)
     setTrackBoardsChange(!trackBoardsChange)
     setTaskTitle("")
     setAddTaskMode(false)
