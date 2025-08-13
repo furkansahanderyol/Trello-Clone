@@ -1,6 +1,6 @@
 import axios from "@/lib/axios"
 import { boardsAtom, loadingAtom } from "@/store"
-import { BoardType } from "@/store/types"
+import { BoardType, UserType } from "@/store/types"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -66,11 +66,16 @@ export namespace BoardService {
       })
   }
 
-  export async function addTask(title: string, boardId: string) {
+  export async function addTask(
+    title: string,
+    boardId: string,
+    user: UserType
+  ) {
     axios
       .post("/add-task", {
         title,
         boardId,
+        user,
       })
       .then((response) => {})
       .catch((error) => {

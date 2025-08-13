@@ -27,6 +27,7 @@ export type BoardType = {
 export type TaskType = {
   id: string
   title: string
+  description: string
   createdAt: string
   updatedAt: string
   boardId: string
@@ -39,4 +40,11 @@ export type BoardMemberType = {
   userId: string
   boardId: string
   role: string
+}
+
+export type UserType = {
+  name: string
+  surname: string
+  email: string
+  profileImage: string | undefined
 }
