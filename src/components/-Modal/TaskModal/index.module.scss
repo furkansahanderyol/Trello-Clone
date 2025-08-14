@@ -18,10 +18,24 @@
     position: relative;
     max-width: 720px;
 
+    .descriptionHeader {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-text-color);
+      font-size: 1rem;
+      font-weight: 600;
+
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
     .markdownArea {
       position: relative;
       width: 100%;
-      max-height: 200px;
+      max-height: 600px;
       border: 1px solid var(--input-border);
       overflow: hidden;
 
@@ -40,9 +54,11 @@
           & img {
             display: block;
             margin: 0.25rem 0;
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
+            max-width: 90%;
+            width: 100%;
+            max-height: 400px;
+            height: fit-content;
+            object-fit: contain;
           }
         }
       }
@@ -83,10 +99,25 @@
 
     .preview {
       border: 1px solid var(--input-border);
-      padding: 1rem;
+      border-radius: 0.3rem;
       color: var(--primary-text-color);
-      max-height: 60px;
+      max-height: 400px;
+      height: fit-content;
       overflow: hidden;
+      cursor: pointer;
+      transition: border 0.25s ease-in-out;
+
+      &:hover {
+        border-color: var(--button-blue-hover);
+      }
+
+      img {
+        max-width: 90%;
+        width: 100%;
+        max-height: 400px;
+        height: fit-content;
+        object-fit: contain;
+      }
     }
 
     .options {

@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
-import { PersonStandingIcon, Plus, Star } from "lucide-react"
+import { PersonStandingIcon, Plus, Star, Text } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
@@ -35,6 +35,7 @@ interface IProps {
 
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [task, setTask] = useAtom(taskAtom)
+  const [user] = useAtom(userAtom)
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [focus, setFocus] = useState(false)
@@ -46,7 +47,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [uploadedImages, setUploadedImages] = useState<
     (string | null)[] | undefined
   >(undefined)
-  const [user] = useAtom(userAtom)
 
   const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
@@ -118,10 +118,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       descriptionEditor.commands.setContent(JSON.parse(task.description))
     }
   }, [task, descriptionEditor])
-
-  // useOnClickOutside(descriptionAreaRef, () => {
-  //   setFocus(false)
-  // })
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -230,6 +226,10 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     })
   }
 
+  useEffect(() => {
+    console.log("description", description)
+  }, [description])
+
   return (
     <div className={styles.container}>
       <form
@@ -237,13 +237,17 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
         onSubmit={handleSubmit}
         className={styles.taskDetails}
       >
+        <div className={styles.descriptionHeader}>
+          <Text />
+          Description
+        </div>
         {focus ? (
           <div className={styles.markdownArea}>
             <div
               onClick={() => descriptionEditor?.commands.focus()}
               className={styles.editor}
             >
-              {descriptionEditor && (
+              {descriptionEditor && focus && (
                 <MenuBar
                   editor={descriptionEditor}
                   onFileChange={(e) => handleUploadImage(e, descriptionEditor)}
@@ -278,7 +282,15 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
             <Button
               type="button"
               text="Cancel"
-              onClick={() => setFocus(false)}
+              onClick={() => {
+                setFocus(false)
+
+                if (descriptionEditor && task) {
+                  descriptionEditor.commands.setContent(
+                    JSON.parse(task.description)
+                  )
+                }
+              }}
             />
             <Button
               type="submit"
@@ -295,6 +307,10 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                   )
                 }
               }}
+              disabled={
+                JSON.parse(JSON.stringify(task?.description)) ===
+                JSON.stringify(descriptionEditor?.getJSON().content)
+              }
             />
           </div>
         )}
