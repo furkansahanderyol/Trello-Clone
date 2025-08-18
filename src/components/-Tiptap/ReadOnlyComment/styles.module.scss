@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  .authorInfo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+
+    .authorImage {
+      position: relative;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  .content {
+    p {
+      margin: 0;
+    }
+  }
+}

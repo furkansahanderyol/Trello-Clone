@@ -6,26 +6,19 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { PersonStandingIcon, Plus, Star, Text } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
 import { UploadImageResponse } from "@/services/type"
-import {
-  Editor,
-  EditorContent,
-  generateJSON,
-  JSONContent,
-  useEditor,
-} from "@tiptap/react"
+import { Editor, EditorContent, JSONContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
-import { generateHTML } from "@tiptap/react"
 import { useAtom } from "jotai"
 import { taskAtom, userAtom } from "@/store"
+import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
 
 interface IProps {
   title: string
@@ -226,10 +219,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
     })
   }
 
-  useEffect(() => {
-    console.log("description", description)
-  }, [description])
-
   return (
     <div className={styles.container}>
       <form
@@ -298,6 +287,8 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
               onClick={() => {
                 setFocus(false)
 
+                console.log("description", description)
+
                 if (description) {
                   TaskService.uploadDescription(
                     params.id as string,
@@ -319,24 +310,24 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
         <div className={styles.commentSectionHeader}>
           Comments and activities
         </div>
-        <div>
-          <div
-            onClick={() => commentEditor?.commands.focus()}
-            className={styles.editor}
-          >
-            {commentEditor && (
-              <MenuBar
-                editor={commentEditor}
-                onFileChange={(e) => handleUploadImage(e, commentEditor)}
-              />
-            )}
-            <EditorContent
-              onDrop={(e) => handleDrop(e, commentEditor)}
-              className={styles.editorContent}
-              onChange={(e) => console.log(e)}
+        <div
+          onClick={() => commentEditor?.commands.focus()}
+          className={styles.editor}
+        >
+          {commentEditor && (
+            <MenuBar
               editor={commentEditor}
+              onFileChange={(e) => handleUploadImage(e, commentEditor)}
             />
-            <div>
+          )}
+          <EditorContent
+            onDrop={(e) => handleDrop(e, commentEditor)}
+            className={styles.editorContent}
+            onChange={(e) => console.log(e)}
+            editor={commentEditor}
+          />
+          <div className={styles.buttonsWrapper}>
+            <div className={styles.buttons}>
               <Button
                 type="button"
                 text="Save"
@@ -351,8 +342,20 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                   )
                 }}
               />
+              <Button type="button" text="Cancel" />
             </div>
           </div>
+        </div>
+        <div className={styles.commentsList}>
+          {task?.comments.map((comment) => {
+            return (
+              <ReadOnlyComment
+                key={comment.id}
+                comment={comment.content}
+                author={comment.author}
+              />
+            )
+          })}
         </div>
       </div>
     </div>
