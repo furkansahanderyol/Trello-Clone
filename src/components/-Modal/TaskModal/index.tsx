@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { PersonStandingIcon, Plus, Star, Text } from "lucide-react"
+import { PersonStandingIcon, Plus, Text } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
@@ -64,6 +64,18 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const commentEditor = useEditor({
     extensions: [StarterKit, Image],
     content: description ? description : "Enter more detailed description...",
+    immediatelyRender: false,
+    onUpdate({ editor }) {
+      const uploadedImages = currentImages(editor)
+      const json = editor.getJSON()
+      setUploadedImages(uploadedImages)
+      setComment(json)
+    },
+  })
+
+  const commentEditEditor = useEditor({
+    extensions: [StarterKit, Image],
+    content: "",
     immediatelyRender: false,
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
@@ -349,11 +361,32 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
         <div className={styles.commentsList}>
           {task?.comments.map((comment) => {
             return (
-              <ReadOnlyComment
-                key={comment.id}
-                comment={comment.content}
-                author={comment.author}
-              />
+              <div key={comment.id} className={styles.comment}>
+                <ReadOnlyComment
+                  editor={commentEditEditor}
+                  comment={comment.content}
+                  author={comment.author}
+                  boardId={boardId}
+                  taskId={taskId}
+                  commentId={comment.id}
+                  markdownTextarea={
+                    <div>
+                      {commentEditEditor && (
+                        <MenuBar
+                          editor={commentEditEditor}
+                          onFileChange={(e) => console.log(e)}
+                        />
+                      )}
+                      <EditorContent
+                        onDrop={(e) => handleDrop(e, commentEditor)}
+                        className={styles.editorContent}
+                        onChange={(e) => console.log(e)}
+                        editor={commentEditEditor}
+                      />
+                    </div>
+                  }
+                />
+              </div>
             )
           })}
         </div>

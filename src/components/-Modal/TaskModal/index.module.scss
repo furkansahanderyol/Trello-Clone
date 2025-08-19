@@ -144,6 +144,8 @@
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    height: 600px;
+    overflow: hidden;
 
     .commentSectionHeader {
       color: var(--primary-text-color);
@@ -200,6 +202,15 @@
       overflow: clip;
       overflow-y: scroll;
       max-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .comment {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
     }
   }
 }

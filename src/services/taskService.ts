@@ -106,4 +106,27 @@ export namespace TaskService {
       throw error
     }
   }
+
+  export async function deleteTaskComment(
+    workspaceId: string,
+    boardId: string,
+    taskId: string,
+    commentId: string
+  ) {
+    try {
+      const response = await axios.post("/delete-task-comment", {
+        workspaceId,
+        boardId,
+        taskId,
+        commentId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - taskComment -> ", error)
+      throw error
+    }
+  }
 }
