@@ -1,14 +1,16 @@
-import StarterKit from "@tiptap/starter-kit"
-import { Editor, EditorContent, generateHTML, useEditor } from "@tiptap/react"
+import { Editor, generateHTML } from "@tiptap/react"
 import styles from "./styles.module.scss"
-import { AuthorType } from "@/store/types"
+import { AuthorType, TaskType } from "@/store/types"
 import Image from "next/image"
-import MenuBar from "../MenuBar"
 import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
 import { useRef, useState } from "react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import TiptapImage from "@tiptap/extension-image"
+import StarterKit from "@tiptap/starter-kit"
+import { useAtom } from "jotai"
+import { editTaskAtom, taskAtom } from "@/store"
 
 interface IProps {
   editor: Editor | null
@@ -29,10 +31,11 @@ export default function ReadOnlyComment({
   commentId,
   markdownTextarea,
 }: IProps) {
+  const [task, setTask] = useAtom(taskAtom)
   if (!comment) return null
   const params = useParams()
   const commentRef = useRef(null)
-  const [edit, setEdit] = useState(false)
+  const [edit, setEdit] = useAtom(editTaskAtom)
 
   let tiptapJSON
   try {
@@ -42,13 +45,13 @@ export default function ReadOnlyComment({
     return null
   }
 
-  const html = generateHTML(tiptapJSON, [StarterKit])
-
-  const userNameFirstLetters = `${author.name[0] + author.surname[0]}`
+  const html = generateHTML(tiptapJSON, [StarterKit, TiptapImage])
 
   useOnClickOutside(commentRef, () => {
     setEdit(false)
   })
+
+  const userNameFirstLetters = `${author.name[0] + author.surname[0]}`
 
   return (
     <div ref={commentRef}>
@@ -93,7 +96,26 @@ export default function ReadOnlyComment({
                   boardId,
                   taskId,
                   commentId
-                )
+                ).then((response) => {
+                  if (response.success) {
+                    const updatedComments = task?.comments.filter((comment) => {
+                      return comment.id !== commentId
+                    })
+
+                    setTask((prev) => {
+                      if (!prev) return prev
+
+                      if (updatedComments) {
+                        const updatedTask: TaskType = {
+                          ...prev,
+                          comments: updatedComments,
+                        }
+
+                        return updatedTask
+                      }
+                    })
+                  }
+                })
               }
               className={styles.button}
               text="Delete"

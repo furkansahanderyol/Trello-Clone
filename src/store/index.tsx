@@ -37,3 +37,4 @@ export const trackBoardsChangeAtom = atom(false)
 
 // Task
 export const taskAtom = atom<TaskType | undefined>(undefined)
+export const editTaskAtom = atom(false)

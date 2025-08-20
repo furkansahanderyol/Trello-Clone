@@ -17,7 +17,7 @@ import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
 import { useAtom } from "jotai"
-import { taskAtom, userAtom } from "@/store"
+import { editTaskAtom, taskAtom, userAtom } from "@/store"
 import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
 
 interface IProps {
@@ -28,12 +28,14 @@ interface IProps {
 
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [task, setTask] = useAtom(taskAtom)
+  const [editTask, setEditTask] = useAtom(editTaskAtom)
   const [user] = useAtom(userAtom)
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [focus, setFocus] = useState(false)
   const [description, setDescription] = useState<JSONContent>()
   const [comment, setComment] = useState<JSONContent>()
+  const [editedComment, setEditedComment] = useState<JSONContent>()
   const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
   const params = useParams()
   const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
@@ -53,6 +55,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
       setDescription(json)
     },
+
     editorProps: {
       handleDrop(view, event) {
         console.log("view", view)
@@ -63,25 +66,32 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
   const commentEditor = useEditor({
     extensions: [StarterKit, Image],
-    content: description ? description : "Enter more detailed description...",
     immediatelyRender: false,
+    // onCreate({ editor }) {
+    //   editor.commands.setContent(JSON.stringify(task?.comments))
+    // },
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
       const json = editor.getJSON()
       setUploadedImages(uploadedImages)
       setComment(json)
     },
+    onContentError({ error }) {
+      console.log("Tiptap Error", error)
+    },
   })
 
   const commentEditEditor = useEditor({
     extensions: [StarterKit, Image],
-    content: "",
     immediatelyRender: false,
+    onCreate({ editor }) {
+      console.log("editor", editor)
+    },
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
       const json = editor.getJSON()
       setUploadedImages(uploadedImages)
-      setComment(json)
+      setEditedComment(json)
     },
   })
 
@@ -121,6 +131,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
     if (task?.description && descriptionEditor) {
       descriptionEditor.commands.setContent(JSON.parse(task.description))
+      commentEditEditor?.commands.setContent(JSON.parse(task.description))
     }
   }, [task, descriptionEditor])
 
@@ -299,8 +310,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
               onClick={() => {
                 setFocus(false)
 
-                console.log("description", description)
-
                 if (description) {
                   TaskService.uploadDescription(
                     params.id as string,
@@ -370,19 +379,57 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                   taskId={taskId}
                   commentId={comment.id}
                   markdownTextarea={
-                    <div>
-                      {commentEditEditor && (
-                        <MenuBar
+                    <div className={styles.editComment}>
+                      <div className={styles.markdownArea}>
+                        {commentEditEditor && (
+                          <MenuBar
+                            editor={commentEditEditor}
+                            onFileChange={(e) => console.log(e)}
+                          />
+                        )}
+                        <EditorContent
+                          onDrop={(e) => handleDrop(e, commentEditEditor)}
+                          className={styles.editorContent}
+                          onChange={(e) => console.log(e)}
                           editor={commentEditEditor}
-                          onFileChange={(e) => console.log(e)}
                         />
-                      )}
-                      <EditorContent
-                        onDrop={(e) => handleDrop(e, commentEditor)}
-                        className={styles.editorContent}
-                        onChange={(e) => console.log(e)}
-                        editor={commentEditEditor}
-                      />
+                      </div>
+                      <div className={styles.buttonsWrapper}>
+                        <div className={styles.buttons}>
+                          <Button
+                            type="button"
+                            text="Save"
+                            onClick={() => {
+                              if (!editedComment || !user) return
+                              TaskService.updateTaskComment(
+                                params.id as string,
+                                boardId,
+                                taskId,
+                                comment.id,
+                                editedComment
+                              )
+                            }}
+                            disabled={
+                              JSON.parse(JSON.stringify(comment.content)) ===
+                              JSON.stringify(
+                                commentEditEditor?.getJSON().content
+                              )
+                            }
+                          />
+                          <Button
+                            type="button"
+                            text="Cancel"
+                            onClick={() => {
+                              setEditTask(false)
+                              if (commentEditEditor && comment) {
+                                commentEditEditor.commands.setContent(
+                                  JSON.parse(comment.content)
+                                )
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   }
                 />
