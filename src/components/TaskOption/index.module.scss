@@ -13,12 +13,9 @@
   .dropdown {
     position: absolute;
     left: 0;
+    top: calc(100% + 1rem);
     bottom: calc(-100% - 3rem);
     width: 360px;
-    padding: 1rem;
-    background-color: var(--card-background);
-    border: 1px solid var(--input-border);
-    border-radius: 0.3rem;
     z-index: 100;
   }
 }

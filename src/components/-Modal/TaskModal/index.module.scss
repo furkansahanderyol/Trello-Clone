@@ -7,100 +7,154 @@
   max-height: 600px;
   transition: height ease-in-out 0.3s;
 
-  .taskDetails {
-    width: 100%;
-    height: 100%;
-    padding: 1rem;
+  .wrapper {
     flex: 1.5;
+    width: 100%;
+    max-width: 720px;
+    height: 600px;
+    overflow: clip;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    position: relative;
-    max-width: 720px;
+    padding: 1rem;
 
-    .markdownArea {
-      position: relative;
-      width: 100%;
-      max-height: 200px;
-      border: 1px solid var(--input-border);
-      overflow: hidden;
+    .options {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-      .editor {
+      .addOption {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 1rem;
+        color: var(--primary-text-color);
+        border-radius: 0.3rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+        font-weight: 500;
+
+        &:hover {
+          background-color: var(--button-blue-hover);
+        }
+      }
+    }
+
+    .taskDetails {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+
+      .descriptionHeader {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary-text-color);
+        font-size: 1rem;
+        font-weight: 600;
+
+        svg {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+      }
+
+      .markdownArea {
+        position: relative;
         width: 100%;
-        height: 100%;
+        max-height: 600px;
+        border: 1px solid var(--input-border);
+        overflow: hidden;
 
-        .editorContent {
+        .editor {
+          display: flex;
+          flex-direction: column;
           width: 100%;
-          height: 400px;
-          overflow: clip;
-          overflow-y: auto;
+          height: 100%;
 
-          & img {
-            display: block;
-            margin: 0.25rem 0;
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
+          .editorContent {
+            width: 100%;
+            height: 400px;
+            overflow: clip;
+            overflow-y: auto;
+
+            & img {
+              display: block;
+              margin: 0.25rem 0;
+              max-width: 90%;
+              width: 100%;
+              max-height: 400px;
+              height: fit-content;
+              object-fit: contain;
+            }
+          }
+        }
+
+        .dropzone {
+          position: absolute;
+          max-height: 240px;
+          pointer-events: none;
+          opacity: 0;
+        }
+
+        .description {
+          background-color: transparent;
+          border-radius: 0.3rem;
+          border: none;
+          outline: none;
+          vertical-align: center;
+          height: 100%;
+
+          &.textareaFocused {
+            border: 1px solid var(--input-border);
+            height: 240px;
+            overflow: auto;
           }
         }
       }
 
-      .dropzone {
-        position: absolute;
-        max-height: 240px;
-        pointer-events: none;
-        opacity: 0;
-      }
-
-      .description {
-        background-color: transparent;
+      .markdown {
+        background: transparent;
+        cursor: pointer;
+        padding: 1rem;
         border-radius: 0.3rem;
-        border: none;
-        outline: none;
-        vertical-align: center;
-        height: 100%;
 
-        &.textareaFocused {
-          border: 1px solid var(--input-border);
-          height: 240px;
-          overflow: auto;
+        &:hover {
+          outline: 1px solid var(--input-border);
         }
       }
-    }
 
-    .markdown {
-      background: transparent;
-      cursor: pointer;
-      padding: 1rem;
-      border-radius: 0.3rem;
+      .preview {
+        border: 1px solid var(--input-border);
+        border-radius: 0.3rem;
+        color: var(--primary-text-color);
+        max-height: 400px;
+        height: fit-content;
+        overflow: hidden;
+        cursor: pointer;
+        transition: border 0.25s ease-in-out;
 
-      &:hover {
-        outline: 1px solid var(--input-border);
+        &:hover {
+          border-color: var(--button-blue-hover);
+        }
+
+        img {
+          max-width: 90%;
+          width: 100%;
+          max-height: 400px;
+          height: fit-content;
+          object-fit: contain;
+        }
       }
-    }
 
-    .preview {
-      border: 1px solid var(--input-border);
-      padding: 1rem;
-      color: var(--primary-text-color);
-      max-height: 60px;
-      overflow: hidden;
-    }
-
-    .options {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .buttons {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      max-width: 200px;
+      .buttons {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        max-width: 200px;
+      }
     }
   }
 
@@ -112,6 +166,9 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
+    height: 600px;
+    overflow: hidden;
 
     .commentSectionHeader {
       color: var(--primary-text-color);
@@ -141,6 +198,83 @@
           width: 200px;
           height: 200px;
           object-fit: cover;
+        }
+      }
+
+      .buttonsWrapper {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 0.5rem;
+
+        .buttons {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          gap: 1rem;
+          text-align: end;
+          max-width: 200px;
+          width: 100%;
+        }
+      }
+    }
+
+    .commentsList {
+      height: 100%;
+      overflow: clip;
+      overflow-y: scroll;
+      max-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .comment {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .markdownArea {
+          position: relative;
+          width: 100%;
+          max-height: 600px;
+          border: 1px solid var(--input-border);
+          overflow: hidden;
+
+          .editorContent {
+            width: 100%;
+            min-height: 60px;
+            max-height: 180px;
+            overflow: clip;
+            overflow-y: auto;
+            & img {
+              display: block;
+              margin: 0.25rem 0;
+              max-width: 90%;
+              width: 100%;
+              max-height: 400px;
+              height: fit-content;
+              object-fit: contain;
+            }
+          }
+        }
+
+        .buttonsWrapper {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          margin-top: 0.5rem;
+
+          .buttons {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            text-align: end;
+            max-width: 200px;
+            width: 100%;
+          }
         }
       }
     }

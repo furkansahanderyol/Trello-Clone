@@ -6,26 +6,20 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { useOnClickOutside } from "@/hooks/useOnClickOutside"
-import { PersonStandingIcon, Plus, Star } from "lucide-react"
+import { PersonStandingIcon, Plus, Text } from "lucide-react"
 import TaskOption from "@/components/TaskOption"
 import Button from "@/components/Button"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
 import { UploadImageResponse } from "@/services/type"
-import {
-  Editor,
-  EditorContent,
-  generateJSON,
-  JSONContent,
-  useEditor,
-} from "@tiptap/react"
+import { Editor, EditorContent, JSONContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
-import { generateHTML } from "@tiptap/react"
 import { useAtom } from "jotai"
-import { taskAtom, userAtom } from "@/store"
+import { editTaskAtom, taskAtom, userAtom } from "@/store"
+import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
+import LabelForm from "@/components/LabelForm"
 
 interface IProps {
   title: string
@@ -35,18 +29,20 @@ interface IProps {
 
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [task, setTask] = useAtom(taskAtom)
+  const [, setEditTask] = useAtom(editTaskAtom)
+  const [user] = useAtom(userAtom)
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
-  const inputRef = useRef<HTMLInputElement | null>(null)
   const [focus, setFocus] = useState(false)
   const [description, setDescription] = useState<JSONContent>()
   const [comment, setComment] = useState<JSONContent>()
-  const caretPositionRef = useRef<HTMLTextAreaElement | null>(null)
+  const [editedComment, setEditedComment] = useState<JSONContent>()
   const params = useParams()
-  const [taskImage, setTaskImage] = useState<UploadImageResponse | undefined>()
-  const [uploadedImages, setUploadedImages] = useState<
-    (string | null)[] | undefined
-  >(undefined)
-  const [user] = useAtom(userAtom)
+  const [, setTaskImage] = useState<UploadImageResponse | undefined>()
+  const [, setUploadedImages] = useState<(string | null)[] | undefined>(
+    undefined
+  )
+  const [addLabel, setAddLabel] = useState(true)
+  const [color, setColor] = useState("#d40000")
 
   const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
@@ -60,6 +56,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
       setDescription(json)
     },
+
     editorProps: {
       handleDrop(view, event) {
         console.log("view", view)
@@ -70,7 +67,6 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
   const commentEditor = useEditor({
     extensions: [StarterKit, Image],
-    content: description ? description : "Enter more detailed description...",
     immediatelyRender: false,
     onUpdate({ editor }) {
       const uploadedImages = currentImages(editor)
@@ -78,18 +74,27 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       setUploadedImages(uploadedImages)
       setComment(json)
     },
+    onContentError({ error }) {
+      console.log("Tiptap Error", error)
+    },
+  })
+
+  const commentEditEditor = useEditor({
+    extensions: [StarterKit, Image],
+    immediatelyRender: false,
+    onUpdate({ editor }) {
+      const uploadedImages = currentImages(editor)
+      const json = editor.getJSON()
+      setUploadedImages(uploadedImages)
+      setEditedComment(json)
+    },
   })
 
   const taskOptions = [
     {
       icon: <Plus />,
       label: "Labels",
-      dropdownOptions: (
-        <div className={styles.optionsMenu}>
-          <div className={styles.option}>Option-1</div>
-          <div className={styles.option}>Option-2</div>
-        </div>
-      ),
+      dropdownOptions: addLabel ? <LabelForm /> : <div>Hi</div>,
     },
     {
       icon: <PersonStandingIcon />,
@@ -116,12 +121,9 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
     if (task?.description && descriptionEditor) {
       descriptionEditor.commands.setContent(JSON.parse(task.description))
+      commentEditEditor?.commands.setContent(JSON.parse(task.description))
     }
   }, [task, descriptionEditor])
-
-  // useOnClickOutside(descriptionAreaRef, () => {
-  //   setFocus(false)
-  // })
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -232,95 +234,115 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
 
   return (
     <div className={styles.container}>
-      <form
-        ref={descriptionAreaRef}
-        onSubmit={handleSubmit}
-        className={styles.taskDetails}
-      >
-        {focus ? (
-          <div className={styles.markdownArea}>
-            <div
-              onClick={() => descriptionEditor?.commands.focus()}
-              className={styles.editor}
-            >
-              {descriptionEditor && (
-                <MenuBar
-                  editor={descriptionEditor}
-                  onFileChange={(e) => handleUploadImage(e, descriptionEditor)}
-                />
-              )}
-              <EditorContent
-                onDrop={(e) => handleDrop(e, descriptionEditor)}
-                className={styles.editorContent}
-                onChange={(e) => console.log(e)}
-                editor={descriptionEditor}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className={styles.preview} onClick={() => setFocus(true)}>
-            {task ? (
-              <EditorContent editor={descriptionEditor} />
-            ) : (
-              <div>Hi</div>
-            )}
-          </div>
-        )}
-
+      <div className={styles.wrapper}>
         <div className={styles.options}>
           {taskOptions.map((task, index) => {
             return <TaskOption {...task} key={index} />
           })}
         </div>
-
-        {focus && (
-          <div className={styles.buttons}>
-            <Button
-              type="button"
-              text="Cancel"
-              onClick={() => setFocus(false)}
-            />
-            <Button
-              type="submit"
-              text="Save"
-              onClick={() => {
-                setFocus(false)
-
-                if (description) {
-                  TaskService.uploadDescription(
-                    params.id as string,
-                    boardId,
-                    taskId,
-                    description
-                  )
-                }
-              }}
-            />
+        <form
+          ref={descriptionAreaRef}
+          onSubmit={handleSubmit}
+          className={styles.taskDetails}
+        >
+          <div className={styles.descriptionHeader}>
+            <Text />
+            Description
           </div>
-        )}
-      </form>
+          {focus ? (
+            <div className={styles.markdownArea}>
+              <div
+                onClick={() => descriptionEditor?.commands.focus()}
+                className={styles.editor}
+              >
+                {descriptionEditor && focus && (
+                  <MenuBar
+                    editor={descriptionEditor}
+                    onFileChange={(e) =>
+                      handleUploadImage(e, descriptionEditor)
+                    }
+                  />
+                )}
+                <EditorContent
+                  onDrop={(e) => handleDrop(e, descriptionEditor)}
+                  className={styles.editorContent}
+                  onChange={(e) => console.log(e)}
+                  editor={descriptionEditor}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className={styles.preview} onClick={() => setFocus(true)}>
+              {task ? (
+                <EditorContent editor={descriptionEditor} />
+              ) : (
+                <div>Hi</div>
+              )}
+            </div>
+          )}
+
+          {focus && (
+            <div className={styles.buttons}>
+              <Button
+                type="button"
+                text="Cancel"
+                onClick={() => {
+                  setFocus(false)
+
+                  if (descriptionEditor && task) {
+                    descriptionEditor.commands.setContent(
+                      JSON.parse(task.description)
+                    )
+                  }
+                }}
+              />
+              <Button
+                type="submit"
+                text="Save"
+                onClick={() => {
+                  setFocus(false)
+
+                  if (description) {
+                    TaskService.uploadDescription(
+                      params.id as string,
+                      boardId,
+                      taskId,
+                      description
+                    )
+                  }
+                }}
+                disabled={
+                  JSON.parse(JSON.stringify(task?.description)) ===
+                  JSON.stringify(descriptionEditor?.getJSON().content)
+                }
+              />
+            </div>
+          )}
+        </form>
+      </div>
+
       <div className={styles.commentSection}>
         <div className={styles.commentSectionHeader}>
           Comments and activities
         </div>
-        <div>
-          <div
-            onClick={() => commentEditor?.commands.focus()}
-            className={styles.editor}
-          >
-            {commentEditor && (
-              <MenuBar
-                editor={commentEditor}
-                onFileChange={(e) => handleUploadImage(e, commentEditor)}
-              />
-            )}
-            <EditorContent
-              onDrop={(e) => handleDrop(e, commentEditor)}
-              className={styles.editorContent}
-              onChange={(e) => console.log(e)}
+        <div
+          onClick={() => commentEditor?.commands.focus()}
+          className={styles.editor}
+        >
+          {commentEditor && (
+            <MenuBar
               editor={commentEditor}
+              onFileChange={(e) => handleUploadImage(e, commentEditor)}
             />
-            <div>
+          )}
+          <EditorContent
+            onDrop={(e) => handleDrop(e, commentEditor)}
+            className={styles.editorContent}
+            onChange={(e) => console.log(e)}
+            editor={commentEditor}
+          />
+          <div className={styles.buttonsWrapper}>
+            <div className={styles.buttons}>
               <Button
                 type="button"
                 text="Save"
@@ -335,8 +357,79 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                   )
                 }}
               />
+              <Button type="button" text="Cancel" />
             </div>
           </div>
+        </div>
+        <div className={styles.commentsList}>
+          {task?.comments.map((comment) => {
+            return (
+              <div key={comment.id} className={styles.comment}>
+                <ReadOnlyComment
+                  editor={commentEditEditor}
+                  comment={comment.content}
+                  author={comment.author}
+                  boardId={boardId}
+                  taskId={taskId}
+                  commentId={comment.id}
+                  markdownTextarea={
+                    <div className={styles.editComment}>
+                      <div className={styles.markdownArea}>
+                        {commentEditEditor && (
+                          <MenuBar
+                            editor={commentEditEditor}
+                            onFileChange={(e) => console.log(e)}
+                          />
+                        )}
+                        <EditorContent
+                          onDrop={(e) => handleDrop(e, commentEditEditor)}
+                          className={styles.editorContent}
+                          onChange={(e) => console.log(e)}
+                          editor={commentEditEditor}
+                        />
+                      </div>
+                      <div className={styles.buttonsWrapper}>
+                        <div className={styles.buttons}>
+                          <Button
+                            type="button"
+                            text="Save"
+                            onClick={() => {
+                              if (!editedComment || !user) return
+                              TaskService.updateTaskComment(
+                                params.id as string,
+                                boardId,
+                                taskId,
+                                comment.id,
+                                editedComment
+                              )
+                            }}
+                            disabled={
+                              JSON.parse(JSON.stringify(comment.content)) ===
+                              JSON.stringify(
+                                commentEditEditor?.getJSON().content
+                              )
+                            }
+                          />
+                          <Button
+                            type="button"
+                            text="Cancel"
+                            onClick={() => {
+                              setEditTask(false)
+                              if (commentEditEditor && comment) {
+                                commentEditEditor.commands.setContent(
+                                  JSON.parse(comment.content)
+                                )
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  }
+                />
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
