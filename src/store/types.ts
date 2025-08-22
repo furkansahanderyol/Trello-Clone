@@ -34,6 +34,7 @@ export type TaskType = {
   assignedToId: string
   order: number
   comments: CommentType[]
+  labels: LabelType[]
 }
 
 export type BoardMemberType = {
@@ -66,4 +67,10 @@ export type AuthorType = {
   surname: string
   email: string
   profileImage: string
+}
+
+export type LabelType = {
+  id: string
+  name: string
+  color: string
 }
