@@ -1,11 +1,13 @@
 import clsx from "clsx"
 import styles from "./index.module.scss"
-import { X } from "lucide-react"
+import { Edit, X } from "lucide-react"
 import { FormEvent, useState } from "react"
 import Input from "@/components/Input"
 import Button from "../Button"
 import { useAtom } from "jotai"
 import { taskAtom } from "@/store"
+import Checkbox from "../Checkbox"
+import { LabelType } from "@/store/types"
 
 interface IProps {
   className?: string
@@ -26,18 +28,84 @@ const COLOR_OPTIONS = [
   "#ff0ff2",
 ]
 
+const LABELS = [
+  {
+    id: "1",
+    name: "Label 1",
+    color: "#d40000",
+  },
+  {
+    id: "2",
+    name: "Label 2",
+    color: "#ff0ff2",
+  },
+  {
+    id: "3",
+    name: "Label 3",
+    color: "#491dff",
+  },
+  {
+    id: "4",
+    name: "Label 4",
+    color: "#dfa251",
+  },
+]
+
 export default function LabelForm({ className }: IProps) {
   const [task] = useAtom(taskAtom)
   const [color, setColor] = useState("#d40000")
   const [header, setHeader] = useState("")
+  const [addNewLabel, setAddNewLabel] = useState(false)
+
+  const [selectedLabels, setSelectedLabels] = useState<LabelType[]>([])
 
   function handleLabelCreate() {
     console.log("Label created")
     return
   }
 
-  return task?.labels ? (
-    <div>Empty label form</div>
+  return LABELS && !addNewLabel ? (
+    <div className={styles.container}>
+      <div className={styles.header}>Labels</div>
+      <div className={styles.searchInputWrapper}>
+        <Input placeholder="Search labels" className={styles.searchInput} />
+      </div>
+      <div className={styles.labelList}>
+        {LABELS.map((label) => {
+          return (
+            <div
+              onClick={() =>
+                setSelectedLabels((prev) => {
+                  return [...prev, label]
+                })
+              }
+              key={label.id}
+              className={styles.labelWrapper}
+            >
+              <Checkbox checked={selectedLabels.includes(label)} />
+              <div
+                className={styles.label}
+                style={{
+                  backgroundColor: label.color,
+                }}
+              >
+                {label.name}
+              </div>
+              <div className={styles.editButton}>
+                <Edit />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <div className={styles.createNewLabelButton}>
+        <Button
+          onClick={() => setAddNewLabel(true)}
+          text={"Create new label"}
+          type="button"
+        />
+      </div>
+    </div>
   ) : (
     <form
       onClick={handleLabelCreate}
