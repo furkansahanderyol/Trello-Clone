@@ -154,4 +154,95 @@ export namespace TaskService {
       throw error
     }
   }
+
+  export async function getTaskLabels(
+    workspaceId: string,
+    boardId: string,
+    taskId: string
+  ) {
+    try {
+      const response = await axios.post("/get-task-labels", {
+        workspaceId,
+        boardId,
+        taskId,
+      })
+
+      return response.data
+    } catch (error) {
+      console.error("TaskService - createTaskLabel -> ", error)
+    }
+  }
+
+  export async function createTaskLabel(
+    workspaceId: string,
+    boardId: string,
+    taskId: string,
+    labelName: string,
+    labelColor: string
+  ) {
+    console.log("labelColor", labelColor)
+    try {
+      const response = await axios.post("/create-task-label", {
+        workspaceId,
+        boardId,
+        taskId,
+        labelName,
+        labelColor,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - createTaskLabel -> ", error)
+    }
+  }
+
+  export async function editTaskLabel(
+    workspaceId: string,
+    boardId: string,
+    taskId: string,
+    labelId: string,
+    labelName: string,
+    labelColor: string
+  ) {
+    try {
+      const response = await axios.patch("/edit-task-label", {
+        workspaceId,
+        boardId,
+        taskId,
+        labelId,
+        labelName,
+        labelColor,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - editTaskLabel -> ", error)
+    }
+  }
+
+  export async function deleteTaskLabel(
+    workspaceId: string,
+    boardId: string,
+    taskId: string,
+    labelId: string
+  ) {
+    try {
+      const response = await axios.post("/delete-task-label", {
+        workspaceId,
+        boardId,
+        taskId,
+        labelId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - editTaskLabel -> ", error)
+    }
+  }
 }
