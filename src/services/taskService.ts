@@ -2,6 +2,7 @@ import axios from "@/lib/axios"
 import { UploadImageResponse } from "./type"
 import { JSONContent } from "@tiptap/react"
 import { UserType } from "@/store/types"
+import { toast } from "react-toastify"
 export namespace TaskService {
   export async function getTaskData(
     workspaceId: string,
@@ -155,16 +156,10 @@ export namespace TaskService {
     }
   }
 
-  export async function getTaskLabels(
-    workspaceId: string,
-    boardId: string,
-    taskId: string
-  ) {
+  export async function getWorkspaceLabels(workspaceId: string) {
     try {
       const response = await axios.post("/get-task-labels", {
         workspaceId,
-        boardId,
-        taskId,
       })
 
       return response.data
@@ -180,7 +175,6 @@ export namespace TaskService {
     labelName: string,
     labelColor: string
   ) {
-    console.log("labelColor", labelColor)
     try {
       const response = await axios.post("/create-task-label", {
         workspaceId,
@@ -191,7 +185,12 @@ export namespace TaskService {
       })
 
       if (response.status === 200) {
-        return response.data
+        const updatedList = await getLabelStatus(workspaceId, taskId)
+
+        if (!updatedList)
+          return toast.error("Something went wrong while updating the task.")
+
+        return updatedList
       }
     } catch (error) {
       console.error("TaskService - createTaskLabel -> ", error)
@@ -217,7 +216,12 @@ export namespace TaskService {
       })
 
       if (response.status === 200) {
-        return response.data
+        const updatedList = await getLabelStatus(workspaceId, taskId)
+
+        if (!updatedList)
+          return toast.error("Something went wrong while updating the task.")
+
+        return updatedList
       }
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
@@ -243,6 +247,41 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
+    }
+  }
+
+  export async function getLabelStatus(workspaceId: string, taskId: string) {
+    try {
+      const response = await axios.post("/get-label-status", {
+        workspaceId,
+        taskId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - getLabelStatus -> ", error)
+    }
+  }
+
+  export async function toggleLabelStatus(
+    workspaceId: string,
+    taskId: string,
+    labelId: string
+  ) {
+    try {
+      const response = await axios.post("/toggle-label-status", {
+        workspaceId,
+        taskId,
+        labelId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - getLabelStatus -> ", error)
     }
   }
 }

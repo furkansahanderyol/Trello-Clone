@@ -46,13 +46,11 @@ export default function LabelForm({ className }: IProps) {
 
   useEffect(() => {
     if (task) {
-      TaskService.getTaskLabels(
-        params.id as string,
-        task?.boardId,
-        task?.id
-      ).then((response) => {
-        setTaskLabels(response.labels)
-      })
+      TaskService.getLabelStatus(params.id as string, task.id).then(
+        (response) => {
+          setTaskLabels(response.labels)
+        }
+      )
     }
   }, [task])
 
@@ -118,23 +116,21 @@ export default function LabelForm({ className }: IProps) {
                 searchedLabels.map((label) => {
                   return (
                     <div
-                      onClick={() =>
-                        setSelectedLabels((prev) => {
-                          if (prev.includes(label)) {
-                            const updatedLabels = prev.filter(
-                              (prevLabels) => prevLabels.id !== label.id
-                            )
+                      onClick={() => {
+                        if (!task) return
 
-                            return updatedLabels
-                          }
-
-                          return [...prev, label]
+                        TaskService.toggleLabelStatus(
+                          params.id as string,
+                          task?.id,
+                          label.id
+                        ).then((response) => {
+                          setTaskLabels(response.labels)
                         })
-                      }
+                      }}
                       key={label.id}
                       className={styles.labelWrapper}
                     >
-                      <Checkbox checked={selectedLabels.includes(label)} />
+                      <Checkbox checked={label.isActive} />
                       <div
                         className={styles.label}
                         style={{
@@ -163,23 +159,21 @@ export default function LabelForm({ className }: IProps) {
               taskLabels.map((label) => {
                 return (
                   <div
-                    onClick={() =>
-                      setSelectedLabels((prev) => {
-                        if (prev.includes(label)) {
-                          const updatedLabels = prev.filter(
-                            (prevLabels) => prevLabels.id !== label.id
-                          )
+                    onClick={() => {
+                      if (!task?.id) return
 
-                          return updatedLabels
-                        }
-
-                        return [...prev, label]
+                      TaskService.toggleLabelStatus(
+                        params.id as string,
+                        task?.id,
+                        label.id
+                      ).then((response) => {
+                        setTaskLabels(response.labels)
                       })
-                    }
+                    }}
                     key={label.id}
                     className={styles.labelWrapper}
                   >
-                    <Checkbox checked={selectedLabels.includes(label)} />
+                    <Checkbox checked={label.isActive} />
                     <div
                       className={styles.label}
                       style={{
@@ -249,11 +243,11 @@ export default function LabelForm({ className }: IProps) {
                 key={index}
                 onClick={() => {
                   setColor(color)
-                  setEditLabelInfo((prev) => {
-                    const updatedLabel = { ...prev, color: color }
+                  // setEditLabelInfo((prev) => {
+                  //   const updatedLabel = { ...prev, color: color }
 
-                    return updatedLabel as LabelType
-                  })
+                  //   return updatedLabel as LabelType
+                  // })
                 }}
                 className={styles.color}
                 style={{
