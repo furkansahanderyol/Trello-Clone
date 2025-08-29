@@ -11,6 +11,7 @@ import { LabelType } from "@/store/types"
 import { useDebounce } from "@/hooks/useDebounce"
 import { TaskService } from "@/services/taskService"
 import { useParams } from "next/navigation"
+import { BoardService } from "@/services/boardService"
 
 interface IProps {
   className?: string
@@ -38,7 +39,6 @@ export default function LabelForm({ className }: IProps) {
   const [color, setColor] = useState(COLOR_OPTIONS[0])
   const [header, setHeader] = useState("")
   const [addNewLabel, setAddNewLabel] = useState(false)
-  const [selectedLabels, setSelectedLabels] = useState<LabelType[]>([])
   const [editLabelInfo, setEditLabelInfo] = useState<LabelType | undefined>(
     undefined
   )
@@ -54,6 +54,11 @@ export default function LabelForm({ className }: IProps) {
     }
   }, [task])
 
+  // Updates the label marks on SortableCard component
+  useEffect(() => {
+    BoardService.getAllBoards(params.id as string)
+  }, [taskLabels])
+
   function handleLabelCreate(e: FormEvent) {
     e.preventDefault()
 
@@ -64,7 +69,7 @@ export default function LabelForm({ className }: IProps) {
         params.id as string,
         task?.boardId,
         task?.id,
-        editLabelInfo.id,
+        editLabelInfo.label.id,
         header,
         color
       ).then((response) => {
@@ -86,12 +91,13 @@ export default function LabelForm({ className }: IProps) {
   }
 
   const searchedLabelsInput = useDebounce(searchInput, 300)
+
   const searchedLabels = useMemo(() => {
     if (searchInput === "") return undefined
     if (!taskLabels) return
 
     return taskLabels.filter((label) => {
-      const labelName = label.name.toLowerCase().replace(/\s/g, "")
+      const labelName = label.label.name.toLowerCase().replace(/\s/g, "")
       const searchedValue = searchedLabelsInput.toLowerCase().replace(/\s/g, "")
 
       return labelName.includes(searchedValue)
@@ -122,22 +128,22 @@ export default function LabelForm({ className }: IProps) {
                         TaskService.toggleLabelStatus(
                           params.id as string,
                           task?.id,
-                          label.id
+                          label.label.id
                         ).then((response) => {
                           setTaskLabels(response.labels)
                         })
                       }}
-                      key={label.id}
+                      key={label.label.id}
                       className={styles.labelWrapper}
                     >
                       <Checkbox checked={label.isActive} />
                       <div
                         className={styles.label}
                         style={{
-                          backgroundColor: label.color,
+                          backgroundColor: label.label.color,
                         }}
                       >
-                        {label.name}
+                        {label.label.name}
                       </div>
                       <div
                         onClick={() => {
@@ -165,28 +171,28 @@ export default function LabelForm({ className }: IProps) {
                       TaskService.toggleLabelStatus(
                         params.id as string,
                         task?.id,
-                        label.id
+                        label.label.id
                       ).then((response) => {
                         setTaskLabels(response.labels)
                       })
                     }}
-                    key={label.id}
+                    key={label.label.id}
                     className={styles.labelWrapper}
                   >
                     <Checkbox checked={label.isActive} />
                     <div
                       className={styles.label}
                       style={{
-                        backgroundColor: label.color,
+                        backgroundColor: label.label.color,
                       }}
                     >
-                      {label.name}
+                      {label.label.name}
                     </div>
                     <div
                       onClick={() => {
                         setAddNewLabel(true)
                         setEditLabelInfo(label)
-                        setHeader(label.name)
+                        setHeader(label.label.name)
                       }}
                       className={styles.editButton}
                     >
@@ -221,10 +227,12 @@ export default function LabelForm({ className }: IProps) {
         <div
           className={styles.color}
           style={{
-            backgroundColor: editLabelInfo?.color ? editLabelInfo.color : color,
+            backgroundColor: editLabelInfo?.label.color
+              ? editLabelInfo.label.color
+              : color,
           }}
         >
-          {editLabelInfo?.name ? editLabelInfo.name : header}
+          {editLabelInfo?.label.name ? editLabelInfo.label.name : header}
         </div>
       </div>
       <div className={styles.options}>
@@ -233,7 +241,7 @@ export default function LabelForm({ className }: IProps) {
           label="Header"
           type="text"
           onChange={(e) => setHeader(e)}
-          defaultValue={editLabelInfo ? editLabelInfo.name : ""}
+          defaultValue={editLabelInfo ? editLabelInfo.label.name : ""}
         />
         <div className={styles.colorHeader}>Choose color</div>
         <div className={styles.colorsWrapper}>
@@ -243,11 +251,6 @@ export default function LabelForm({ className }: IProps) {
                 key={index}
                 onClick={() => {
                   setColor(color)
-                  // setEditLabelInfo((prev) => {
-                  //   const updatedLabel = { ...prev, color: color }
-
-                  //   return updatedLabel as LabelType
-                  // })
                 }}
                 className={styles.color}
                 style={{
@@ -269,7 +272,7 @@ export default function LabelForm({ className }: IProps) {
                 params.id as string,
                 task?.boardId,
                 task?.id,
-                editLabelInfo.id
+                editLabelInfo.label.id
               ).then((response) => {
                 setTaskLabels(response.labels)
               })

@@ -17,7 +17,7 @@ import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
 import { useAtom } from "jotai"
-import { editTaskAtom, taskAtom, userAtom } from "@/store"
+import { editTaskAtom, taskAtom, taskLabelsAtom, userAtom } from "@/store"
 import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
 import LabelForm from "@/components/LabelForm"
 
@@ -30,6 +30,7 @@ interface IProps {
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [task, setTask] = useAtom(taskAtom)
   const [, setEditTask] = useAtom(editTaskAtom)
+  const [taskLabels, setTaskLabels] = useAtom(taskLabelsAtom)
   const [user] = useAtom(userAtom)
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const [focus, setFocus] = useState(false)
@@ -41,8 +42,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [, setUploadedImages] = useState<(string | null)[] | undefined>(
     undefined
   )
-  const [addLabel, setAddLabel] = useState(true)
-  const [color, setColor] = useState("#d40000")
+  const [addLabel] = useState(true)
 
   const descriptionEditor = useEditor({
     extensions: [StarterKit, Image],
@@ -239,6 +239,24 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
           {taskOptions.map((task, index) => {
             return <TaskOption {...task} key={index} />
           })}
+        </div>
+        <div className={styles.activeLabels}>
+          {taskLabels &&
+            taskLabels.map((data) => {
+              if (!data.isActive) return
+
+              return (
+                <div
+                  key={data.label.id}
+                  className={styles.activeLabel}
+                  style={{
+                    backgroundColor: data.label.color,
+                  }}
+                >
+                  {data.label.name}
+                </div>
+              )
+            })}
         </div>
         <form
           ref={descriptionAreaRef}

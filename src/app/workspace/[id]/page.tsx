@@ -247,6 +247,7 @@ export default function Workspace() {
         boardId={""}
         id={activeId as UniqueIdentifier}
         title=""
+        labels={[]}
       />
     )
   }, [activeId, setActiveId])

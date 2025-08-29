@@ -14,14 +14,19 @@ import {
   dragActiveAtom,
   editTaskActiveAtom,
   modalContentAtom,
+  taskLabelsAtom,
   trackBoardsChangeAtom,
 } from "@/store"
 import TaskModal from "@/components/-Modal/TaskModal"
+import { LabelType } from "@/store/types"
+import { TaskService } from "@/services/taskService"
+import { useParams } from "next/navigation"
 interface IProps {
   id: UniqueIdentifier
   title: string
   isActive?: boolean
   boardId: string
+  labels: LabelType[]
 }
 
 export default function SortableCardItem({
@@ -29,12 +34,14 @@ export default function SortableCardItem({
   title,
   isActive,
   boardId,
+  labels,
 }: IProps) {
+  const params = useParams()
   const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
+  const [taskLabels, setTaskLabels] = useAtom(taskLabelsAtom)
   const editTaskRef = useRef(null)
   const [editMode, setEditMode] = useState(false)
-  const [checkboxVisible, setCheckboxVisible] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
@@ -48,7 +55,6 @@ export default function SortableCardItem({
     transform: CSS.Transform.toString(transform),
     transition,
   }
-
   useOnClickOutside(editTaskRef, () => {
     setEditMode(false)
     setEditTaskActive(false)
@@ -73,6 +79,12 @@ export default function SortableCardItem({
       ),
       size: "l",
     })
+
+    TaskService.getLabelStatus(params.id as string, id as string).then(
+      (response) => {
+        setTaskLabels(response.labels)
+      }
+    )
   }
 
   return (
@@ -101,20 +113,23 @@ export default function SortableCardItem({
           </div>
         </form>
       ) : (
-        <div
-          className={styles.wrapper}
-          onMouseEnter={() => setCheckboxVisible(true)}
-          onMouseLeave={() => setCheckboxVisible(false)}
-        >
-          <div onClick={handleTaskModal} className={styles.boardNameSide}>
-            <input
-              className={clsx(
-                styles.checkbox,
-                checkboxVisible && styles.checkboxVisible
-              )}
-              type="checkbox"
-            />
-            <div>{title}</div>
+        <div className={styles.wrapper}>
+          <div onClick={handleTaskModal} className={styles.titleWrapper}>
+            <div className={styles.boardNameSide}>
+              <div>{title}</div>
+            </div>
+
+            <div className={styles.labelsWrapper}>
+              {labels.map((data) => {
+                return (
+                  <div
+                    key={data.label.id}
+                    className={styles.label}
+                    style={{ backgroundColor: data.label.color }}
+                  />
+                )
+              })}
+            </div>
           </div>
 
           <div

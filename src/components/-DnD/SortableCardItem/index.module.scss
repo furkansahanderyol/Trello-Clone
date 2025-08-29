@@ -61,35 +61,47 @@
     justify-content: space-between;
     align-items: center;
 
-    .boardNameSide {
+    .titleWrapper {
       display: flex;
+      justify-content: flex-start;
       align-items: center;
-      gap: 0.25rem;
-      height: 100%;
       width: 100%;
-      padding: 1rem 0;
+      gap: 0.5rem;
 
-      .checkbox {
-        width: 0;
-        transition: width 0.25s ease-in-out;
+      .boardNameSide {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        height: 100%;
+        width: fit-content;
+        padding: 1rem 0;
+      }
 
-        &.checkboxVisible {
-          width: 40px;
+      .labelsWrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        max-width: 50%;
+
+        .label {
+          width: 2rem;
+          height: 0.25rem;
+          border-radius: 0.3rem;
         }
       }
-    }
 
-    .editButton {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0.25rem;
-      border-radius: 0.3rem;
-      transition: background-color 0.3s ease-in-out;
+      .editButton {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.25rem;
+        border-radius: 0.3rem;
+        transition: background-color 0.3s ease-in-out;
 
-      &:hover {
-        background-color: var(--button-blue-hover);
-        cursor: pointer;
+        &:hover {
+          background-color: var(--button-blue-hover);
+          cursor: pointer;
+        }
       }
     }
   }

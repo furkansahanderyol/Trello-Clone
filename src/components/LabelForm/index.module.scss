@@ -37,6 +37,7 @@
       align-items: center;
       gap: 0.5rem;
       width: 100%;
+      position: relative;
 
       .label {
         width: 100%;
@@ -45,6 +46,9 @@
         color: var(--primary-text-color);
         transition: opacity 0.3s ease-in-out;
         cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &:hover {
           opacity: 0.75;
