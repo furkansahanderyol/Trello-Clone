@@ -2,6 +2,7 @@ import { atom, useAtom } from "jotai"
 import {
   AllWorkspacesType,
   BoardType,
+  LabelType,
   TaskType,
   UserType,
   WorkspaceType,
@@ -38,3 +39,4 @@ export const trackBoardsChangeAtom = atom(false)
 // Task
 export const taskAtom = atom<TaskType | undefined>(undefined)
 export const editTaskAtom = atom(false)
+export const taskLabelsAtom = atom<LabelType[] | undefined>(undefined)

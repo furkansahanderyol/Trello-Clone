@@ -20,7 +20,7 @@ export namespace WorkspaceService {
         return response.data
       })
       .catch((error) => {
-        console.error("BoardService - getAllBoards -> ", error)
+        console.error("BoardService - getAllWorkspaces -> ", error)
         throw error
       })
       .finally(() => {

@@ -6,6 +6,77 @@
   border-radius: 0.3rem;
   background-color: var(--card-background);
 
+  .header {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    text-align: center;
+  }
+
+  .searchInputWrapper {
+    padding: 0.5rem 1rem;
+
+    .searchInput {
+      color: var(--primary-text-color);
+    }
+  }
+
+  .labelList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    max-height: 180px;
+    overflow: clip;
+    overflow-y: auto;
+
+    .labelWrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      position: relative;
+
+      .label {
+        width: 100%;
+        border-radius: 0.15rem;
+        padding: 0.25rem 0.5rem;
+        color: var(--primary-text-color);
+        transition: opacity 0.3s ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          opacity: 0.75;
+        }
+      }
+
+      .editButton {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--primary-text-color);
+        border-radius: 0.3rem;
+        transition: background-color 0.3s ease-in-out;
+
+        &:hover {
+          background-color: var(--button-blue-hover);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .createNewLabelButton {
+    padding: 0 0.5rem 1rem 0.5rem;
+  }
+
   .headerWrapper {
     display: flex;
     justify-content: space-between;
@@ -94,5 +165,11 @@
   .buttonWrapper {
     padding: 0 1rem;
     padding-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+
+    .deleteButton {
+      background-color: var(--danger);
+    }
   }
 }

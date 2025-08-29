@@ -25,12 +25,17 @@ import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useMouseMove } from "@/hooks/useMouseMove"
-import { BoardType } from "@/store/types"
+import { BoardType, LabelType } from "@/store/types"
 
 interface IProps {
   id: UniqueIdentifier
   cardHeader: string
-  cardItems: { id: UniqueIdentifier; title: string; boardId: string }[]
+  cardItems: {
+    id: UniqueIdentifier
+    title: string
+    boardId: string
+    labels: LabelType[]
+  }[]
   data: BoardType
 }
 
@@ -64,7 +69,6 @@ export default function SortableCard({
     transform: CSS.Transform.toString(restrictedTransform),
     transition,
   }
-
   useOnClickOutside(addTaskModeRef, () => setAddTaskMode(false))
 
   function handleAddTask(e: FormEvent) {
@@ -136,7 +140,6 @@ export default function SortableCard({
                 {/* {isEmptyList && (
                   <div className={clsx(styles.shadow, styles.marginBottom)} />
                 )} */}
-
                 {!checkSameList &&
                   item.id === over?.id &&
                   cardItems.length - 1 === index &&
@@ -157,6 +160,7 @@ export default function SortableCard({
                   boardId={id as string}
                   title={item.title}
                   isActive={item.id === activeId}
+                  labels={item.labels}
                 />
 
                 {!checkSameList &&
