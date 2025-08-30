@@ -1,12 +1,21 @@
 import Navbar from "@/components/Navbar"
 import styles from "./index.module.scss"
-import { getDefaultStore, useAtomValue } from "jotai"
-import { boardsAtom, pageLoadingAtom, trackBoardsChangeAtom } from "@/store"
+import { getDefaultStore, useAtom, useAtomValue } from "jotai"
+import {
+  allWorkspacesAtom,
+  boardsAtom,
+  modalContentAtom,
+  pageLoadingAtom,
+  trackBoardsChangeAtom,
+  userAtom,
+} from "@/store"
 import Sidebar from "@/components/Sidebar"
 import { useEffect, useRef } from "react"
 import { io, Socket } from "socket.io-client"
 import { useParams } from "next/navigation"
 import { BoardService } from "@/services/boardService"
+import Button from "@/components/Button"
+import AddWorkspaceMemberModal from "@/components/-Modal/AddWorkspaceMemberModal"
 
 interface IProps {
   children: React.ReactNode
@@ -18,7 +27,8 @@ export default function WorkspaceLayout({ children }: IProps) {
   const params = useParams()
   const trackBoardsChange = useAtomValue(trackBoardsChangeAtom)
   const boards = useAtomValue(boardsAtom)
-
+  const [modalContent, setModalContent] = useAtom(modalContentAtom)
+  const [allWorkspaces] = useAtom(allWorkspacesAtom)
   const defaultStore = getDefaultStore()
 
   useEffect(() => {
@@ -51,12 +61,24 @@ export default function WorkspaceLayout({ children }: IProps) {
     }
   }, [trackBoardsChange])
 
+  function handleMemberAdd() {
+    setModalContent({
+      title: "Add new member",
+      content: <AddWorkspaceMemberModal />,
+      size: "s",
+    })
+  }
+
   return (
     <div>
       <Navbar />
       <main className={styles.container}>
         <Sidebar>
-          <div>Sidebar</div>
+          <Button
+            type="button"
+            text="Add new member"
+            onClick={handleMemberAdd}
+          />
         </Sidebar>
 
         {pageLoading ? (
