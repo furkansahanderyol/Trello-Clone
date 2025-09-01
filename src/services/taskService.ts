@@ -230,14 +230,12 @@ export namespace TaskService {
 
   export async function deleteTaskLabel(
     workspaceId: string,
-    boardId: string,
     taskId: string,
     labelId: string
   ) {
     try {
       const response = await axios.post("/delete-task-label", {
         workspaceId,
-        boardId,
         taskId,
         labelId,
       })

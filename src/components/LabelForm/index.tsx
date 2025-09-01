@@ -163,24 +163,22 @@ export default function LabelForm({ className }: IProps) {
             ) : (
               !searchedLabels &&
               taskLabels.map((label) => {
+                1
                 return (
-                  <div
-                    onClick={() => {
-                      if (!task?.id) return
-
-                      TaskService.toggleLabelStatus(
-                        params.id as string,
-                        task?.id,
-                        label.label.id
-                      ).then((response) => {
-                        setTaskLabels(response.labels)
-                      })
-                    }}
-                    key={label.label.id}
-                    className={styles.labelWrapper}
-                  >
+                  <div key={label.label.id} className={styles.labelWrapper}>
                     <Checkbox checked={label.isActive} />
                     <div
+                      onClick={() => {
+                        if (!task?.id) return
+
+                        TaskService.toggleLabelStatus(
+                          params.id as string,
+                          task?.id,
+                          label.label.id
+                        ).then((response) => {
+                          setTaskLabels(response.labels)
+                        })
+                      }}
                       className={styles.label}
                       style={{
                         backgroundColor: label.label.color,
@@ -270,7 +268,6 @@ export default function LabelForm({ className }: IProps) {
               if (!task) return
               TaskService.deleteTaskLabel(
                 params.id as string,
-                task?.boardId,
                 task?.id,
                 editLabelInfo.label.id
               ).then((response) => {
