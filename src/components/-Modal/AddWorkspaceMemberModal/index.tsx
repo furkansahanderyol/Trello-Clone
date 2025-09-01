@@ -1,13 +1,29 @@
 import Input from "@/components/Input"
 import styles from "./index.module.scss"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { UserService } from "@/services/userService"
 import ProfileImage from "@/components/ProfileImage"
+import clsx from "clsx"
+import { X } from "lucide-react"
+import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import Textarea from "@/components/Textarea"
+import Button from "@/components/Button"
 
 export default function AddWorkspaceMemberModal() {
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [searchInput, setSearchInput] = useState("")
   const [searchedUsers, setSearchUsers] = useState<
+    | {
+        name: string
+        surname: string
+        email: string
+        profileImage: string
+        isVerified: boolean
+      }[]
+    | undefined
+  >(undefined)
+  const [selectedUsers, setSelectedUsers] = useState<
     | {
         name: string
         surname: string
@@ -21,10 +37,17 @@ export default function AddWorkspaceMemberModal() {
   const searchInputValue = useDebounce(searchInput, 200)
 
   useEffect(() => {
+    if (searchInput === "") return
+
     UserService.searchUser(searchInputValue).then((response) => {
       setSearchUsers(response)
     })
   }, [searchInput])
+
+  useOnClickOutside(dropdownRef, () => {
+    setSearchInput("")
+    setSearchUsers(undefined)
+  })
 
   return (
     <form className={styles.container}>
@@ -35,12 +58,70 @@ export default function AddWorkspaceMemberModal() {
           placeholder="Type email or name"
           className={styles.searchInput}
         />
-        <div className={styles.dropdown}>
+        <div className={styles.selectedUsers}>
+          {selectedUsers?.map((user) => {
+            return (
+              <div className={styles.selectedUser}>
+                <div className={styles.userEmail}>{user.email}</div>
+                <div
+                  onClick={() =>
+                    setSelectedUsers((prev) => {
+                      if (!prev) return undefined
+
+                      const updatedUsers = prev.filter(
+                        (prevUser) => prevUser.email !== user.email
+                      )
+
+                      return updatedUsers
+                    })
+                  }
+                  className={styles.closeButton}
+                >
+                  <X size={16} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <div
+          ref={dropdownRef}
+          className={clsx(
+            styles.dropdown,
+            searchedUsers && styles.dropdownActive
+          )}
+        >
           {searchedUsers?.map((user, index) => {
             const userNameFirstLetters = `${user.name[0] + user.surname[0]}`
 
             return (
-              <div key={index} className={styles.searchedUser}>
+              <div
+                key={index}
+                onClick={() => {
+                  setSelectedUsers((prev) => {
+                    if (!prev) return [user]
+                    if (
+                      prev?.some(
+                        (selectedUser) => selectedUser.email === user.email
+                      )
+                    ) {
+                      const updatedUsers = prev.filter(
+                        (prevUser) => prevUser.email !== user.email
+                      )
+
+                      return updatedUsers
+                    }
+
+                    return [...prev, user]
+                  })
+                }}
+                className={clsx(
+                  styles.searchedUser,
+                  selectedUsers?.some(
+                    (selectedUser) => selectedUser.email === user.email
+                  ) && styles.selected
+                )}
+              >
                 <div className={styles.profileImage}>
                   {user.profileImage ? (
                     <ProfileImage url={user.profileImage} />
@@ -61,6 +142,16 @@ export default function AddWorkspaceMemberModal() {
           })}
         </div>
       </div>
+      {selectedUsers && (
+        <div className={styles.inputSide}>
+          <Textarea className={styles.textarea} />
+
+          <div className={styles.buttonsContainer}>
+            <Button type="button" text="Cancel" />
+            <Button type="submit" text="Share" />
+          </div>
+        </div>
+      )}
     </form>
   )
 }
