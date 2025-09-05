@@ -1,6 +1,6 @@
 import Input from "@/components/Input"
 import styles from "./index.module.scss"
-import { useEffect, useRef, useState } from "react"
+import { FormEvent, useEffect, useRef, useState } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { UserService } from "@/services/userService"
 import ProfileImage from "@/components/ProfileImage"
@@ -9,8 +9,11 @@ import { X } from "lucide-react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
+import { WorkspaceService } from "@/services/workspaceService"
+import { useParams } from "next/navigation"
 
 export default function AddWorkspaceMemberModal() {
+  const params = useParams()
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [searchInput, setSearchInput] = useState("")
   const [searchedUsers, setSearchUsers] = useState<
@@ -49,8 +52,22 @@ export default function AddWorkspaceMemberModal() {
     setSearchUsers(undefined)
   })
 
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+
+    if (selectedUsers) {
+      WorkspaceService.inviteUsers(
+        params.id as string,
+        selectedUsers.map((u) => u.email),
+        ""
+      ).then((response) => {
+        console.log("response", response)
+      })
+    }
+  }
+
   return (
-    <form className={styles.container}>
+    <form onSubmit={handleSubmit} className={styles.container}>
       <div className={styles.searchSide}>
         <Input
           type="text"
@@ -59,9 +76,9 @@ export default function AddWorkspaceMemberModal() {
           className={styles.searchInput}
         />
         <div className={styles.selectedUsers}>
-          {selectedUsers?.map((user) => {
+          {selectedUsers?.map((user, index) => {
             return (
-              <div className={styles.selectedUser}>
+              <div key={index} className={styles.selectedUser}>
                 <div className={styles.userEmail}>{user.email}</div>
                 <div
                   onClick={() =>

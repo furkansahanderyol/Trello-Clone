@@ -66,4 +66,26 @@ export namespace WorkspaceService {
         return defaultStore.set(pageLoadingAtom, false)
       })
   }
+
+  export async function inviteUsers(
+    workspaceId: string,
+    invitedEmails: string[],
+    message: string
+  ) {
+    try {
+      const response = await axios.post("/invite-users", {
+        workspaceId,
+        invitedEmails,
+        message,
+      })
+      console.log("responseBok", response)
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - inviteUsers ->", error)
+      return
+    }
+  }
 }
