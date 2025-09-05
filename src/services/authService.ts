@@ -177,7 +177,7 @@ export namespace AuthService {
 
         defaultStore.set(firstLoadAtom, false)
 
-        return response.data.user // Burada return kesin olmalı
+        return response.data.user
       }
     } catch (error) {
       console.error("AuthService-getUser -> ", error)

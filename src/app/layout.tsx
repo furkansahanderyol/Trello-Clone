@@ -4,6 +4,7 @@ import "./globals.css"
 import { ToastContainer } from "react-toastify"
 import UserLoader from "@/components/UserLoader"
 import ModalContainer from "@/components/-Modal/ModalContainer"
+import SocketProvider from "@/components/SocketProvider"
 
 export const metadata: Metadata = {
   title: "Trello Clone",
@@ -30,19 +31,21 @@ export default function RootLayout({
     <html lang="en">
       <UserLoader />
       <body className={`${domine.variable} ${unna.variable}`}>
-        {children}
+        <SocketProvider>
+          {children}
 
-        <ModalContainer />
+          <ModalContainer />
 
-        <ToastContainer
-          position="top-right"
-          autoClose={4000}
-          closeOnClick
-          pauseOnHover
-          theme="light"
-          limit={4}
-          stacked
-        />
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            closeOnClick
+            pauseOnHover
+            theme="light"
+            limit={4}
+            stacked
+          />
+        </SocketProvider>
       </body>
     </html>
   )
