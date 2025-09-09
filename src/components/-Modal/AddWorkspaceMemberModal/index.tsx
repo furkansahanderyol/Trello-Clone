@@ -11,9 +11,12 @@ import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useParams } from "next/navigation"
+import { useAtom } from "jotai"
+import { socketAtom } from "@/store"
 
 export default function AddWorkspaceMemberModal() {
   const params = useParams()
+  const [socket] = useAtom(socketAtom)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [searchInput, setSearchInput] = useState("")
   const [searchedUsers, setSearchUsers] = useState<
@@ -61,7 +64,7 @@ export default function AddWorkspaceMemberModal() {
         selectedUsers.map((u) => u.email),
         ""
       ).then((response) => {
-        console.log("response", response)
+        socket?.emit("invite_users", JSON.stringify(selectedUsers))
       })
     }
   }

@@ -5,7 +5,7 @@ import styles from "./index.module.scss"
 import { Power, Search } from "lucide-react"
 import { AuthService } from "@/services/authService"
 import { useAtom, useAtomValue } from "jotai"
-import { dragActiveAtom, userAtom } from "@/store"
+import { dragActiveAtom, notificationAtom, userAtom } from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
 import { useEffect, useRef, useState } from "react"
@@ -20,6 +20,7 @@ export default function Navbar() {
   const profileButtonRef = useRef<HTMLDivElement>(null)
   const dropdownMenuRef = useRef<HTMLUListElement>(null)
   const [dropdownActive, setDropdownActive] = useState(false)
+  const [notification] = useAtom(notificationAtom)
 
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
 
@@ -40,38 +41,41 @@ export default function Navbar() {
           placeholder="Search"
         />
 
-        <div>
-          <div className={styles.test}>
-            <div
-              ref={profileButtonRef}
-              onClick={() => setDropdownActive(!dropdownActive)}
-              className={styles.profileButton}
-            >
-              <ProfileImage url={user?.profileImage} />
-            </div>
+        <div className={styles.notificationsWrapper}>
+          <div className={styles.notifications}></div>
+          <div className={styles.notificationsDropdown}></div>
+        </div>
 
-            <ul
-              ref={dropdownMenuRef}
-              className={clsx(
-                styles.dropdownMenu,
-                !dropdownActive && styles.hideDropdownMenu
-              )}
-            >
-              <li className={styles.menuItem}>
-                <Link className={styles.user} href={PageLink.userProfile}>
-                  {<ProfileImage url={user?.profileImage} />}
-                  <div className={styles.userInformation}>
-                    {user?.name} {user?.surname}
-                    <div>{user?.email}</div>
-                  </div>
-                </Link>
-              </li>
-              <li onClick={logout} className={styles.menuItem}>
-                <Power />
-                Log out
-              </li>
-            </ul>
+        <div className={styles.profileWrapper}>
+          <div
+            ref={profileButtonRef}
+            onClick={() => setDropdownActive(!dropdownActive)}
+            className={styles.profileButton}
+          >
+            <ProfileImage url={user?.profileImage} />
           </div>
+
+          <ul
+            ref={dropdownMenuRef}
+            className={clsx(
+              styles.dropdownMenu,
+              !dropdownActive && styles.hideDropdownMenu
+            )}
+          >
+            <li className={styles.menuItem}>
+              <Link className={styles.user} href={PageLink.userProfile}>
+                {<ProfileImage url={user?.profileImage} />}
+                <div className={styles.userInformation}>
+                  {user?.name} {user?.surname}
+                  <div>{user?.email}</div>
+                </div>
+              </Link>
+            </li>
+            <li onClick={logout} className={styles.menuItem}>
+              <Power />
+              Log out
+            </li>
+          </ul>
         </div>
       </div>
     </nav>

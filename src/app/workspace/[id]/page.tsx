@@ -222,10 +222,6 @@ export default function Workspace() {
     [boards, setBoards, arrayMove]
   )
 
-  useEffect(() => {
-    console.log("track", trackBoardsChange)
-  }, [trackBoardsChange])
-
   function isActiveIdTask() {
     return boards.some((list) =>
       list.tasks.some((task) => task.id === activeId)

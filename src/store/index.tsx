@@ -1,4 +1,4 @@
-import { atom, useAtom } from "jotai"
+import { atom } from "jotai"
 import {
   AllWorkspacesType,
   BoardType,
@@ -44,3 +44,6 @@ export const taskLabelsAtom = atom<LabelType[] | undefined>(undefined)
 
 // Socket
 export const socketAtom = atom<Socket | undefined>(undefined)
+
+// Notifications
+export const notificationAtom = atom<number | undefined>(undefined)

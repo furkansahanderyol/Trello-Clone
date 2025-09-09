@@ -29,7 +29,18 @@
       }
     }
 
-    .test {
+    .notificationsWrapper {
+      position: relative;
+
+      .notifications {
+        width: 2rem;
+        height: 2rem;
+        background-color: red;
+        border-radius: 50%;
+      }
+    }
+
+    .profileWrapper {
       position: relative;
       .profileButton {
         cursor: pointer;

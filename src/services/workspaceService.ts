@@ -78,7 +78,6 @@ export namespace WorkspaceService {
         invitedEmails,
         message,
       })
-      console.log("responseBok", response)
 
       if (response.status === 200) {
         return response.data

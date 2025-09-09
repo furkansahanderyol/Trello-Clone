@@ -1,6 +1,7 @@
 "use client"
 
 import getCookie from "@/helpers/getCookie"
+import { UserService } from "@/services/userService"
 import { socketAtom } from "@/store"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
@@ -11,7 +12,7 @@ interface IProps {
 }
 
 export default function SocketProvider({ children }: IProps) {
-  const [, setSocket] = useAtom(socketAtom)
+  const [socket, setSocket] = useAtom(socketAtom)
 
   useEffect(() => {
     const token = getCookie("socket-token")
@@ -29,6 +30,20 @@ export default function SocketProvider({ children }: IProps) {
       socket?.disconnect()
     }
   }, [])
+
+  useEffect(() => {
+    if (!socket) return
+    console.log("change detected")
+    socket.on("connect", () => {
+      socket.on("invite_users", (response) => {
+        UserService.getUserNotifications().then((apiResponse) => {})
+      })
+    })
+
+    return () => {
+      socket.off("invite_users")
+    }
+  }, [socket])
 
   return children
 }
