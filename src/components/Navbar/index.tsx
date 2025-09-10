@@ -2,16 +2,17 @@
 
 import Input from "@/components/Input/index"
 import styles from "./index.module.scss"
-import { Power, Search } from "lucide-react"
+import { Bell, Power, Search } from "lucide-react"
 import { AuthService } from "@/services/authService"
 import { useAtom, useAtomValue } from "jotai"
 import { dragActiveAtom, notificationAtom, userAtom } from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import clsx from "clsx"
 import { PageLink } from "@/constants/PageLink"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import { timeAgo } from "@/helpers/timeAgo"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
@@ -19,10 +20,16 @@ export default function Navbar() {
 
   const profileButtonRef = useRef<HTMLDivElement>(null)
   const dropdownMenuRef = useRef<HTMLUListElement>(null)
+  const notificationsDropdownMenuRef = useRef<HTMLDivElement>(null)
   const [dropdownActive, setDropdownActive] = useState(false)
+  const [notificationsDropdownActive, setNotificationsDropdownActive] =
+    useState(false)
   const [notification] = useAtom(notificationAtom)
 
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
+  useOnClickOutside(notificationsDropdownMenuRef, () =>
+    setNotificationsDropdownActive(false)
+  )
 
   async function logout() {
     AuthService.logout()
@@ -42,8 +49,48 @@ export default function Navbar() {
         />
 
         <div className={styles.notificationsWrapper}>
-          <div className={styles.notifications}></div>
-          <div className={styles.notificationsDropdown}></div>
+          <div
+            onClick={() => setNotificationsDropdownActive(true)}
+            className={styles.notifications}
+          >
+            <Bell />
+            <div className={styles.notificationsCount}>
+              {notification?.count}
+            </div>
+          </div>
+          <div
+            ref={notificationsDropdownMenuRef}
+            className={clsx(
+              styles.notificationsDropdown,
+              notificationsDropdownActive && styles.active
+            )}
+          >
+            {notification?.notifications.map((notification) => {
+              return (
+                <div
+                  key={notification.id}
+                  className={styles.notificationWrapper}
+                >
+                  <div className={styles.senderInformation}>
+                    <ProfileImage url={notification?.senderProfileImage} />
+                    <div className={styles.senderDetails}>
+                      <div className={styles.name}>
+                        {notification.senderName} {notification.senderSurname}
+                      </div>
+                      <div className={styles.message}>
+                        This is a message This is a messageThis is a messageThis
+                        is a messageThis is a messageThis is a messageThis is a
+                        messageThis is a message
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.createdAt}>
+                    {timeAgo(notification.createdAt)}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         <div className={styles.profileWrapper}>

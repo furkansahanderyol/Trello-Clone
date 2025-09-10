@@ -33,7 +33,6 @@ export default function SocketProvider({ children }: IProps) {
 
   useEffect(() => {
     if (!socket) return
-    console.log("change detected")
     socket.on("connect", () => {
       socket.on("invite_users", (response) => {
         UserService.getUserNotifications().then((apiResponse) => {})

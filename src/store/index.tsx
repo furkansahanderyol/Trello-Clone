@@ -3,6 +3,7 @@ import {
   AllWorkspacesType,
   BoardType,
   LabelType,
+  NotificationsDataType,
   TaskType,
   UserType,
   WorkspaceType,
@@ -46,4 +47,6 @@ export const taskLabelsAtom = atom<LabelType[] | undefined>(undefined)
 export const socketAtom = atom<Socket | undefined>(undefined)
 
 // Notifications
-export const notificationAtom = atom<number | undefined>(undefined)
+export const notificationAtom = atom<NotificationsDataType | undefined>(
+  undefined
+)

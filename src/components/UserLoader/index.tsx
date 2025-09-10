@@ -1,13 +1,14 @@
 "use client"
 
-import getCookie from "@/helpers/getCookie"
 import { AuthService } from "@/services/authService"
-import { userAtom } from "@/store"
-import { getDefaultStore, useAtom } from "jotai"
+import { UserService } from "@/services/userService"
+import { notificationAtom, userAtom } from "@/store"
+import { useAtom } from "jotai"
 import { useEffect } from "react"
 
 export default function UserLoader() {
-  const [user, setUser] = useAtom(userAtom)
+  const [, setUser] = useAtom(userAtom)
+  const [, setNotification] = useAtom(notificationAtom)
 
   useEffect(() => {
     const getUser = async () => {
@@ -16,7 +17,14 @@ export default function UserLoader() {
       setUser(user)
     }
 
+    const getNotification = async () => {
+      const notification = await UserService.getUserNotifications()
+
+      setNotification(notification)
+    }
+
     getUser()
+    getNotification()
   }, [])
 
   return null

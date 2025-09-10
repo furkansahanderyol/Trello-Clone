@@ -43,12 +43,6 @@ export default function WorkspaceLayout({ children }: IProps) {
       socket.on("board_updated", (updatedBoards) => {
         defaultStore.set(boardsAtom, [...updatedBoards])
       })
-
-      // socket.emit("test", JSON.stringify({ message: "Hi" }))
-
-      // socket.on("test", (response) => {
-      //   console.log("response", response)
-      // })
     }
   }, [trackBoardsChange, socket])
 
