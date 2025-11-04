@@ -1,13 +1,15 @@
-import { atom, useAtom } from "jotai"
+import { atom } from "jotai"
 import {
   AllWorkspacesType,
   BoardType,
   LabelType,
+  NotificationsDataType,
   TaskType,
   UserType,
   WorkspaceType,
 } from "./types"
 import { UniqueIdentifier } from "@dnd-kit/core"
+import { Socket } from "socket.io-client"
 
 export const testAtom = atom<string | undefined>(undefined)
 
@@ -40,3 +42,11 @@ export const trackBoardsChangeAtom = atom(false)
 export const taskAtom = atom<TaskType | undefined>(undefined)
 export const editTaskAtom = atom(false)
 export const taskLabelsAtom = atom<LabelType[] | undefined>(undefined)
+
+// Socket
+export const socketAtom = atom<Socket | undefined>(undefined)
+
+// Notifications
+export const notificationAtom = atom<NotificationsDataType | undefined>(
+  undefined
+)

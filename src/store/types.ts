@@ -77,3 +77,20 @@ export type LabelType = {
     color: string
   }
 }
+
+export type NotificationsType = {
+  id: string
+  createdAt: string
+  workspaceId: string
+  type: "workspace-invite" | "board-update"
+  message: string
+  senderName: string
+  senderSurname: string
+  senderProfileImage: string | undefined
+  workspaceName: string
+}
+
+export type NotificationsDataType = {
+  count: number
+  notifications: NotificationsType[]
+}

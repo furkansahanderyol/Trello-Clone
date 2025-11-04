@@ -66,4 +66,44 @@ export namespace WorkspaceService {
         return defaultStore.set(pageLoadingAtom, false)
       })
   }
+
+  export async function inviteUsers(
+    workspaceId: string,
+    invitedEmails: string[],
+    message: string
+  ) {
+    try {
+      const response = await axios.post("/invite-users", {
+        workspaceId,
+        invitedEmails,
+        message,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - inviteUsers ->", error)
+      return
+    }
+  }
+
+  export async function acceptWorkspaceInvite(
+    workspaceId: string,
+    email: string
+  ) {
+    try {
+      const response = await axios.post("/accept-workspace-invite", {
+        workspaceId,
+        email,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - acceptWorkspaceInvite ->", error)
+      return
+    }
+  }
 }

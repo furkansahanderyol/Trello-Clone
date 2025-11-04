@@ -12,4 +12,16 @@ export namespace UserService {
       console.error("UserService - searchUser", error)
     }
   }
+
+  export async function getUserNotifications() {
+    try {
+      const response = await axios.get("/user-notifications")
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("UserService - getUserNotifications -> ", error)
+    }
+  }
 }
