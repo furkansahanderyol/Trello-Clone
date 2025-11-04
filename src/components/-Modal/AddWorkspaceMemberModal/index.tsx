@@ -12,10 +12,12 @@ import Button from "@/components/Button"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useParams } from "next/navigation"
 import { useAtom } from "jotai"
-import { socketAtom } from "@/store"
+import { selectedWorkspaceAtom, socketAtom, userAtom } from "@/store"
 
 export default function AddWorkspaceMemberModal() {
   const params = useParams()
+  const [user] = useAtom(userAtom)
+  const [workspace] = useAtom(selectedWorkspaceAtom)
   const [socket] = useAtom(socketAtom)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [searchInput, setSearchInput] = useState("")
@@ -62,8 +64,8 @@ export default function AddWorkspaceMemberModal() {
       WorkspaceService.inviteUsers(
         params.id as string,
         selectedUsers.map((u) => u.email),
-        ""
-      ).then((response) => {
+        `${user?.name} send you a invite for ${workspace?.name}.`
+      ).then(() => {
         socket?.emit("invite_users", JSON.stringify(selectedUsers))
       })
     }

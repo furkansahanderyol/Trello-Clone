@@ -5,7 +5,13 @@ import styles from "./index.module.scss"
 import { Bell, Power, Search } from "lucide-react"
 import { AuthService } from "@/services/authService"
 import { useAtom, useAtomValue } from "jotai"
-import { dragActiveAtom, notificationAtom, userAtom } from "@/store"
+import {
+  dragActiveAtom,
+  modalContentAtom,
+  notificationAtom,
+  selectedWorkspaceAtom,
+  userAtom,
+} from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
 import { useRef, useState } from "react"
@@ -13,6 +19,7 @@ import clsx from "clsx"
 import { PageLink } from "@/constants/PageLink"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { timeAgo } from "@/helpers/timeAgo"
+import NotificationModal from "../-Modal/NotificationModal"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
@@ -25,6 +32,8 @@ export default function Navbar() {
   const [notificationsDropdownActive, setNotificationsDropdownActive] =
     useState(false)
   const [notification] = useAtom(notificationAtom)
+  const [, setModalContent] = useAtom(modalContentAtom)
+  const [workspace] = useAtom(selectedWorkspaceAtom)
 
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
   useOnClickOutside(notificationsDropdownMenuRef, () =>
@@ -70,6 +79,19 @@ export default function Navbar() {
                 <div
                   key={notification.id}
                   className={styles.notificationWrapper}
+                  onClick={() =>
+                    setModalContent({
+                      title: `${notification.senderName} ${notification.senderSurname}`,
+                      content: (
+                        <NotificationModal
+                          type={notification.type}
+                          message={notification.message}
+                          workspaceId={notification.workspaceId}
+                        />
+                      ),
+                      size: "l",
+                    })
+                  }
                 >
                   <div className={styles.senderInformation}>
                     <ProfileImage url={notification?.senderProfileImage} />
@@ -78,9 +100,7 @@ export default function Navbar() {
                         {notification.senderName} {notification.senderSurname}
                       </div>
                       <div className={styles.message}>
-                        This is a message This is a messageThis is a messageThis
-                        is a messageThis is a messageThis is a messageThis is a
-                        messageThis is a message
+                        {notification.message}
                       </div>
                     </div>
                   </div>

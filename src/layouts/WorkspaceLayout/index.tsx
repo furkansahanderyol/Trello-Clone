@@ -9,7 +9,7 @@ import {
   trackBoardsChangeAtom,
 } from "@/store"
 import Sidebar from "@/components/Sidebar"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { BoardService } from "@/services/boardService"
 import Button from "@/components/Button"
@@ -34,7 +34,9 @@ export default function WorkspaceLayout({ children }: IProps) {
   }, [])
 
   useEffect(() => {
-    if (socket) {
+    if (socket && params.id) {
+      socket.emit("join_room", params.id)
+
       socket.emit(
         "update_board",
         JSON.stringify({ workspaceId: params.id, boards: boards })
@@ -44,7 +46,7 @@ export default function WorkspaceLayout({ children }: IProps) {
         defaultStore.set(boardsAtom, [...updatedBoards])
       })
     }
-  }, [trackBoardsChange, socket])
+  }, [trackBoardsChange, socket, params.id])
 
   function handleMemberAdd() {
     setModalContent({
