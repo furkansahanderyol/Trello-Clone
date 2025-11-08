@@ -282,4 +282,20 @@ export namespace TaskService {
       console.error("TaskService - getLabelStatus -> ", error)
     }
   }
+
+  export async function addMemberToTask(email: string, taskId: string) {
+    try {
+      const response = await axios.post("/add-member-to-task", {
+        email,
+        taskId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - addMemberToTask -> ", error)
+      return
+    }
+  }
 }

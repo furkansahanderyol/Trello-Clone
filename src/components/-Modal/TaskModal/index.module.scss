@@ -24,6 +24,13 @@
       align-items: center;
       gap: 1rem;
 
+      .optionsMenu {
+        border: 1px solid var(--border);
+        border-radius: 0.3rem;
+        background-color: var(--card-background);
+        overflow: clip;
+      }
+
       .addOption {
         display: flex;
         align-items: center;

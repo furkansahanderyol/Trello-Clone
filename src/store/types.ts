@@ -94,3 +94,11 @@ export type NotificationsDataType = {
   count: number
   notifications: NotificationsType[]
 }
+
+export type WorkspaceMember = {
+  email: string
+  name: string
+  surname: string
+  role: "admin" | "member"
+  profileImage: string
+}

@@ -6,6 +6,7 @@ import {
   NotificationsDataType,
   TaskType,
   UserType,
+  WorkspaceMember,
   WorkspaceType,
 } from "./types"
 import { UniqueIdentifier } from "@dnd-kit/core"
@@ -33,6 +34,9 @@ export const selectedWorkspaceAtom = atom<WorkspaceType | undefined>()
 export const dragActiveAtom = atom(false)
 export const activeIdAtom = atom<UniqueIdentifier | null>(null)
 export const editTaskActiveAtom = atom(false)
+export const workspaceMembersAtom = atom<{ members: WorkspaceMember[] } | null>(
+  null
+)
 
 // Boards
 export const boardsAtom = atom<BoardType>([])
