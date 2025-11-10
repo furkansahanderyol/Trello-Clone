@@ -111,17 +111,11 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       dropdownOptions: (
         <div className={styles.optionsMenu}>
           {workspaceMembers ? (
-            workspaceMembers.members.map((member, index) => {
+            workspaceMembers.map((member, index) => {
               return (
                 <WorkspaceMember
                   onClick={() => {
-                    console.log("member.email", member.email)
-                    console.log("taskId", taskId)
-                    TaskService.addMemberToTask(member.email, taskId).then(
-                      (response) => {
-                        console.log("response", response)
-                      }
-                    )
+                    TaskService.addMemberToTask(member.email, taskId)
                   }}
                   key={index}
                   member={member}
@@ -154,16 +148,14 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   }, [task, descriptionEditor])
 
   useEffect(() => {
-    WorkspaceService.getWorkspaceMembers(params.id as string).then(
-      (response) => {
-        setWorkspaceMembers(response)
-      }
-    )
-  }, [params.id])
-
-  useEffect(() => {
-    console.log("workspaceMembers", workspaceMembers)
-  }, [workspaceMembers])
+    if (task?.id && params.id) {
+      TaskService.getAvailableTaskMembers(params.id as string, task?.id).then(
+        (response) => {
+          setWorkspaceMembers(response)
+        }
+      )
+    }
+  }, [params.id, task?.id])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()

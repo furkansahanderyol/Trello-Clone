@@ -298,4 +298,22 @@ export namespace TaskService {
       return
     }
   }
+
+  export async function getAvailableTaskMembers(
+    workspaceId: string,
+    taskId: string
+  ) {
+    try {
+      const response = await axios.get(
+        `/available-task-members/${workspaceId}/${taskId}`
+      )
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - getAvailableTaskMembers -> ", error)
+      return
+    }
+  }
 }
