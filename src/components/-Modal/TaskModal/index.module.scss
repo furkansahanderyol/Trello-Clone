@@ -64,6 +64,12 @@
       }
     }
 
+    .taskMembers {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .taskDetails {
       display: flex;
       flex-direction: column;

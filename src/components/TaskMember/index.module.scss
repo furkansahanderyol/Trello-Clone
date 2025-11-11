@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  width: fit-content;
+  position: relative;
+
+  &:hover {
+    background-color: var(--main-background-hover);
+    transition: all 0.3s ease;
+
+    .deleteButton {
+      opacity: 1;
+    }
+  }
+
+  .userInfo {
+    color: var(--primary-text-color);
+  }
+
+  .deleteButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    cursor: pointer;
+    color: var(--button-border);
+
+    &:hover {
+      color: var(--button-blue-hover);
+    }
+  }
+}

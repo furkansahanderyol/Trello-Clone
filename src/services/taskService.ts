@@ -316,4 +316,17 @@ export namespace TaskService {
       return
     }
   }
+
+  export async function unassignUser(taskId: string, email: string) {
+    try {
+      const response = await axios.post("/unassign-user", { taskId, email })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - unassignUser -> ", error)
+      return
+    }
+  }
 }

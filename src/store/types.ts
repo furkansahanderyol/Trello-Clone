@@ -35,6 +35,10 @@ export type TaskType = {
   order: number
   comments: CommentType[]
   labels: LabelType[]
+  assignedUsers: {
+    taskId: string
+    user: UserType
+  }[]
 }
 
 export type BoardMemberType = {

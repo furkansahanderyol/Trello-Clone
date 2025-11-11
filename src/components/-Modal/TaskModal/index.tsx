@@ -28,6 +28,7 @@ import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
 import LabelForm from "@/components/LabelForm"
 import { WorkspaceService } from "@/services/workspaceService"
 import WorkspaceMember from "@/components/WorkspaceMember"
+import TaskMember from "@/components/TaskMember"
 
 interface IProps {
   title: string
@@ -51,6 +52,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [, setUploadedImages] = useState<(string | null)[] | undefined>(
     undefined
   )
+  // const [assignedTaskMembers] = useState()
   const [addLabel] = useState(true)
 
   const descriptionEditor = useEditor({
@@ -289,6 +291,24 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                 </div>
               )
             })}
+        </div>
+        <div className={styles.taskMembers}>
+          {task?.assignedUsers.map((user, index) => {
+            return (
+              <TaskMember
+                key={index}
+                name={user.user.name}
+                surname={user.user.surname}
+                email={user.user.email}
+                profileImage={user.user.profileImage}
+                onClick={() =>
+                  TaskService.unassignUser(task.id, user.user.email).then(
+                    (response) => console.log("response", response)
+                  )
+                }
+              />
+            )
+          })}
         </div>
         <form
           ref={descriptionAreaRef}
