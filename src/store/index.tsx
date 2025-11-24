@@ -52,3 +52,4 @@ export const socketAtom = atom<Socket | undefined>(undefined)
 export const notificationAtom = atom<NotificationsDataType | undefined>(
   undefined
 )
+export const notificationAlertAtom = atom(false)

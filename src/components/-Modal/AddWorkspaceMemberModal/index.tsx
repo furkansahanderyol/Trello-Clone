@@ -59,7 +59,6 @@ export default function AddWorkspaceMemberModal() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-
     if (selectedUsers) {
       WorkspaceService.inviteUsers(
         params.id as string,
