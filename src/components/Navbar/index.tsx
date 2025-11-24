@@ -8,8 +8,8 @@ import { useAtom, useAtomValue } from "jotai"
 import {
   dragActiveAtom,
   modalContentAtom,
+  notificationAlertAtom,
   notificationAtom,
-  selectedWorkspaceAtom,
   userAtom,
 } from "@/store"
 import Link from "next/link"
@@ -32,8 +32,10 @@ export default function Navbar() {
   const [notificationsDropdownActive, setNotificationsDropdownActive] =
     useState(false)
   const [notification] = useAtom(notificationAtom)
+  const [notificationAlert, setNotificationAlert] = useAtom(
+    notificationAlertAtom
+  )
   const [, setModalContent] = useAtom(modalContentAtom)
-  const [workspace] = useAtom(selectedWorkspaceAtom)
 
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
   useOnClickOutside(notificationsDropdownMenuRef, () =>
@@ -59,13 +61,26 @@ export default function Navbar() {
 
         <div className={styles.notificationsWrapper}>
           <div
-            onClick={() => setNotificationsDropdownActive(true)}
-            className={styles.notifications}
+            onClick={() => {
+              setNotificationsDropdownActive(true)
+              setNotificationAlert(false)
+            }}
+            className={clsx(
+              styles.notifications,
+              notificationAlert && styles.notificationsAlert
+            )}
           >
             <Bell />
-            <div className={styles.notificationsCount}>
-              {notification?.count}
-            </div>
+            {notification && notification?.count > 0 && (
+              <div
+                className={clsx(
+                  styles.notificationsCount,
+                  notificationAlert && styles.countAlert
+                )}
+              >
+                {notification?.count}
+              </div>
+            )}
           </div>
           <div
             ref={notificationsDropdownMenuRef}

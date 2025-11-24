@@ -17,9 +17,18 @@ import StarterKit from "@tiptap/starter-kit"
 import MenuBar from "@/components/-Tiptap/MenuBar"
 import Image from "@tiptap/extension-image"
 import { useAtom } from "jotai"
-import { editTaskAtom, taskAtom, taskLabelsAtom, userAtom } from "@/store"
+import {
+  editTaskAtom,
+  taskAtom,
+  taskLabelsAtom,
+  userAtom,
+  workspaceMembersAtom,
+} from "@/store"
 import ReadOnlyComment from "@/components/-Tiptap/ReadOnlyComment"
 import LabelForm from "@/components/LabelForm"
+import { WorkspaceService } from "@/services/workspaceService"
+import WorkspaceMember from "@/components/WorkspaceMember"
+import TaskMember from "@/components/TaskMember"
 
 interface IProps {
   title: string
@@ -30,7 +39,8 @@ interface IProps {
 export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [task, setTask] = useAtom(taskAtom)
   const [, setEditTask] = useAtom(editTaskAtom)
-  const [taskLabels, setTaskLabels] = useAtom(taskLabelsAtom)
+  const [taskLabels] = useAtom(taskLabelsAtom)
+  const [workspaceMembers, setWorkspaceMembers] = useAtom(workspaceMembersAtom)
   const [user] = useAtom(userAtom)
   const descriptionAreaRef = useRef<HTMLFormElement | null>(null)
   const [focus, setFocus] = useState(false)
@@ -42,6 +52,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
   const [, setUploadedImages] = useState<(string | null)[] | undefined>(
     undefined
   )
+  // const [assignedTaskMembers] = useState()
   const [addLabel] = useState(true)
 
   const descriptionEditor = useEditor({
@@ -101,8 +112,21 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       label: "Members",
       dropdownOptions: (
         <div className={styles.optionsMenu}>
-          <div className={styles.option}>Option-1</div>
-          <div className={styles.option}>Option-2</div>
+          {workspaceMembers ? (
+            workspaceMembers.map((member, index) => {
+              return (
+                <WorkspaceMember
+                  onClick={() => {
+                    TaskService.addMemberToTask(member.email, taskId)
+                  }}
+                  key={index}
+                  member={member}
+                />
+              )
+            })
+          ) : (
+            <div>No data</div>
+          )}
         </div>
       ),
     },
@@ -124,6 +148,16 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
       commentEditEditor?.commands.setContent(JSON.parse(task.description))
     }
   }, [task, descriptionEditor])
+
+  useEffect(() => {
+    if (task?.id && params.id) {
+      TaskService.getAvailableTaskMembers(params.id as string, task?.id).then(
+        (response) => {
+          setWorkspaceMembers(response)
+        }
+      )
+    }
+  }, [params.id, task?.id])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -257,6 +291,24 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                 </div>
               )
             })}
+        </div>
+        <div className={styles.taskMembers}>
+          {task?.assignedUsers.map((user, index) => {
+            return (
+              <TaskMember
+                key={index}
+                name={user.user.name}
+                surname={user.user.surname}
+                email={user.user.email}
+                profileImage={user.user.profileImage}
+                onClick={() =>
+                  TaskService.unassignUser(task.id, user.user.email).then(
+                    (response) => console.log("response", response)
+                  )
+                }
+              />
+            )
+          })}
         </div>
         <form
           ref={descriptionAreaRef}

@@ -18,7 +18,6 @@ export default function NotificationModal({
   const [user] = useAtom(userAtom)
   const [modalContent, setModalContent] = useAtom(modalContentAtom)
 
-  console.log("workspaceId", workspaceId)
   return (
     <div className={styles.container}>
       <div className={styles.message}>{message}</div>

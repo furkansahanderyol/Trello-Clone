@@ -35,6 +35,10 @@ export type TaskType = {
   order: number
   comments: CommentType[]
   labels: LabelType[]
+  assignedUsers: {
+    taskId: string
+    user: UserType
+  }[]
 }
 
 export type BoardMemberType = {
@@ -93,4 +97,12 @@ export type NotificationsType = {
 export type NotificationsDataType = {
   count: number
   notifications: NotificationsType[]
+}
+
+export type WorkspaceMember = {
+  email: string
+  name: string
+  surname: string
+  role: "admin" | "member"
+  profileImage: string
 }

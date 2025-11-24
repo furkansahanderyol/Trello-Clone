@@ -2,7 +2,7 @@
 
 import getCookie from "@/helpers/getCookie"
 import { UserService } from "@/services/userService"
-import { socketAtom } from "@/store"
+import { notificationAlertAtom, notificationAtom, socketAtom } from "@/store"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 import { io } from "socket.io-client"
@@ -13,6 +13,8 @@ interface IProps {
 
 export default function SocketProvider({ children }: IProps) {
   const [socket, setSocket] = useAtom(socketAtom)
+  const [, setNotifications] = useAtom(notificationAtom)
+  const [, setNotificationAlert] = useAtom(notificationAlertAtom)
 
   useEffect(() => {
     const token = getCookie("socket-token")
@@ -35,7 +37,10 @@ export default function SocketProvider({ children }: IProps) {
     if (!socket) return
     socket.on("connect", () => {
       socket.on("invite_users", (response) => {
-        UserService.getUserNotifications().then((apiResponse) => {})
+        UserService.getUserNotifications().then((response) => {
+          setNotifications(response)
+          setNotificationAlert(true)
+        })
       })
     })
 

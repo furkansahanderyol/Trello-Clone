@@ -16,7 +16,6 @@ export namespace UserService {
   export async function getUserNotifications() {
     try {
       const response = await axios.get("/user-notifications")
-
       if (response.status === 200) {
         return response.data
       }

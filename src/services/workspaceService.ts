@@ -106,4 +106,17 @@ export namespace WorkspaceService {
       return
     }
   }
+
+  export async function getWorkspaceMembers(workspaceId: string) {
+    try {
+      const response = await axios.get(`/get-workspace-members/${workspaceId}`)
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - getWorkspaceMembers -> ", error)
+      return
+    }
+  }
 }

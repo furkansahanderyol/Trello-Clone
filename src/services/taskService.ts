@@ -282,4 +282,51 @@ export namespace TaskService {
       console.error("TaskService - getLabelStatus -> ", error)
     }
   }
+
+  export async function addMemberToTask(email: string, taskId: string) {
+    try {
+      const response = await axios.post("/add-member-to-task", {
+        email,
+        taskId,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - addMemberToTask -> ", error)
+      return
+    }
+  }
+
+  export async function getAvailableTaskMembers(
+    workspaceId: string,
+    taskId: string
+  ) {
+    try {
+      const response = await axios.get(
+        `/available-task-members/${workspaceId}/${taskId}`
+      )
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - getAvailableTaskMembers -> ", error)
+      return
+    }
+  }
+
+  export async function unassignUser(taskId: string, email: string) {
+    try {
+      const response = await axios.post("/unassign-user", { taskId, email })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - unassignUser -> ", error)
+      return
+    }
+  }
 }
