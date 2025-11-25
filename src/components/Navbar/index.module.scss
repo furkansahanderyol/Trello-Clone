@@ -89,7 +89,6 @@
         overflow: clip;
         overflow-y: auto;
         z-index: 10;
-        padding: 0.5rem;
         border-radius: 0.3rem;
         background-color: var(--main-background);
         border: 1px solid var(--border);
@@ -109,6 +108,16 @@
           flex-direction: column;
           align-items: flex-start;
           justify-content: center;
+          border-bottom: 1px solid var(--border);
+          padding: 0.5rem;
+
+          &.unread {
+            background-color: var(--button-blue);
+
+            &:hover {
+              background-color: var(--button-blue-hover);
+            }
+          }
 
           .senderInformation {
             display: flex;

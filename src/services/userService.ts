@@ -23,4 +23,18 @@ export namespace UserService {
       console.error("UserService - getUserNotifications -> ", error)
     }
   }
+
+  export async function markNotificationAsRead(notificationId: string) {
+    try {
+      const response = await axios.patch(
+        `/notifications/read/${notificationId}`
+      )
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("UserService - markNotificationAsRead -> ", error)
+    }
+  }
 }

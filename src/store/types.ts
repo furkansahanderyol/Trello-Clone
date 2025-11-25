@@ -92,6 +92,7 @@ export type NotificationsType = {
   senderSurname: string
   senderProfileImage: string | undefined
   workspaceName: string
+  read: boolean
 }
 
 export type NotificationsDataType = {

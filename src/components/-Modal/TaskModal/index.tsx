@@ -302,9 +302,7 @@ export default function TaskModal({ title, boardId, taskId }: IProps) {
                 email={user.user.email}
                 profileImage={user.user.profileImage}
                 onClick={() =>
-                  TaskService.unassignUser(task.id, user.user.email).then(
-                    (response) => console.log("response", response)
-                  )
+                  TaskService.unassignUser(task.id, user.user.email)
                 }
               />
             )

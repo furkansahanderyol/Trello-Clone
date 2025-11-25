@@ -14,16 +14,22 @@ import {
 } from "@/store"
 import Link from "next/link"
 import ProfileImage from "../ProfileImage"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import { PageLink } from "@/constants/PageLink"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { timeAgo } from "@/helpers/timeAgo"
 import NotificationModal from "../-Modal/NotificationModal"
+import { UserService } from "@/services/userService"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
   const [dragActive] = useAtom(dragActiveAtom)
+  const [notification, setNotification] = useAtom(notificationAtom)
+  const [notificationAlert, setNotificationAlert] = useAtom(
+    notificationAlertAtom
+  )
+  const [, setModalContent] = useAtom(modalContentAtom)
 
   const profileButtonRef = useRef<HTMLDivElement>(null)
   const dropdownMenuRef = useRef<HTMLUListElement>(null)
@@ -31,11 +37,6 @@ export default function Navbar() {
   const [dropdownActive, setDropdownActive] = useState(false)
   const [notificationsDropdownActive, setNotificationsDropdownActive] =
     useState(false)
-  const [notification] = useAtom(notificationAtom)
-  const [notificationAlert, setNotificationAlert] = useAtom(
-    notificationAlertAtom
-  )
-  const [, setModalContent] = useAtom(modalContentAtom)
 
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
   useOnClickOutside(notificationsDropdownMenuRef, () =>
@@ -45,6 +46,12 @@ export default function Navbar() {
   async function logout() {
     AuthService.logout()
   }
+
+  useEffect(() => {
+    UserService.getUserNotifications().then((response) =>
+      setNotification(response)
+    )
+  }, [notificationsDropdownActive])
 
   return (
     <nav className={clsx(styles.container, dragActive && styles.dragActive)}>
@@ -93,8 +100,12 @@ export default function Navbar() {
               return (
                 <div
                   key={notification.id}
-                  className={styles.notificationWrapper}
-                  onClick={() =>
+                  className={clsx(
+                    styles.notificationWrapper,
+                    !notification.read && styles.unread
+                  )}
+                  onClick={() => {
+                    setNotificationsDropdownActive(false)
                     setModalContent({
                       title: `${notification.senderName} ${notification.senderSurname}`,
                       content: (
@@ -106,7 +117,9 @@ export default function Navbar() {
                       ),
                       size: "l",
                     })
-                  }
+
+                    UserService.markNotificationAsRead(notification.id)
+                  }}
                 >
                   <div className={styles.senderInformation}>
                     <ProfileImage url={notification?.senderProfileImage} />

@@ -1,6 +1,6 @@
 import { useAtom } from "jotai"
 import styles from "./index.module.scss"
-import { modalContentAtom, userAtom } from "@/store"
+import { userAtom } from "@/store"
 import Button from "@/components/Button"
 import { WorkspaceService } from "@/services/workspaceService"
 
@@ -16,8 +16,6 @@ export default function NotificationModal({
   workspaceId,
 }: IProps) {
   const [user] = useAtom(userAtom)
-  const [modalContent, setModalContent] = useAtom(modalContentAtom)
-
   return (
     <div className={styles.container}>
       <div className={styles.message}>{message}</div>
