@@ -8,12 +8,12 @@ import {
   dragActiveAtom,
   editTaskActiveAtom,
   trackBoardsChangeAtom,
+  workspaceMembersAtom,
 } from "@/store"
 import {
   closestCorners,
   DndContext,
   DragEndEvent,
-  DragMoveEvent,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
@@ -22,7 +22,7 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { act, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -38,6 +38,7 @@ import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useParams } from "next/navigation"
+import WorkspaceHeader from "@/components/WorkspaceHeader"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -49,6 +50,7 @@ export default function Workspace() {
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
+  const [workspaceMembers] = useAtom(workspaceMembersAtom)
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
 
@@ -255,10 +257,7 @@ export default function Workspace() {
   return (
     <WorkspaceLayout>
       <div className={styles.container}>
-        <div className={styles.header}>
-          <div>Header</div>
-          <div>Header Left</div>
-        </div>
+        <WorkspaceHeader />
         <div className={styles.body}>
           <div ref={listRef} className={styles.lists}>
             <DndContext

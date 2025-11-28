@@ -7,6 +7,7 @@ import {
   pageLoadingAtom,
   socketAtom,
   trackBoardsChangeAtom,
+  workspaceMembersAtom,
 } from "@/store"
 import Sidebar from "@/components/Sidebar"
 import { useEffect, useState } from "react"
@@ -14,6 +15,7 @@ import { useParams } from "next/navigation"
 import { BoardService } from "@/services/boardService"
 import Button from "@/components/Button"
 import AddWorkspaceMemberModal from "@/components/-Modal/AddWorkspaceMemberModal"
+import { WorkspaceService } from "@/services/workspaceService"
 
 interface IProps {
   children: React.ReactNode
@@ -25,12 +27,16 @@ export default function WorkspaceLayout({ children }: IProps) {
   const trackBoardsChange = useAtomValue(trackBoardsChangeAtom)
   const boards = useAtomValue(boardsAtom)
   const [, setModalContent] = useAtom(modalContentAtom)
+  const [, setWorkspaceMembers] = useAtom(workspaceMembersAtom)
   const defaultStore = getDefaultStore()
 
   const [socket] = useAtom(socketAtom)
 
   useEffect(() => {
     BoardService.getAllBoards(params.id as string)
+    WorkspaceService.getWorkspaceMembers(params.id as string).then((response) =>
+      setWorkspaceMembers(response)
+    )
   }, [])
 
   useEffect(() => {
