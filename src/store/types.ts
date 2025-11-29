@@ -12,6 +12,7 @@ export type WorkspaceType = {
   createdBy: string
   id: string
   name: string
+  members: WorkspaceMember[]
 }
 
 export type BoardType = {

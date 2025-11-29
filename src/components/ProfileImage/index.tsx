@@ -8,18 +8,26 @@ interface IProps {
   url: string | undefined
   className?: string
   isUploadAllowed?: boolean
+  size?: number
 }
 
 export default function ProfileImage({
   url,
   className,
   isUploadAllowed,
+  size,
 }: IProps) {
   return (
     <div className={styles.profileImage}>
       {isUploadAllowed && <SelectImage />}
       {url ? (
-        <div className={styles.imageWrapper}>
+        <div
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+          }}
+          className={styles.imageWrapper}
+        >
           <Image
             src={`http://localhost:8000/${url}`}
             alt="Profile image of user."

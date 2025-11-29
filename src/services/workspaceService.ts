@@ -119,4 +119,23 @@ export namespace WorkspaceService {
       return
     }
   }
+
+  export async function removeWorkspaceMember(
+    workspaceId: string,
+    email: string
+  ) {
+    try {
+      const response = await axios.post("/remove-workspace-member", {
+        workspaceId,
+        email,
+      })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - removeWorkspaceMember -> ", error)
+      return
+    }
+  }
 }
