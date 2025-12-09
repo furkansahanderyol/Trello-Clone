@@ -20,9 +20,9 @@
     "clsx": "^2.1.1",
     "jotai": "^2.12.2",
     "lucide-react": "^0.485.0",
-    "next": "15.2.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "16.0.8",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "react-dropzone": "^14.3.8",
     "react-easy-crop": "^5.4.2",
     "react-number-format": "^5.4.4",
@@ -37,7 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9.23.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-config-next": "15.2.3",
+    "eslint-config-next": "16.0.8",
     "typescript": "^5"
   }
 }
