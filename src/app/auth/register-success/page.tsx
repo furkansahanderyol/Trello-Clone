@@ -7,7 +7,7 @@ import AuthLayout from "@/layouts/AuthLayout"
 import { AuthService } from "@/services/authService"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { FormEvent, Suspense, useEffect, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import styles from "./page.module.scss"
 import { formatTime } from "@/helpers/formatTime"
 import clsx from "clsx"
@@ -78,45 +78,41 @@ export default function RegisterSuccess() {
   }
 
   return (
-    <Suspense>
-      <AuthLayout>
-        <Form formHeader="Verification Code" onSubmit={handleSubmit}>
-          <div className={styles.wrapper}>
-            <PatternFormatInput
-              format={"### ###"}
-              label="Please enter your verification code."
-              onChange={(e) => setVerificationCode(e)}
+    <AuthLayout>
+      <Form formHeader="Verification Code" onSubmit={handleSubmit}>
+        <div className={styles.wrapper}>
+          <PatternFormatInput
+            format={"### ###"}
+            label="Please enter your verification code."
+            onChange={(e) => setVerificationCode(e)}
+          />
+          <div className={styles.buttons}>
+            <Button type="submit" text="Send" />
+            <Button
+              onClick={handleResendCode}
+              type="button"
+              text="Resend code"
+              disabled={startCountdown}
             />
-            <div className={styles.buttons}>
-              <Button type="submit" text="Send" />
-              <Button
-                onClick={handleResendCode}
-                type="button"
-                text="Resend code"
-                disabled={startCountdown}
-              />
-              <Link className={styles.verifyLater} href={PageLink.dashboard}>
-                Verify account later.
-              </Link>
-              {startCountdown && (
-                <div
-                  style={{
-                    animationDuration: `${animationTimer}s`,
-                  }}
-                  className={clsx(
-                    styles.progressBar,
-                    startCountdown && styles.progress
-                  )}
-                >
-                  <div className={styles.countdown}>
-                    {formatTime(countdown!)}
-                  </div>
-                </div>
-              )}
-            </div>
+            <Link className={styles.verifyLater} href={PageLink.dashboard}>
+              Verify account later.
+            </Link>
+            {startCountdown && (
+              <div
+                style={{
+                  animationDuration: `${animationTimer}s`,
+                }}
+                className={clsx(
+                  styles.progressBar,
+                  startCountdown && styles.progress
+                )}
+              >
+                <div className={styles.countdown}>{formatTime(countdown!)}</div>
+              </div>
+            )}
           </div>
-        </Form>
-      </AuthLayout>
-    </Suspense>
+        </div>
+      </Form>
+    </AuthLayout>
   )
 }

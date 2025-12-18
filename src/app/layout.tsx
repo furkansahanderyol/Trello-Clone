@@ -29,8 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <UserLoader />
       <body className={`${domine.variable} ${unna.variable}`}>
+        <UserLoader />
         <SocketProvider>
           {children}
 
