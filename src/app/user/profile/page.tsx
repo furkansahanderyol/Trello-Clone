@@ -28,7 +28,11 @@ export default function UserProfile() {
               <Setting
                 label="Profile Image"
                 value={
-                  <ProfileImage isUploadAllowed url={user?.profileImage} />
+                  <ProfileImage
+                    isUploadAllowed
+                    url={user?.profileImage}
+                    className={styles.profileImage}
+                  />
                 }
               />
               <Setting

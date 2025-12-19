@@ -37,11 +37,15 @@ export default function Navbar() {
   const [dropdownActive, setDropdownActive] = useState(false)
   const [notificationsDropdownActive, setNotificationsDropdownActive] =
     useState(false)
-
+  const [isMounted, setIsMounted] = useState(false)
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
   useOnClickOutside(notificationsDropdownMenuRef, () =>
     setNotificationsDropdownActive(false)
   )
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   async function logout() {
     AuthService.logout()
@@ -96,48 +100,52 @@ export default function Navbar() {
               notificationsDropdownActive && styles.active
             )}
           >
-            {notification?.notifications.map((notification) => {
-              return (
-                <div
-                  key={notification.id}
-                  className={clsx(
-                    styles.notificationWrapper,
-                    !notification.read && styles.unread
-                  )}
-                  onClick={() => {
-                    setNotificationsDropdownActive(false)
-                    setModalContent({
-                      title: `${notification.senderName} ${notification.senderSurname}`,
-                      content: (
-                        <NotificationModal
-                          type={notification.type}
-                          message={notification.message}
-                          workspaceId={notification.workspaceId}
-                        />
-                      ),
-                      size: "l",
-                    })
+            {isMounted &&
+              notification?.notifications.map((notification) => {
+                return (
+                  <div
+                    key={notification.id}
+                    className={clsx(
+                      styles.notificationWrapper,
+                      !notification.read && styles.unread
+                    )}
+                    onClick={() => {
+                      setNotificationsDropdownActive(false)
+                      setModalContent({
+                        title: `${notification.senderName} ${notification.senderSurname}`,
+                        content: (
+                          <NotificationModal
+                            type={notification.type}
+                            message={notification.message}
+                            workspaceId={notification.workspaceId}
+                          />
+                        ),
+                        size: "l",
+                      })
 
-                    UserService.markNotificationAsRead(notification.id)
-                  }}
-                >
-                  <div className={styles.senderInformation}>
-                    <ProfileImage url={notification?.senderProfileImage} />
-                    <div className={styles.senderDetails}>
-                      <div className={styles.name}>
-                        {notification.senderName} {notification.senderSurname}
-                      </div>
-                      <div className={styles.message}>
-                        {notification.message}
+                      UserService.markNotificationAsRead(notification.id)
+                    }}
+                  >
+                    <div className={styles.senderInformation}>
+                      <ProfileImage
+                        url={notification?.senderProfileImage}
+                        size={48}
+                      />
+                      <div className={styles.senderDetails}>
+                        <div className={styles.name}>
+                          {notification.senderName} {notification.senderSurname}
+                        </div>
+                        <div className={styles.message}>
+                          {notification.message}
+                        </div>
                       </div>
                     </div>
+                    <div className={styles.createdAt}>
+                      {timeAgo(notification.createdAt)}
+                    </div>
                   </div>
-                  <div className={styles.createdAt}>
-                    {timeAgo(notification.createdAt)}
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })}
           </div>
         </div>
 
@@ -147,7 +155,11 @@ export default function Navbar() {
             onClick={() => setDropdownActive(!dropdownActive)}
             className={styles.profileButton}
           >
-            <ProfileImage url={user?.profileImage} />
+            <ProfileImage
+              className={styles.profileImage}
+              url={user?.profileImage}
+              size={48}
+            />
           </div>
 
           <ul
@@ -159,11 +171,13 @@ export default function Navbar() {
           >
             <li className={styles.menuItem}>
               <Link className={styles.user} href={PageLink.userProfile}>
-                {<ProfileImage url={user?.profileImage} />}
-                <div className={styles.userInformation}>
-                  {user?.name} {user?.surname}
-                  <div>{user?.email}</div>
-                </div>
+                {<ProfileImage url={user?.profileImage} size={48} />}
+                {isMounted && (
+                  <div className={styles.userInformation}>
+                    {user?.name} {user?.surname}
+                    <div>{user?.email}</div>
+                  </div>
+                )}
               </Link>
             </li>
             <li onClick={logout} className={styles.menuItem}>

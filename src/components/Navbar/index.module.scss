@@ -164,6 +164,11 @@
       position: relative;
       .profileButton {
         cursor: pointer;
+
+        .profileImage {
+          width: 48px;
+          height: 48px;
+        }
       }
 
       .dropdownMenu {
