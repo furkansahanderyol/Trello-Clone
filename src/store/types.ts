@@ -13,6 +13,7 @@ export type WorkspaceType = {
   id: string
   name: string
   members: WorkspaceMember[]
+  isAdmin: boolean
 }
 
 export type BoardType = {

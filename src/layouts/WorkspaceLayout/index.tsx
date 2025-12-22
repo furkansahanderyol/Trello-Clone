@@ -5,6 +5,7 @@ import {
   boardsAtom,
   modalContentAtom,
   pageLoadingAtom,
+  selectedWorkspaceAtom,
   socketAtom,
   trackBoardsChangeAtom,
   workspaceMembersAtom,
@@ -22,6 +23,7 @@ interface IProps {
 }
 
 export default function WorkspaceLayout({ children }: IProps) {
+  const [workspace] = useAtom(selectedWorkspaceAtom)
   const pageLoading = useAtomValue(pageLoadingAtom)
   const params = useParams()
   const trackBoardsChange = useAtomValue(trackBoardsChangeAtom)
@@ -34,6 +36,7 @@ export default function WorkspaceLayout({ children }: IProps) {
 
   useEffect(() => {
     BoardService.getAllBoards(params.id as string)
+    WorkspaceService.getWorkspace(params.id as string)
     WorkspaceService.getWorkspaceMembers(params.id as string).then((response) =>
       setWorkspaceMembers(response)
     )
@@ -67,11 +70,13 @@ export default function WorkspaceLayout({ children }: IProps) {
       <Navbar />
       <main className={styles.container}>
         <Sidebar>
-          <Button
-            type="button"
-            text="Add new member"
-            onClick={handleMemberAdd}
-          />
+          {workspace?.isAdmin && (
+            <Button
+              type="button"
+              text="Add new member"
+              onClick={handleMemberAdd}
+            />
+          )}
         </Sidebar>
 
         {pageLoading ? (

@@ -8,7 +8,6 @@ import {
   dragActiveAtom,
   editTaskActiveAtom,
   trackBoardsChangeAtom,
-  workspaceMembersAtom,
 } from "@/store"
 import {
   closestCorners,
@@ -50,7 +49,6 @@ export default function Workspace() {
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
-  const [workspaceMembers] = useAtom(workspaceMembersAtom)
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
 
