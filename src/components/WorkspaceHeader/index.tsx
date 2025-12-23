@@ -1,6 +1,6 @@
 import { useAtom } from "jotai"
 import styles from "./index.module.scss"
-import { selectedWorkspaceAtom, workspaceMembersAtom } from "@/store"
+import { selectedWorkspaceAtom, userAtom, workspaceMembersAtom } from "@/store"
 import ProfileImage from "../ProfileImage"
 import { useRef, useState } from "react"
 import { WorkspaceMember } from "@/store/types"
@@ -10,12 +10,15 @@ import { useParams } from "next/navigation"
 
 export default function WorkspaceHeader() {
   const memberRef = useRef<HTMLDivElement | null>(null)
+  const [user] = useAtom(userAtom)
   const [workspace] = useAtom(selectedWorkspaceAtom)
   const [selectedUser, setSelectedUser] = useState<WorkspaceMember | null>(null)
 
   const [workspaceMembers, setWorkspaceMembers] = useState(workspace?.members)
 
   const params = useParams()
+
+  console.log("workspace", workspace)
 
   useOnClickOutside(memberRef, () => setSelectedUser(null))
 
@@ -68,12 +71,17 @@ export default function WorkspaceHeader() {
                   <div className={styles.email}>{selectedUser?.email}</div>
                 </div>
               </div>
-              <div
-                onClick={() =>
-                  removeWorkspaceMember(params.id as string, selectedUser.email)
-                }
-                className={styles.remove}
-              >{`Remove ${selectedUser?.name} from workspace.`}</div>
+              {selectedUser.email !== user?.email && (
+                <div
+                  onClick={() =>
+                    removeWorkspaceMember(
+                      params.id as string,
+                      selectedUser.email
+                    )
+                  }
+                  className={styles.remove}
+                >{`Remove ${selectedUser?.name} from workspace.`}</div>
+              )}
             </div>
           )}
         </div>
