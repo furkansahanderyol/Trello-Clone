@@ -138,4 +138,17 @@ export namespace WorkspaceService {
       return
     }
   }
+
+  export async function deleteWorkspace(workspaceId: string) {
+    try {
+      const response = await axios.delete(`/workspace-delete/${workspaceId}`)
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - deleteWorkspace -> ", error)
+      return
+    }
+  }
 }
