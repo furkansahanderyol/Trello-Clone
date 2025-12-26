@@ -18,8 +18,6 @@ export default function WorkspaceHeader() {
 
   const params = useParams()
 
-  console.log("workspace", workspace)
-
   useOnClickOutside(memberRef, () => setSelectedUser(null))
 
   function removeWorkspaceMember(id: string, email: string) {
