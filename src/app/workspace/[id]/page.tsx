@@ -7,6 +7,8 @@ import {
   boardsAtom,
   dragActiveAtom,
   editTaskActiveAtom,
+  modalContentAtom,
+  socketAtom,
   trackBoardsChangeAtom,
 } from "@/store"
 import {
@@ -21,7 +23,7 @@ import {
   useSensors,
 } from "@dnd-kit/core"
 import { useAtom } from "jotai"
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -36,8 +38,9 @@ import Button from "@/components/Button"
 import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import WorkspaceHeader from "@/components/WorkspaceHeader"
+import { PageLink } from "@/constants/PageLink"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -49,6 +52,11 @@ export default function Workspace() {
   const [trackBoardsChange, setTrackBoardsChange] = useAtom(
     trackBoardsChangeAtom
   )
+  const [, setModalContent] = useAtom(modalContentAtom)
+  const router = useRouter()
+
+  const [socket] = useAtom(socketAtom)
+
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
 
@@ -251,6 +259,20 @@ export default function Workspace() {
       />
     )
   }, [activeId, setActiveId])
+
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on("workspace_deleted", (data) => {
+      setModalContent({
+        size: "s",
+        title: "Redirected",
+        content: data.message,
+      })
+
+      router.push(PageLink.dashboard)
+    })
+  }, [socket])
 
   return (
     <WorkspaceLayout>

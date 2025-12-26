@@ -17,6 +17,8 @@ import { BoardService } from "@/services/boardService"
 import Button from "@/components/Button"
 import AddWorkspaceMemberModal from "@/components/-Modal/AddWorkspaceMemberModal"
 import { WorkspaceService } from "@/services/workspaceService"
+import { useRouter } from "next/navigation"
+import { PageLink } from "@/constants/PageLink"
 
 interface IProps {
   children: React.ReactNode
@@ -31,6 +33,7 @@ export default function WorkspaceLayout({ children }: IProps) {
   const [, setModalContent] = useAtom(modalContentAtom)
   const [, setWorkspaceMembers] = useAtom(workspaceMembersAtom)
   const defaultStore = getDefaultStore()
+  const router = useRouter()
 
   const [socket] = useAtom(socketAtom)
 
