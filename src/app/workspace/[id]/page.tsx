@@ -38,9 +38,10 @@ import Button from "@/components/Button"
 import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import WorkspaceHeader from "@/components/WorkspaceHeader"
 import { PageLink } from "@/constants/PageLink"
+import WorkspaceDeletionNotificationModal from "@/components/-Modal/WorkspaceDeletionNotificationModal"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -53,12 +54,13 @@ export default function Workspace() {
     trackBoardsChangeAtom
   )
   const [, setModalContent] = useAtom(modalContentAtom)
-  const router = useRouter()
 
   const [socket] = useAtom(socketAtom)
 
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
+  const router = useRouter()
+  const pathname = usePathname()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -264,15 +266,22 @@ export default function Workspace() {
     if (!socket) return
 
     socket.on("workspace_deleted", (data) => {
+      const deletedWorkspaceId = data.workspaceId
+      const isUserInsideDeletedWorkspace = params.id === deletedWorkspaceId
+
+      if (!isUserInsideDeletedWorkspace) return
+
       setModalContent({
         size: "s",
         title: "Redirected",
-        content: data.message,
+        content: <WorkspaceDeletionNotificationModal message={data.message} />,
       })
 
       router.push(PageLink.dashboard)
     })
-  }, [socket])
+  }, [socket, params])
+
+  console.log("params.id", params.id)
 
   return (
     <WorkspaceLayout>

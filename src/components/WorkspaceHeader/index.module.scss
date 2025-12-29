@@ -6,6 +6,13 @@
   align-items: center;
   background-color: var(--main-background-overlay);
 
+  .leftSide {
+    color: var(--primary-text-color);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
   .rightSide {
     position: relative;
 
