@@ -120,15 +120,16 @@ export default function SortableCardItem({
             </div>
 
             <div className={styles.labelsWrapper}>
-              {labels.map((data) => {
-                return (
-                  <div
-                    key={data.label.id}
-                    className={styles.label}
-                    style={{ backgroundColor: data.label.color }}
-                  />
-                )
-              })}
+              {labels &&
+                labels.map((data) => {
+                  return (
+                    <div
+                      key={data.label.id}
+                      className={styles.label}
+                      style={{ backgroundColor: data.label.color }}
+                    />
+                  )
+                })}
             </div>
           </div>
 

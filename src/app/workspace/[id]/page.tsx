@@ -9,7 +9,6 @@ import {
   editTaskActiveAtom,
   modalContentAtom,
   socketAtom,
-  trackBoardsChangeAtom,
 } from "@/store"
 import {
   closestCorners,
@@ -50,9 +49,6 @@ export default function Workspace() {
   const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [addNewList, setAddNewList] = useState(false)
   const [newListName, setNewListName] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
-    trackBoardsChangeAtom
-  )
   const [, setModalContent] = useAtom(modalContentAtom)
 
   const [socket] = useAtom(socketAtom)
@@ -60,7 +56,6 @@ export default function Workspace() {
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
   const router = useRouter()
-  const pathname = usePathname()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -90,7 +85,6 @@ export default function Workspace() {
           boardId,
           overListIndex
         )
-        setTrackBoardsChange(!trackBoardsChange)
         return
       }
 
@@ -145,7 +139,6 @@ export default function Workspace() {
             overListOnlyIndex,
             0
           )
-          setTrackBoardsChange(!trackBoardsChange)
 
           return
         }
@@ -175,7 +168,6 @@ export default function Workspace() {
         )
 
         setBoards(newData)
-        setTrackBoardsChange(!trackBoardsChange)
       } else {
         // If task is in another list
         const activeList = boards[activeTaskListIndex]
@@ -226,7 +218,6 @@ export default function Workspace() {
         )
       }
 
-      setTrackBoardsChange(!trackBoardsChange)
       return
     },
     [boards, setBoards, arrayMove]
@@ -247,7 +238,6 @@ export default function Workspace() {
 
     if (params.id) {
       BoardService.createBoard(params.id as string, newListName)
-      setTrackBoardsChange(!trackBoardsChange)
     }
   }
 

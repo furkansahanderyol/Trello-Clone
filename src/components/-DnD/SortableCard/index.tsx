@@ -8,7 +8,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, trackBoardsChangeAtom, userAtom } from "@/store"
+import { activeIdAtom, userAtom } from "@/store"
 import clsx from "clsx"
 import {
   FormEvent,
@@ -58,9 +58,6 @@ export default function SortableCard({
   const [activeId] = useAtom(activeIdAtom)
   const [addTaskMode, setAddTaskMode] = useState(false)
   const [taskTitle, setTaskTitle] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
-    trackBoardsChangeAtom
-  )
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
   const [mouseY, setMouseY] = useState<number | undefined>(undefined)
   const [user] = useAtom(userAtom)
@@ -83,7 +80,6 @@ export default function SortableCard({
     }
 
     BoardService.addTask(taskTitle, id as string, user)
-    setTrackBoardsChange(!trackBoardsChange)
     setTaskTitle("")
     setAddTaskMode(false)
   }
