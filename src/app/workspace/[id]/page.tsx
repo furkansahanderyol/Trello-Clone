@@ -37,7 +37,7 @@ import Button from "@/components/Button"
 import clsx from "clsx"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import WorkspaceHeader from "@/components/WorkspaceHeader"
 import { PageLink } from "@/constants/PageLink"
 import WorkspaceDeletionNotificationModal from "@/components/-Modal/WorkspaceDeletionNotificationModal"
@@ -270,8 +270,6 @@ export default function Workspace() {
       router.push(PageLink.dashboard)
     })
   }, [socket, params])
-
-  console.log("params.id", params.id)
 
   return (
     <WorkspaceLayout>

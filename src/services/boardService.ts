@@ -1,6 +1,6 @@
 import axios from "@/lib/axios"
 import { boardsAtom, loadingAtom } from "@/store"
-import { BoardType, UserType } from "@/store/types"
+import { UserType } from "@/store/types"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -85,9 +85,14 @@ export namespace BoardService {
       })
   }
 
-  export async function updateTaskName(title: string, id: string) {
+  export async function updateTaskName(
+    workspaceId: string,
+    title: string,
+    id: string
+  ) {
     axios
       .patch("/update-task", {
+        workspaceId: workspaceId,
         title: title,
         id: id,
       })

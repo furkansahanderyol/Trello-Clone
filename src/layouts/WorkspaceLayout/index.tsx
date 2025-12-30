@@ -7,7 +7,6 @@ import {
   pageLoadingAtom,
   selectedWorkspaceAtom,
   socketAtom,
-  trackBoardsChangeAtom,
   workspaceMembersAtom,
 } from "@/store"
 import Sidebar from "@/components/Sidebar"
@@ -26,7 +25,6 @@ export default function WorkspaceLayout({ children }: IProps) {
   const [workspace] = useAtom(selectedWorkspaceAtom)
   const pageLoading = useAtomValue(pageLoadingAtom)
   const params = useParams()
-  const trackBoardsChange = useAtomValue(trackBoardsChangeAtom)
   const boards = useAtomValue(boardsAtom)
   const [, setModalContent] = useAtom(modalContentAtom)
   const [, setWorkspaceMembers] = useAtom(workspaceMembersAtom)
@@ -55,7 +53,7 @@ export default function WorkspaceLayout({ children }: IProps) {
         defaultStore.set(boardsAtom, [...updatedBoards])
       })
     }
-  }, [trackBoardsChange, socket, params.id])
+  }, [socket, params.id])
 
   function handleMemberAdd() {
     setModalContent({
