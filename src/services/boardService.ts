@@ -67,12 +67,14 @@ export namespace BoardService {
   }
 
   export async function addTask(
+    workspaceId: string,
     title: string,
     boardId: string,
     user: UserType
   ) {
     axios
       .post("/add-task", {
+        workspaceId,
         title,
         boardId,
         user,
