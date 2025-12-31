@@ -181,7 +181,8 @@ export namespace AuthService {
       }
     } catch (error) {
       console.error("AuthService-getUser -> ", error)
-      throw error
+      toast.error("Error occurred while getting your user info")
+      return
     }
   }
 

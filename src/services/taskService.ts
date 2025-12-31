@@ -20,7 +20,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - getTaskData ->", error)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -56,7 +59,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - uploadImage -> ", error)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -79,7 +85,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - uploadDescription -> ", error)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -104,7 +113,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - taskComment -> ", error)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -127,7 +139,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - taskComment -> ", error)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -152,7 +167,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - updateTaskComment -> ", comment)
-      throw error
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -165,6 +183,10 @@ export namespace TaskService {
       return response.data
     } catch (error) {
       console.error("TaskService - createTaskLabel -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -194,6 +216,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - createTaskLabel -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -225,6 +251,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -245,6 +275,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -260,6 +294,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - getLabelStatus -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -280,6 +318,10 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - getLabelStatus -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -295,6 +337,9 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - addMemberToTask -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }
@@ -313,6 +358,9 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - getAvailableTaskMembers -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }
@@ -326,6 +374,9 @@ export namespace TaskService {
       }
     } catch (error) {
       console.error("TaskService - unassignUser -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }

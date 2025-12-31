@@ -18,8 +18,11 @@ export namespace BoardService {
         }
       })
       .catch((error) => {
-        toast.error(error.message)
         console.error("BoardService - getAllBoards", error)
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
       .finally(() => {
         return defaultStore.set(loadingAtom, false)
@@ -37,7 +40,10 @@ export namespace BoardService {
       })
       .catch((error) => {
         console.error("BoardService - createBoard -> ", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -62,7 +68,10 @@ export namespace BoardService {
       .catch((error) => {
         console.error("BoardService - updateBoard -> ", error)
 
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -83,7 +92,10 @@ export namespace BoardService {
       .catch((error) => {
         console.error("BoardService - updateBoard -> ", error)
 
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -101,6 +113,10 @@ export namespace BoardService {
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateTaskName -> ", error)
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -114,7 +130,10 @@ export namespace BoardService {
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateBoardOrders ->", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 }
