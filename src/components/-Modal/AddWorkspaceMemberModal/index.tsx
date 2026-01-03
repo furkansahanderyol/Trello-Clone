@@ -12,13 +12,19 @@ import Button from "@/components/Button"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useParams } from "next/navigation"
 import { useAtom } from "jotai"
-import { selectedWorkspaceAtom, socketAtom, userAtom } from "@/store"
+import {
+  modalContentAtom,
+  selectedWorkspaceAtom,
+  socketAtom,
+  userAtom,
+} from "@/store"
 
 export default function AddWorkspaceMemberModal() {
   const params = useParams()
   const [user] = useAtom(userAtom)
   const [workspace] = useAtom(selectedWorkspaceAtom)
   const [socket] = useAtom(socketAtom)
+  const [, setModalContent] = useAtom(modalContentAtom)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [searchInput, setSearchInput] = useState("")
   const [searchedUsers, setSearchUsers] = useState<
@@ -41,16 +47,21 @@ export default function AddWorkspaceMemberModal() {
       }[]
     | undefined
   >(undefined)
+  const [dropdownActive, setDropdownActive] = useState(false)
 
   const searchInputValue = useDebounce(searchInput, 200)
 
   useEffect(() => {
-    if (searchInput === "") return
+    if (searchInput === "") {
+      setDropdownActive(false)
+      return
+    }
 
+    setDropdownActive(true)
     UserService.searchUser(searchInputValue).then((response) => {
       setSearchUsers(response)
     })
-  }, [searchInput])
+  }, [searchInput, dropdownActive])
 
   useOnClickOutside(dropdownRef, () => {
     setSearchInput("")
@@ -70,6 +81,10 @@ export default function AddWorkspaceMemberModal() {
     }
   }
 
+  function handleCloseModal() {
+    setModalContent(undefined)
+  }
+
   return (
     <form onSubmit={handleSubmit} className={styles.container}>
       <div className={styles.searchSide}>
@@ -78,6 +93,7 @@ export default function AddWorkspaceMemberModal() {
           onChange={(e) => setSearchInput(e)}
           placeholder="Type email or name"
           className={styles.searchInput}
+          value={searchInput}
         />
         <div className={styles.selectedUsers}>
           {selectedUsers?.map((user, index) => {
@@ -109,7 +125,7 @@ export default function AddWorkspaceMemberModal() {
           ref={dropdownRef}
           className={clsx(
             styles.dropdown,
-            searchedUsers && styles.dropdownActive
+            dropdownActive && searchedUsers && styles.dropdownActive
           )}
         >
           {searchedUsers?.map((user, index) => {
@@ -135,6 +151,9 @@ export default function AddWorkspaceMemberModal() {
 
                     return [...prev, user]
                   })
+
+                  setSearchInput("")
+                  setDropdownActive(false)
                 }}
                 className={clsx(
                   styles.searchedUser,
@@ -168,7 +187,7 @@ export default function AddWorkspaceMemberModal() {
           <Textarea className={styles.textarea} />
 
           <div className={styles.buttonsContainer}>
-            <Button type="button" text="Cancel" />
+            <Button type="button" text="Cancel" onClick={handleCloseModal} />
             <Button type="submit" text="Share" />
           </div>
         </div>

@@ -15,6 +15,7 @@ interface Props {
   ref?: Ref<HTMLInputElement>
   placeholder?: string
   defaultValue?: string
+  value?: string
 }
 
 export default function Input({
@@ -28,6 +29,7 @@ export default function Input({
   ref,
   placeholder,
   defaultValue,
+  value,
 }: Props) {
   const [isFocused, setIsFocused] = useState(false)
 
@@ -55,6 +57,7 @@ export default function Input({
           onChange={handleOnChange}
           placeholder={placeholder}
           defaultValue={defaultValue}
+          value={value}
         />
         {suffix && (
           <div tabIndex={-1} className={styles.suffix}>
