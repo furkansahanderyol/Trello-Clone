@@ -4,6 +4,7 @@ import {
   pageLoadingAtom,
   selectedWorkspaceAtom,
 } from "@/store"
+import { isAxiosError } from "axios"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -157,10 +158,12 @@ export namespace WorkspaceService {
       const response = await axios.delete(`/workspace-delete/${workspaceId}`)
 
       if (response.status === 200) {
+        toast.success("Workspace deleted")
         return response.data
       }
     } catch (error) {
       console.error("WorkspaceService - deleteWorkspace -> ", error)
+
       toast.error(
         "Something went wrong, please check your internet connection."
       )
