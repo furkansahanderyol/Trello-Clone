@@ -4,7 +4,9 @@ import {
   pageLoadingAtom,
   selectedWorkspaceAtom,
 } from "@/store"
+import { isAxiosError } from "axios"
 import { getDefaultStore } from "jotai"
+import { toast } from "react-toastify"
 
 const defaultStore = getDefaultStore()
 
@@ -44,7 +46,10 @@ export namespace WorkspaceService {
       })
       .catch((error) => {
         console.error("WorkspaceService - createWorkspace -> ", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -60,7 +65,10 @@ export namespace WorkspaceService {
       })
       .catch((error) => {
         console.error("WorkspaceService - getWorkspace -> ", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
       .finally(() => {
         return defaultStore.set(pageLoadingAtom, false)
@@ -84,6 +92,9 @@ export namespace WorkspaceService {
       }
     } catch (error) {
       console.error("WorkspaceService - inviteUsers ->", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }
@@ -116,6 +127,9 @@ export namespace WorkspaceService {
       }
     } catch (error) {
       console.error("WorkspaceService - getWorkspaceMembers -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }
@@ -144,10 +158,15 @@ export namespace WorkspaceService {
       const response = await axios.delete(`/workspace-delete/${workspaceId}`)
 
       if (response.status === 200) {
+        toast.success("Workspace deleted")
         return response.data
       }
     } catch (error) {
       console.error("WorkspaceService - deleteWorkspace -> ", error)
+
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
       return
     }
   }

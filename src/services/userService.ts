@@ -1,4 +1,5 @@
 import axios from "@/lib/axios"
+import { toast } from "react-toastify"
 
 export namespace UserService {
   export async function searchUser(input: string) {
@@ -10,6 +11,10 @@ export namespace UserService {
       }
     } catch (error) {
       console.error("UserService - searchUser", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -21,6 +26,10 @@ export namespace UserService {
       }
     } catch (error) {
       console.error("UserService - getUserNotifications -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 
@@ -35,6 +44,10 @@ export namespace UserService {
       }
     } catch (error) {
       console.error("UserService - markNotificationAsRead -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
     }
   }
 }

@@ -1,6 +1,6 @@
 import axios from "@/lib/axios"
 import { boardsAtom, loadingAtom } from "@/store"
-import { BoardType, UserType } from "@/store/types"
+import { UserType } from "@/store/types"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -18,8 +18,11 @@ export namespace BoardService {
         }
       })
       .catch((error) => {
-        toast.error(error.message)
         console.error("BoardService - getAllBoards", error)
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
       .finally(() => {
         return defaultStore.set(loadingAtom, false)
@@ -37,7 +40,10 @@ export namespace BoardService {
       })
       .catch((error) => {
         console.error("BoardService - createBoard -> ", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -62,17 +68,22 @@ export namespace BoardService {
       .catch((error) => {
         console.error("BoardService - updateBoard -> ", error)
 
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
   export async function addTask(
+    workspaceId: string,
     title: string,
     boardId: string,
     user: UserType
   ) {
     axios
       .post("/add-task", {
+        workspaceId,
         title,
         boardId,
         user,
@@ -81,19 +92,31 @@ export namespace BoardService {
       .catch((error) => {
         console.error("BoardService - updateBoard -> ", error)
 
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
-  export async function updateTaskName(title: string, id: string) {
+  export async function updateTaskName(
+    workspaceId: string,
+    title: string,
+    id: string
+  ) {
     axios
       .patch("/update-task", {
+        workspaceId: workspaceId,
         title: title,
         id: id,
       })
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateTaskName -> ", error)
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 
@@ -107,7 +130,10 @@ export namespace BoardService {
       .then((response) => {})
       .catch((error) => {
         console.error("BoardService - updateBoardOrders ->", error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 }

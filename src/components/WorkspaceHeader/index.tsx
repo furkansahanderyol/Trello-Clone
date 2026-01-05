@@ -36,7 +36,7 @@ export default function WorkspaceHeader() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.leftSide}>Header Left</div>
+      <div className={styles.leftSide}>{workspace?.name}</div>
       <div ref={memberRef}>
         <div className={styles.rightSide}>
           <div className={styles.workspaceMembers}>

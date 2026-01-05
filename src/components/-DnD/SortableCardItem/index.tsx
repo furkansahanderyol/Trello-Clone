@@ -2,7 +2,7 @@ import { UniqueIdentifier } from "@dnd-kit/core"
 import styles from "./index.module.scss"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { FormEvent, useRef, useState } from "react"
+import { FormEvent, useEffect, useRef, useState } from "react"
 import { SquarePen } from "lucide-react"
 import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
@@ -11,11 +11,12 @@ import Textarea from "@/components/Textarea"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { useAtom } from "jotai"
 import {
+  boardsAtom,
   dragActiveAtom,
   editTaskActiveAtom,
   modalContentAtom,
+  socketAtom,
   taskLabelsAtom,
-  trackBoardsChangeAtom,
 } from "@/store"
 import TaskModal from "@/components/-Modal/TaskModal"
 import { LabelType } from "@/store/types"
@@ -37,15 +38,15 @@ export default function SortableCardItem({
   labels,
 }: IProps) {
   const params = useParams()
+  const [socket] = useAtom(socketAtom)
+  const [, setBoards] = useAtom(boardsAtom)
   const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
-  const [taskLabels, setTaskLabels] = useAtom(taskLabelsAtom)
+  const [, setTaskLabels] = useAtom(taskLabelsAtom)
   const editTaskRef = useRef(null)
   const [editMode, setEditMode] = useState(false)
   const [newTitle, setNewTitle] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
-    trackBoardsChangeAtom
-  )
+
   const [, setModalContent] = useAtom(modalContentAtom)
 
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -64,8 +65,7 @@ export default function SortableCardItem({
   function handleEditTaskName(e: FormEvent) {
     e.preventDefault()
 
-    BoardService.updateTaskName(newTitle, id as string)
-    setTrackBoardsChange(!trackBoardsChange)
+    BoardService.updateTaskName(params.id as string, newTitle, id as string)
     setEditMode(false)
     setEditTaskActive(false)
     setDragActive(false)
@@ -86,6 +86,25 @@ export default function SortableCardItem({
       }
     )
   }
+
+  useEffect(() => {
+    socket?.on("task_name_updated", (updatedTask) => {
+      setBoards((prevBoards) => {
+        return prevBoards.map((board) => {
+          const hasTask = board.tasks.some((t) => t.id === updatedTask.id)
+
+          if (!hasTask) return board
+
+          return {
+            ...board,
+            tasks: board.tasks.map((task) =>
+              task.id === updatedTask.id ? updatedTask : task
+            ),
+          }
+        })
+      })
+    })
+  }, [])
 
   return (
     <div
@@ -120,15 +139,16 @@ export default function SortableCardItem({
             </div>
 
             <div className={styles.labelsWrapper}>
-              {labels.map((data) => {
-                return (
-                  <div
-                    key={data.label.id}
-                    className={styles.label}
-                    style={{ backgroundColor: data.label.color }}
-                  />
-                )
-              })}
+              {labels &&
+                labels.map((data) => {
+                  return (
+                    <div
+                      key={data.label.id}
+                      className={styles.label}
+                      style={{ backgroundColor: data.label.color }}
+                    />
+                  )
+                })}
             </div>
           </div>
 

@@ -9,7 +9,6 @@ import {
   editTaskActiveAtom,
   modalContentAtom,
   socketAtom,
-  trackBoardsChangeAtom,
 } from "@/store"
 import {
   closestCorners,
@@ -41,6 +40,7 @@ import { toast } from "react-toastify"
 import { useParams, useRouter } from "next/navigation"
 import WorkspaceHeader from "@/components/WorkspaceHeader"
 import { PageLink } from "@/constants/PageLink"
+import WorkspaceDeletionNotificationModal from "@/components/-Modal/WorkspaceDeletionNotificationModal"
 
 export default function Workspace() {
   const [boards, setBoards] = useAtom(boardsAtom)
@@ -49,16 +49,13 @@ export default function Workspace() {
   const [activeId, setActiveId] = useAtom(activeIdAtom)
   const [addNewList, setAddNewList] = useState(false)
   const [newListName, setNewListName] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
-    trackBoardsChangeAtom
-  )
   const [, setModalContent] = useAtom(modalContentAtom)
-  const router = useRouter()
 
   const [socket] = useAtom(socketAtom)
 
   const listRef = useRef<HTMLDivElement>(null)
   const params = useParams()
+  const router = useRouter()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -88,7 +85,6 @@ export default function Workspace() {
           boardId,
           overListIndex
         )
-        setTrackBoardsChange(!trackBoardsChange)
         return
       }
 
@@ -143,7 +139,6 @@ export default function Workspace() {
             overListOnlyIndex,
             0
           )
-          setTrackBoardsChange(!trackBoardsChange)
 
           return
         }
@@ -173,7 +168,6 @@ export default function Workspace() {
         )
 
         setBoards(newData)
-        setTrackBoardsChange(!trackBoardsChange)
       } else {
         // If task is in another list
         const activeList = boards[activeTaskListIndex]
@@ -224,7 +218,6 @@ export default function Workspace() {
         )
       }
 
-      setTrackBoardsChange(!trackBoardsChange)
       return
     },
     [boards, setBoards, arrayMove]
@@ -245,7 +238,6 @@ export default function Workspace() {
 
     if (params.id) {
       BoardService.createBoard(params.id as string, newListName)
-      setTrackBoardsChange(!trackBoardsChange)
     }
   }
 
@@ -264,15 +256,20 @@ export default function Workspace() {
     if (!socket) return
 
     socket.on("workspace_deleted", (data) => {
+      const deletedWorkspaceId = data.workspaceId
+      const isUserInsideDeletedWorkspace = params.id === deletedWorkspaceId
+
+      if (!isUserInsideDeletedWorkspace) return
+
       setModalContent({
         size: "s",
         title: "Redirected",
-        content: data.message,
+        content: <WorkspaceDeletionNotificationModal message={data.message} />,
       })
 
       router.push(PageLink.dashboard)
     })
-  }, [socket])
+  }, [socket, params])
 
   return (
     <WorkspaceLayout>

@@ -7,11 +7,15 @@ import { Ellipsis, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
 import clsx from "clsx"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
+import { useAtom } from "jotai"
+import { allWorkspacesAtom, socketAtom } from "@/store"
 
 export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
   const router = useRouter()
   const optionsRef = useRef<HTMLDivElement | null>(null)
   const [optionListActive, setOptionListActive] = useState(false)
+  const [socket] = useAtom(socketAtom)
+  const [workspaces, setWorkspaces] = useAtom(allWorkspacesAtom)
 
   useOnClickOutside(optionsRef, () => setOptionListActive(false))
 
@@ -26,6 +30,19 @@ export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
 
   function handleDeleteWorkspace() {
     WorkspaceService.deleteWorkspace(id)
+
+    socket?.on("workspace_list_updated", (data) =>
+      setWorkspaces((previousWorkspaces) => {
+        console.log("previousWorkspaces", previousWorkspaces)
+        if (!data.workspaceId) return previousWorkspaces
+
+        const updatedWorkspacesList = workspaces.filter(
+          (workspace) => workspace.workspaceId !== data.workspaceId
+        )
+
+        return updatedWorkspacesList
+      })
+    )
   }
 
   return (

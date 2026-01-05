@@ -8,7 +8,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, trackBoardsChangeAtom, userAtom } from "@/store"
+import { activeIdAtom, boardsAtom, socketAtom, userAtom } from "@/store"
 import clsx from "clsx"
 import {
   FormEvent,
@@ -26,6 +26,7 @@ import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
 import { useMouseMove } from "@/hooks/useMouseMove"
 import { BoardType, LabelType } from "@/store/types"
+import { useParams } from "next/navigation"
 
 interface IProps {
   id: UniqueIdentifier
@@ -56,14 +57,14 @@ export default function SortableCard({
   } = useSortable({ id: id })
   const addTaskModeRef = useRef(null)
   const [activeId] = useAtom(activeIdAtom)
+  const params = useParams()
   const [addTaskMode, setAddTaskMode] = useState(false)
   const [taskTitle, setTaskTitle] = useState("")
-  const [trackBoardsChange, setTrackBoardsChange] = useAtom(
-    trackBoardsChangeAtom
-  )
   const restrictedTransform = transform ? { ...transform, y: 0 } : null
   const [mouseY, setMouseY] = useState<number | undefined>(undefined)
   const [user] = useAtom(userAtom)
+  const [socket] = useAtom(socketAtom)
+  const [boards, setBoards] = useAtom(boardsAtom)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
@@ -82,11 +83,31 @@ export default function SortableCard({
       return toast.error("User cannot be found.")
     }
 
-    BoardService.addTask(taskTitle, id as string, user)
-    setTrackBoardsChange(!trackBoardsChange)
+    BoardService.addTask(params.id as string, taskTitle, id as string, user)
     setTaskTitle("")
     setAddTaskMode(false)
   }
+
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on("task_created", (newTask) => {
+      setBoards((prevBoards) => {
+        return prevBoards.map((board) => {
+          if (board.id === newTask.boardId) {
+            const exists = board.tasks.some((t) => t.id === newTask.id)
+            if (exists) return board
+
+            return {
+              ...board,
+              tasks: [...board.tasks, newTask],
+            }
+          }
+          return board
+        })
+      })
+    })
+  }, [])
 
   useMouseMove((e) => {
     if (!over) return

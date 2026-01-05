@@ -7,18 +7,15 @@ import {
   pageLoadingAtom,
   selectedWorkspaceAtom,
   socketAtom,
-  trackBoardsChangeAtom,
   workspaceMembersAtom,
 } from "@/store"
 import Sidebar from "@/components/Sidebar"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useParams } from "next/navigation"
 import { BoardService } from "@/services/boardService"
 import Button from "@/components/Button"
 import AddWorkspaceMemberModal from "@/components/-Modal/AddWorkspaceMemberModal"
 import { WorkspaceService } from "@/services/workspaceService"
-import { useRouter } from "next/navigation"
-import { PageLink } from "@/constants/PageLink"
 
 interface IProps {
   children: React.ReactNode
@@ -28,12 +25,10 @@ export default function WorkspaceLayout({ children }: IProps) {
   const [workspace] = useAtom(selectedWorkspaceAtom)
   const pageLoading = useAtomValue(pageLoadingAtom)
   const params = useParams()
-  const trackBoardsChange = useAtomValue(trackBoardsChangeAtom)
   const boards = useAtomValue(boardsAtom)
   const [, setModalContent] = useAtom(modalContentAtom)
   const [, setWorkspaceMembers] = useAtom(workspaceMembersAtom)
   const defaultStore = getDefaultStore()
-  const router = useRouter()
 
   const [socket] = useAtom(socketAtom)
 
@@ -58,7 +53,7 @@ export default function WorkspaceLayout({ children }: IProps) {
         defaultStore.set(boardsAtom, [...updatedBoards])
       })
     }
-  }, [trackBoardsChange, socket, params.id])
+  }, [socket, params.id])
 
   function handleMemberAdd() {
     setModalContent({

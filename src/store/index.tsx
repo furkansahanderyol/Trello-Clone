@@ -38,7 +38,6 @@ export const workspaceMembersAtom = atom<WorkspaceMember[] | null>(null)
 
 // Boards
 export const boardsAtom = atom<BoardType>([])
-export const trackBoardsChangeAtom = atom(false)
 
 // Task
 export const taskAtom = atom<TaskType | undefined>(undefined)

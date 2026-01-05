@@ -1,4 +1,5 @@
 import axios from "@/lib/axios"
+import { toast } from "react-toastify"
 
 export namespace userSettingsService {
   export async function uploadProfileImage(imageBlob: Blob) {
@@ -16,7 +17,10 @@ export namespace userSettingsService {
       })
       .catch((error) => {
         console.error(error)
-        throw error
+        toast.error(
+          "Something went wrong, please check your internet connection."
+        )
+        return
       })
   }
 }
