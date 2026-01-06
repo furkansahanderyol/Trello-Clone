@@ -14,7 +14,7 @@ axiosInstance.interceptors.response.use(
     return response
   },
   (error) => {
-    const message = error.response?.data?.message || "Bir hata oluştu"
+    const message = error.response?.data?.message || "Something went wrong."
 
     if (error.response) {
       switch (error.response.status) {

@@ -4,7 +4,6 @@ import {
   pageLoadingAtom,
   selectedWorkspaceAtom,
 } from "@/store"
-import { isAxiosError } from "axios"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -167,6 +166,23 @@ export namespace WorkspaceService {
       toast.error(
         "Something went wrong, please check your internet connection."
       )
+      return
+    }
+  }
+
+  export async function editWorkspace(workspaceId: string, name: string) {
+    try {
+      const response = await axios.patch(`/workspace-edit/${workspaceId}`, {
+        name,
+      })
+
+      if (response.status === 200) {
+        toast.success("Workspace updated.")
+        return response.data
+      }
+    } catch (error) {
+      console.error("WorkspaceService - editWorkspace -> ", error)
+      toast.error("Something went wrong.")
       return
     }
   }

@@ -55,8 +55,8 @@ export namespace BoardService {
     oldIndex: number,
     newIndex: number
   ) {
-    axios
-      .patch("/update-board-tasks", {
+    try {
+      const response = await axios.patch("/update-board-tasks", {
         workspaceId,
         taskId,
         previousBoardId,
@@ -64,15 +64,18 @@ export namespace BoardService {
         oldIndex,
         newIndex,
       })
-      .then((response) => {})
-      .catch((error) => {
-        console.error("BoardService - updateBoard -> ", error)
 
-        toast.error(
-          "Something went wrong, please check your internet connection."
-        )
-        return
-      })
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("BoardService - updateBoard -> ", error)
+
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
+    }
   }
 
   export async function addTask(
@@ -81,22 +84,25 @@ export namespace BoardService {
     boardId: string,
     user: UserType
   ) {
-    axios
-      .post("/add-task", {
+    try {
+      const response = await axios.post("/add-task", {
         workspaceId,
         title,
         boardId,
         user,
       })
-      .then((response) => {})
-      .catch((error) => {
-        console.error("BoardService - updateBoard -> ", error)
 
-        toast.error(
-          "Something went wrong, please check your internet connection."
-        )
-        return
-      })
+      if (response.status === 200) {
+        toast.success("Task created successfully.")
+        return response.data
+      }
+    } catch (error) {
+      console.error("BoardService - updateBoard -> ", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
+    }
   }
 
   export async function updateTaskName(
@@ -104,20 +110,14 @@ export namespace BoardService {
     title: string,
     id: string
   ) {
-    axios
-      .patch("/update-task", {
-        workspaceId: workspaceId,
-        title: title,
-        id: id,
-      })
-      .then((response) => {})
-      .catch((error) => {
-        console.error("BoardService - updateTaskName -> ", error)
-        toast.error(
-          "Something went wrong, please check your internet connection."
-        )
-        return
-      })
+    const response = await axios.patch("/update-task", {
+      workspaceId: workspaceId,
+      title: title,
+      id: id,
+    })
+    if (response.status === 200) {
+      return response.data
+    }
   }
 
   export async function updateBoardOrders(
@@ -125,15 +125,22 @@ export namespace BoardService {
     boardId: string,
     newOrder: number
   ) {
-    axios
-      .patch("/update-board-orders", { workspaceId, boardId, newOrder })
-      .then((response) => {})
-      .catch((error) => {
-        console.error("BoardService - updateBoardOrders ->", error)
-        toast.error(
-          "Something went wrong, please check your internet connection."
-        )
-        return
+    try {
+      const response = await axios.patch("/update-board-orders", {
+        workspaceId,
+        boardId,
+        newOrder,
       })
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("BoardService - updateBoardOrders ->", error)
+      toast.error(
+        "Something went wrong, please check your internet connection."
+      )
+      return
+    }
   }
 }

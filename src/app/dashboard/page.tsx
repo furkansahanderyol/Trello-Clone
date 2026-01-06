@@ -5,19 +5,20 @@ import styles from "./page.module.scss"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useEffect } from "react"
 import { useAtom, useAtomValue } from "jotai"
-import { allWorkspacesAtom, modalContentAtom } from "@/store"
+import {
+  allWorkspacesAtom,
+  modalContentAtom,
+  selectedWorkspaceAtom,
+} from "@/store"
 import EmptyLayout from "@/layouts/EmptyLayout"
 import { Presentation } from "lucide-react"
 import CreateNewWorkspaceModal from "@/components/-Modal/CreateNewWorkspaceModal"
 import WorkspaceCard from "@/components/-Card/WorkspaceCard"
 
 export default function Dashboard() {
-  const workspaces = useAtomValue(allWorkspacesAtom)
+  const [workspaces] = useAtom(allWorkspacesAtom)
   const [, setModalContent] = useAtom(modalContentAtom)
-
-  // function handleVerifyPageRedirect() {
-  //   AuthService.checkVerified()
-  // }
+  const [, setSelectedWorkspace] = useAtom(selectedWorkspaceAtom)
 
   useEffect(() => {
     WorkspaceService.getAllWorkspaces()
@@ -45,7 +46,13 @@ export default function Dashboard() {
         <div className={styles.container}>
           <div className={styles.workspaces}>
             {workspaces.map((workspace, index) => {
-              return <WorkspaceCard key={index} {...workspace.workspace} />
+              return (
+                <WorkspaceCard
+                  key={index}
+                  onClick={() => setSelectedWorkspace(workspace.workspace)}
+                  {...workspace.workspace}
+                />
+              )
             })}
           </div>
         </div>

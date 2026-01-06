@@ -22,7 +22,7 @@ interface IProps {
 }
 
 export default function WorkspaceLayout({ children }: IProps) {
-  const [workspace] = useAtom(selectedWorkspaceAtom)
+  const [workspace, setSelectedWorkspace] = useAtom(selectedWorkspaceAtom)
   const pageLoading = useAtomValue(pageLoadingAtom)
   const params = useParams()
   const boards = useAtomValue(boardsAtom)
@@ -51,6 +51,17 @@ export default function WorkspaceLayout({ children }: IProps) {
 
       socket.on("board_updated", (updatedBoards) => {
         defaultStore.set(boardsAtom, [...updatedBoards])
+      })
+
+      socket.on("workspace_updated", (data) => {
+        setSelectedWorkspace((prev) => {
+          if (!prev) return prev
+
+          return {
+            ...prev,
+            name: data.name,
+          }
+        })
       })
     }
   }, [socket, params.id])

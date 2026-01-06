@@ -3,21 +3,38 @@ import styles from "./index.module.scss"
 import { WorkspaceService } from "@/services/workspaceService"
 import { PageLink } from "@/constants/PageLink"
 import { useRouter } from "next/navigation"
-import { Ellipsis, Trash2 } from "lucide-react"
+import { Edit, Ellipsis, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
 import clsx from "clsx"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { useAtom } from "jotai"
-import { allWorkspacesAtom, socketAtom } from "@/store"
+import { allWorkspacesAtom, modalContentAtom, socketAtom } from "@/store"
+import EditWorkspaceModal from "@/components/-Modal/EditWorkspaceModal"
 
-export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
+interface IProps {
+  id: string
+  color: string
+  name: string
+  onClick: () => void
+}
+
+export default function WorkspaceCard({ id, color, name, onClick }: IProps) {
   const router = useRouter()
   const optionsRef = useRef<HTMLDivElement | null>(null)
   const [optionListActive, setOptionListActive] = useState(false)
   const [socket] = useAtom(socketAtom)
   const [workspaces, setWorkspaces] = useAtom(allWorkspacesAtom)
+  const [, setModalContent] = useAtom(modalContentAtom)
 
   useOnClickOutside(optionsRef, () => setOptionListActive(false))
+
+  function handleEditWorkspace() {
+    setModalContent({
+      title: ``,
+      size: "s",
+      content: <EditWorkspaceModal />,
+    })
+  }
 
   function handleWorkspaceRedirect() {
     try {
@@ -47,6 +64,7 @@ export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
 
   return (
     <div
+      onClick={onClick}
       style={{
         background: color,
       }}
@@ -66,6 +84,10 @@ export default function WorkspaceCard({ id, color, name }: WorkspaceType) {
             optionListActive && styles.listActive
           )}
         >
+          <div onClick={handleEditWorkspace} className={styles.optionListItem}>
+            <Edit width={16} height={16} />
+            Edit workspace
+          </div>
           <div
             onClick={handleDeleteWorkspace}
             className={styles.optionListItem}

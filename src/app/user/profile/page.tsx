@@ -23,7 +23,7 @@ export default function UserProfile() {
         </div>
 
         <div className={styles.sections}>
-          <Section title={"Profile"}>
+          <Section title="">
             <div className={styles.settings}>
               <Setting
                 label="Profile Image"
