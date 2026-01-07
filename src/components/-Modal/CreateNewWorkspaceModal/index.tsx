@@ -6,27 +6,11 @@ import ColorPicker from "@/components/ColorPicker"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useAtom } from "jotai"
 import { modalContentAtom } from "@/store"
-
-const colors = [
-  "#3b82f6",
-  "#ef4444",
-  "#8b5cf6",
-  "#10b981",
-  "#f59e0b",
-  "#0ea5e9",
-]
-const gradientColors = [
-  "linear-gradient(to right, #3b82f6, #9333ea)",
-  "linear-gradient(to right, #ef4444, #f97316)",
-  "linear-gradient(to right, #10b981, #22d3ee)",
-  "linear-gradient(to right, #facc15, #f59e0b)",
-  "linear-gradient(to right, #6366f1, #0ea5e9)",
-  "linear-gradient(to right, #ec4899, #f43f5e)",
-]
+import { Colors, GradientColors } from "@/constants/CardColors"
 
 export default function CreateNewWorkspaceModal() {
   const [, setModalContent] = useAtom(modalContentAtom)
-  const [selectedColor, setSelectedColor] = useState(colors[0])
+  const [selectedColor, setSelectedColor] = useState(Colors[0])
   const [workspaceName, setWorkspaceName] = useState("")
 
   function handleSubmit(e: FormEvent) {
@@ -45,8 +29,8 @@ export default function CreateNewWorkspaceModal() {
       />
       <ColorPicker
         selectedColor={selectedColor}
-        colors={colors}
-        gradientColors={gradientColors}
+        colors={Colors}
+        gradientColors={GradientColors}
         onSelect={(color) => setSelectedColor(color)}
       />
 

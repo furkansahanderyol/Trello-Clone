@@ -50,7 +50,6 @@ export default function WorkspaceCard({ id, color, name, onClick }: IProps) {
 
     socket?.on("workspace_list_updated", (data) =>
       setWorkspaces((previousWorkspaces) => {
-        console.log("previousWorkspaces", previousWorkspaces)
         if (!data.workspaceId) return previousWorkspaces
 
         const updatedWorkspacesList = workspaces.filter(

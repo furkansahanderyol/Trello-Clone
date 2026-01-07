@@ -170,10 +170,15 @@ export namespace WorkspaceService {
     }
   }
 
-  export async function editWorkspace(workspaceId: string, name: string) {
+  export async function editWorkspace(
+    workspaceId: string,
+    name: string,
+    selectedColor: string
+  ) {
     try {
       const response = await axios.patch(`/workspace-edit/${workspaceId}`, {
         name,
+        selectedColor,
       })
 
       if (response.status === 200) {
