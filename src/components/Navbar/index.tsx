@@ -21,13 +21,14 @@ import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { timeAgo } from "@/helpers/timeAgo"
 import NotificationModal from "../-Modal/NotificationModal"
 import { UserService } from "@/services/userService"
+import { IconLogo } from "@/assets/svg/IconLogo"
 
 export default function Navbar() {
   const user = useAtomValue(userAtom)
   const [dragActive] = useAtom(dragActiveAtom)
   const [notification, setNotification] = useAtom(notificationAtom)
   const [notificationAlert, setNotificationAlert] = useAtom(
-    notificationAlertAtom
+    notificationAlertAtom,
   )
   const [, setModalContent] = useAtom(modalContentAtom)
 
@@ -40,7 +41,7 @@ export default function Navbar() {
   const [isMounted, setIsMounted] = useState(false)
   useOnClickOutside(dropdownMenuRef, () => setDropdownActive(false))
   useOnClickOutside(notificationsDropdownMenuRef, () =>
-    setNotificationsDropdownActive(false)
+    setNotificationsDropdownActive(false),
   )
 
   useEffect(() => {
@@ -53,14 +54,14 @@ export default function Navbar() {
 
   useEffect(() => {
     UserService.getUserNotifications().then((response) =>
-      setNotification(response)
+      setNotification(response),
     )
   }, [notificationsDropdownActive])
 
   return (
     <nav className={clsx(styles.container, dragActive && styles.dragActive)}>
       <Link href={PageLink.dashboard} className={styles.logo}>
-        Logo
+        <IconLogo />
       </Link>
 
       <div className={styles.topControls}>
@@ -78,7 +79,7 @@ export default function Navbar() {
             }}
             className={clsx(
               styles.notifications,
-              notificationAlert && styles.notificationsAlert
+              notificationAlert && styles.notificationsAlert,
             )}
           >
             <Bell />
@@ -86,7 +87,7 @@ export default function Navbar() {
               <div
                 className={clsx(
                   styles.notificationsCount,
-                  notificationAlert && styles.countAlert
+                  notificationAlert && styles.countAlert,
                 )}
               >
                 {notification?.count}
@@ -97,7 +98,7 @@ export default function Navbar() {
             ref={notificationsDropdownMenuRef}
             className={clsx(
               styles.notificationsDropdown,
-              notificationsDropdownActive && styles.active
+              notificationsDropdownActive && styles.active,
             )}
           >
             {isMounted &&
@@ -107,7 +108,7 @@ export default function Navbar() {
                     key={notification.id}
                     className={clsx(
                       styles.notificationWrapper,
-                      !notification.read && styles.unread
+                      !notification.read && styles.unread,
                     )}
                     onClick={() => {
                       setNotificationsDropdownActive(false)
@@ -166,7 +167,7 @@ export default function Navbar() {
             ref={dropdownMenuRef}
             className={clsx(
               styles.dropdownMenu,
-              !dropdownActive && styles.hideDropdownMenu
+              !dropdownActive && styles.hideDropdownMenu,
             )}
           >
             <li className={styles.menuItem}>
