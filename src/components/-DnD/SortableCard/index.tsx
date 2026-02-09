@@ -8,7 +8,13 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
-import { activeIdAtom, boardsAtom, socketAtom, userAtom } from "@/store"
+import {
+  activeIdAtom,
+  boardsAtom,
+  modalContentAtom,
+  socketAtom,
+  userAtom,
+} from "@/store"
 import clsx from "clsx"
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import Textarea from "@/components/Textarea"
@@ -20,6 +26,8 @@ import { toast } from "react-toastify"
 import { useMouseMove } from "@/hooks/useMouseMove"
 import { BoardType, LabelType } from "@/store/types"
 import { useParams } from "next/navigation"
+import Input from "@/components/Input"
+import EditBoardNameModal from "@/components/-Modal/EditBoardNameModal"
 
 interface IProps {
   id: UniqueIdentifier
@@ -60,6 +68,7 @@ export default function SortableCard({
   const [socket] = useAtom(socketAtom)
   const [, setBoards] = useAtom(boardsAtom)
   const [optionsActive, setOptionsActive] = useState(false)
+  const [, setModalContent] = useAtom(modalContentAtom)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
@@ -166,7 +175,16 @@ export default function SortableCard({
                 optionsActive && styles.active,
               )}
             >
-              <div className={styles.option}>
+              <div
+                onClick={() =>
+                  setModalContent({
+                    title: `Edit ${cardHeader}`,
+                    size: "s",
+                    content: <EditBoardNameModal />,
+                  })
+                }
+                className={styles.option}
+              >
                 <Edit />
                 Edit
               </div>
