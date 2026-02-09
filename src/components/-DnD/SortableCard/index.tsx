@@ -10,17 +10,10 @@ import SortableCardItem from "../SortableCardItem"
 import { useAtom } from "jotai"
 import { activeIdAtom, boardsAtom, socketAtom, userAtom } from "@/store"
 import clsx from "clsx"
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import Textarea from "@/components/Textarea"
 import Button from "@/components/Button"
-import { Plus } from "lucide-react"
+import { Edit, Ellipsis, Plus, Trash2 } from "lucide-react"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { BoardService } from "@/services/boardService"
 import { toast } from "react-toastify"
@@ -56,6 +49,7 @@ export default function SortableCard({
     over,
   } = useSortable({ id: id })
   const addTaskModeRef = useRef(null)
+  const optionsListRef = useRef(null)
   const [activeId] = useAtom(activeIdAtom)
   const params = useParams()
   const [addTaskMode, setAddTaskMode] = useState(false)
@@ -64,13 +58,15 @@ export default function SortableCard({
   const [mouseY, setMouseY] = useState<number | undefined>(undefined)
   const [user] = useAtom(userAtom)
   const [socket] = useAtom(socketAtom)
-  const [boards, setBoards] = useAtom(boardsAtom)
+  const [, setBoards] = useAtom(boardsAtom)
+  const [optionsActive, setOptionsActive] = useState(false)
 
   const style = {
     transform: CSS.Transform.toString(restrictedTransform),
     transition,
   }
   useOnClickOutside(addTaskModeRef, () => setAddTaskMode(false))
+  useOnClickOutside(optionsListRef, () => setOptionsActive(false))
 
   function handleAddTask(e: FormEvent) {
     e.preventDefault()
@@ -122,6 +118,10 @@ export default function SortableCard({
     return isSameList
   }, [id, active, cardItems])
 
+  useEffect(() => {
+    console.log("optionsActive", optionsActive)
+  }, [optionsActive])
+
   const checkIsAbove = useMemo(() => {
     const activeItemY = active?.rect.current.translated?.top
     const overItemY = over?.rect.top
@@ -143,7 +143,7 @@ export default function SortableCard({
         style={style}
         className={clsx(
           styles.container,
-          cardItems.length > 0 && styles.containerPadding
+          cardItems.length > 0 && styles.containerPadding,
         )}
       >
         <div
@@ -153,6 +153,29 @@ export default function SortableCard({
           className={styles.header}
         >
           {cardHeader}
+          <div ref={optionsListRef} className={styles.options}>
+            <div
+              onClick={() => setOptionsActive(!optionsActive)}
+              className={styles.optionsListTrigger}
+            >
+              <Ellipsis />
+            </div>
+            <div
+              className={clsx(
+                styles.optionsList,
+                optionsActive && styles.active,
+              )}
+            >
+              <div className={styles.option}>
+                <Edit />
+                Edit
+              </div>
+              <div className={styles.option}>
+                <Trash2 />
+                Delete
+              </div>
+            </div>
+          </div>
         </div>
         <div className={clsx(styles.tasks, addTaskMode && styles.extend)}>
           {cardItems.map((item, index) => {
