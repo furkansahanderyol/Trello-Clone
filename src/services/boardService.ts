@@ -1,6 +1,7 @@
 import axios from "@/lib/axios"
 import { boardsAtom, loadingAtom } from "@/store"
 import { UserType } from "@/store/types"
+import { UniqueIdentifier } from "@dnd-kit/core"
 import { getDefaultStore } from "jotai"
 import { toast } from "react-toastify"
 
@@ -144,11 +145,16 @@ export namespace BoardService {
     }
   }
 
-  export async function editBoardName(boardId: string, boardName: string) {
+  export async function editBoardName(
+    workspaceId: string,
+    boardId: UniqueIdentifier,
+    newBoardName: string,
+  ) {
     try {
       const response = await axios.patch("/edit-board-name", {
+        workspaceId,
         boardId,
-        boardName,
+        newBoardName,
       })
 
       if (response.status === 200) {

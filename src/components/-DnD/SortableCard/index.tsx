@@ -31,6 +31,7 @@ import EditBoardNameModal from "@/components/-Modal/EditBoardNameModal"
 
 interface IProps {
   id: UniqueIdentifier
+  boardId: string
   cardHeader: string
   cardItems: {
     id: UniqueIdentifier
@@ -43,6 +44,7 @@ interface IProps {
 
 export default function SortableCard({
   id,
+  boardId,
   cardHeader,
   cardItems,
   data,
@@ -127,10 +129,6 @@ export default function SortableCard({
     return isSameList
   }, [id, active, cardItems])
 
-  useEffect(() => {
-    console.log("optionsActive", optionsActive)
-  }, [optionsActive])
-
   const checkIsAbove = useMemo(() => {
     const activeItemY = active?.rect.current.translated?.top
     const overItemY = over?.rect.top
@@ -180,7 +178,7 @@ export default function SortableCard({
                   setModalContent({
                     title: `Edit ${cardHeader}`,
                     size: "s",
-                    content: <EditBoardNameModal />,
+                    content: <EditBoardNameModal boardId={boardId} />,
                   })
                 }
                 className={styles.option}

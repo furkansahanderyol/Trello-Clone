@@ -4,19 +4,29 @@ import { FormEvent, useState } from "react"
 import Button from "@/components/Button"
 import { toast } from "react-toastify"
 import { useAtom } from "jotai"
-import { modalContentAtom } from "@/store"
+import { modalContentAtom, selectedWorkspaceAtom, socketAtom } from "@/store"
+import { BoardService } from "@/services/boardService"
+import { UniqueIdentifier } from "@dnd-kit/core"
 
-export default function EditBoardNameModal() {
+interface IProps {
+  boardId: UniqueIdentifier
+}
+
+export default function EditBoardNameModal({ boardId }: IProps) {
+  const [workspace] = useAtom(selectedWorkspaceAtom)
   const [, setModalContent] = useAtom(modalContentAtom)
   const [boardName, setBoardName] = useState("")
 
   function handleFormSubmit(e: FormEvent) {
     e.preventDefault()
 
-    if (boardName === "") {
+    if (boardName === "" || !workspace) {
       toast.error("Board name cannot be empty.")
       return
     }
+
+    BoardService.editBoardName(workspace?.id, boardId, boardName)
+    setModalContent(undefined)
   }
 
   return (

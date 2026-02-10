@@ -63,7 +63,7 @@ export default function Workspace() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
   const handleDragEnd = useCallback(
@@ -83,19 +83,19 @@ export default function Workspace() {
         BoardService.updateBoardOrders(
           params.id as string,
           boardId,
-          overListIndex
+          overListIndex,
         )
         return
       }
 
       const activeTaskListIndex = boards.findIndex((list) =>
-        list.tasks.some((task) => task.id === active.id)
+        list.tasks.some((task) => task.id === active.id),
       )
 
       const overTaskListIndex = boards.findIndex((list) =>
         list.tasks.some((task) => {
           return task.id === over.id
-        })
+        }),
       )
 
       // Aborts when task or target task cannot be found
@@ -104,17 +104,17 @@ export default function Workspace() {
       // If task carried to the new list
       if (overTaskListIndex === -1) {
         const overListOnlyIndex = boards.findIndex(
-          (list) => list.id === over.id
+          (list) => list.id === over.id,
         )
 
         if (overListOnlyIndex !== -1) {
           const activeList = boards[activeTaskListIndex]
           const taskToMove = activeList.tasks.find(
-            (task) => task.id === active.id
+            (task) => task.id === active.id,
           )!
 
           const newActiveTasks = activeList.tasks.filter(
-            (task) => task.id !== active.id
+            (task) => task.id !== active.id,
           )
 
           const newData = [...boards]
@@ -137,7 +137,7 @@ export default function Workspace() {
             newData[activeTaskListIndex].id,
             over.id as string,
             overListOnlyIndex,
-            0
+            0,
           )
 
           return
@@ -164,7 +164,7 @@ export default function Workspace() {
           list.id,
           list.id,
           oldIndex,
-          newIndex
+          newIndex,
         )
 
         setBoards(newData)
@@ -178,7 +178,7 @@ export default function Workspace() {
         const task = activeList.tasks.filter((task) => task.id === active.id)
         const movedItemOldIndex = task[0].order
         const oldTasks = activeList.tasks.filter(
-          (task) => task.id !== active.id
+          (task) => task.id !== active.id,
         )
 
         if (!activeRect || !overRect) return
@@ -187,7 +187,7 @@ export default function Workspace() {
         const isAbove = activeItemCenterY < overItemCenterY
 
         const overItemIndex = overList.tasks.filter(
-          (task) => task.id === over.id
+          (task) => task.id === over.id,
         )[0].order
 
         const newTasks = [...overList.tasks]
@@ -214,18 +214,18 @@ export default function Workspace() {
           activeList.id,
           overList.id,
           movedItemOldIndex,
-          newIndex
+          newIndex,
         )
       }
 
       return
     },
-    [boards, setBoards, arrayMove]
+    [boards, setBoards, arrayMove],
   )
 
   function isActiveIdTask() {
     return boards.some((list) =>
-      list.tasks.some((task) => task.id === activeId)
+      list.tasks.some((task) => task.id === activeId),
     )
   }
 
@@ -269,6 +269,22 @@ export default function Workspace() {
 
       router.push(PageLink.dashboard)
     })
+
+    socket.on("board_name_updated", (data) => {
+      setBoards((prev) => {
+        const newBoardsList = prev.map((board) => {
+          if (board.id === data.boardId) {
+            board.title = data.newBoardName
+
+            return board
+          }
+
+          return board
+        })
+
+        return newBoardsList
+      })
+    })
   }, [socket, params])
 
   return (
@@ -300,6 +316,7 @@ export default function Workspace() {
                     <SortableCard
                       key={list.id}
                       id={list.id}
+                      boardId={list.id}
                       cardHeader={list.title}
                       cardItems={list.tasks}
                       data={boards}
@@ -342,7 +359,7 @@ export default function Workspace() {
         <div
           className={clsx(
             styles.overlay,
-            editTaskActive && styles.overlayVisible
+            editTaskActive && styles.overlayVisible,
           )}
         />
       </div>
