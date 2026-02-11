@@ -28,6 +28,7 @@ import { BoardType, LabelType } from "@/store/types"
 import { useParams } from "next/navigation"
 import Input from "@/components/Input"
 import EditBoardNameModal from "@/components/-Modal/EditBoardNameModal"
+import DeleteBoardModal from "@/components/-Modal/DeleteBoardModal"
 
 interface IProps {
   id: UniqueIdentifier
@@ -186,7 +187,16 @@ export default function SortableCard({
                 <Edit />
                 Edit
               </div>
-              <div className={styles.option}>
+              <div
+                onClick={() =>
+                  setModalContent({
+                    title: `Delete ${cardHeader}`,
+                    size: "s",
+                    content: <DeleteBoardModal boardId={boardId} />,
+                  })
+                }
+                className={styles.option}
+              >
                 <Trash2 />
                 Delete
               </div>

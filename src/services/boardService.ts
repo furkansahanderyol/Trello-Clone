@@ -166,4 +166,20 @@ export namespace BoardService {
       return
     }
   }
+
+  export async function deleteBoard(workspaceId: string, boardId: string) {
+    try {
+      const response = await axios.delete(
+        `/delete-board/${workspaceId}/${boardId}`,
+      )
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("BoardService - deleteBoard -> ", error)
+      toast.error("Something went wrong.")
+      return
+    }
+  }
 }

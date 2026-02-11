@@ -285,6 +285,14 @@ export default function Workspace() {
         return newBoardsList
       })
     })
+
+    socket.on("board_deleted", (data) => {
+      setBoards((prev) => {
+        const filteredData = prev.filter((board) => board.id !== data.boardId)
+
+        return filteredData
+      })
+    })
   }, [socket, params])
 
   return (
