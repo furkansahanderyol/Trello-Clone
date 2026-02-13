@@ -69,7 +69,7 @@ export default function SortableCard({
   const [mouseY, setMouseY] = useState<number | undefined>(undefined)
   const [user] = useAtom(userAtom)
   const [socket] = useAtom(socketAtom)
-  const [, setBoards] = useAtom(boardsAtom)
+  const [boards, setBoards] = useAtom(boardsAtom)
   const [optionsActive, setOptionsActive] = useState(false)
   const [, setModalContent] = useAtom(modalContentAtom)
 
@@ -112,6 +112,20 @@ export default function SortableCard({
             }
           }
           return board
+        })
+      })
+    })
+
+    socket.on("task_deleted", (data) => {
+      setBoards((prev) => {
+        return prev.map((board) => {
+          if (board.id !== data.boardId) return board
+
+          const newTaskList = board.tasks.filter(
+            (task) => task.id !== data.taskId,
+          )
+
+          return { ...board, tasks: newTaskList }
         })
       })
     })

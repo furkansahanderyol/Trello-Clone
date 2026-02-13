@@ -7,7 +7,7 @@ export namespace TaskService {
   export async function getTaskData(
     workspaceId: string,
     boardId: string,
-    taskId: string
+    taskId: string,
   ) {
     try {
       const response = await axios.post("/get-task-data", {
@@ -21,7 +21,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - getTaskData ->", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -31,7 +31,7 @@ export namespace TaskService {
     workspaceId: string,
     boardId: string,
     taskId: string,
-    files: Blob[]
+    files: Blob[],
   ): Promise<UploadImageResponse | undefined> {
     const data = new FormData()
 
@@ -51,7 +51,7 @@ export namespace TaskService {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       )
 
       if (response.status === 200) {
@@ -60,7 +60,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - uploadImage -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -70,7 +70,7 @@ export namespace TaskService {
     workspaceId: string,
     boardId: string,
     taskId: string,
-    description: JSONContent
+    description: JSONContent,
   ) {
     try {
       const response = await axios.patch("/upload-task-description", {
@@ -86,7 +86,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - uploadDescription -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -97,7 +97,7 @@ export namespace TaskService {
     boardId: string,
     taskId: string,
     comment: JSONContent,
-    user: UserType
+    user: UserType,
   ) {
     try {
       const response = await axios.post("/task-comment", {
@@ -114,7 +114,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - taskComment -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -124,7 +124,7 @@ export namespace TaskService {
     workspaceId: string,
     boardId: string,
     taskId: string,
-    commentId: string
+    commentId: string,
   ) {
     try {
       const response = await axios.post("/delete-task-comment", {
@@ -140,7 +140,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - taskComment -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -151,7 +151,7 @@ export namespace TaskService {
     boardId: string,
     taskId: string,
     commentId: string,
-    comment: JSONContent
+    comment: JSONContent,
   ) {
     try {
       const response = await axios.patch("/update-task-comment", {
@@ -168,7 +168,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - updateTaskComment -> ", comment)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -184,7 +184,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - createTaskLabel -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -195,7 +195,7 @@ export namespace TaskService {
     boardId: string,
     taskId: string,
     labelName: string,
-    labelColor: string
+    labelColor: string,
   ) {
     try {
       const response = await axios.post("/create-task-label", {
@@ -217,7 +217,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - createTaskLabel -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -229,7 +229,7 @@ export namespace TaskService {
     taskId: string,
     labelId: string,
     labelName: string,
-    labelColor: string
+    labelColor: string,
   ) {
     try {
       const response = await axios.patch("/edit-task-label", {
@@ -252,7 +252,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -261,7 +261,7 @@ export namespace TaskService {
   export async function deleteTaskLabel(
     workspaceId: string,
     taskId: string,
-    labelId: string
+    labelId: string,
   ) {
     try {
       const response = await axios.post("/delete-task-label", {
@@ -276,7 +276,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - editTaskLabel -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -295,7 +295,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - getLabelStatus -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -304,7 +304,7 @@ export namespace TaskService {
   export async function toggleLabelStatus(
     workspaceId: string,
     taskId: string,
-    labelId: string
+    labelId: string,
   ) {
     try {
       const response = await axios.post("/toggle-label-status", {
@@ -319,7 +319,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - getLabelStatus -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -338,7 +338,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - addMemberToTask -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -346,11 +346,11 @@ export namespace TaskService {
 
   export async function getAvailableTaskMembers(
     workspaceId: string,
-    taskId: string
+    taskId: string,
   ) {
     try {
       const response = await axios.get(
-        `/available-task-members/${workspaceId}/${taskId}`
+        `/available-task-members/${workspaceId}/${taskId}`,
       )
 
       if (response.status === 200) {
@@ -359,7 +359,7 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - getAvailableTaskMembers -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
       return
     }
@@ -375,8 +375,28 @@ export namespace TaskService {
     } catch (error) {
       console.error("TaskService - unassignUser -> ", error)
       toast.error(
-        "Something went wrong, please check your internet connection."
+        "Something went wrong, please check your internet connection.",
       )
+      return
+    }
+  }
+
+  export async function deleteTask(
+    workspaceId: string,
+    boardId: string,
+    taskId: string,
+  ) {
+    try {
+      const response = await axios.delete(
+        `/delete-task/${workspaceId}/${boardId}/${taskId}`,
+      )
+
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error("TaskService - deleteTask -> ", error)
+      toast.error("Something went wrong.")
       return
     }
   }

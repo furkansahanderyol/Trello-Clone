@@ -3,7 +3,7 @@ import styles from "./index.module.scss"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { FormEvent, useEffect, useRef, useState } from "react"
-import { SquarePen } from "lucide-react"
+import { SquarePen, Trash2 } from "lucide-react"
 import Button from "@/components/Button"
 import { BoardService } from "@/services/boardService"
 import clsx from "clsx"
@@ -15,6 +15,7 @@ import {
   dragActiveAtom,
   editTaskActiveAtom,
   modalContentAtom,
+  selectedWorkspaceAtom,
   socketAtom,
   taskLabelsAtom,
 } from "@/store"
@@ -43,6 +44,7 @@ export default function SortableCardItem({
   const [, setEditTaskActive] = useAtom(editTaskActiveAtom)
   const [, setDragActive] = useAtom(dragActiveAtom)
   const [, setTaskLabels] = useAtom(taskLabelsAtom)
+  const [workspace] = useAtom(selectedWorkspaceAtom)
   const editTaskRef = useRef(null)
   const [editMode, setEditMode] = useState(false)
   const [newTitle, setNewTitle] = useState("")
@@ -83,8 +85,14 @@ export default function SortableCardItem({
     TaskService.getLabelStatus(params.id as string, id as string).then(
       (response) => {
         setTaskLabels(response.labels)
-      }
+      },
     )
+  }
+
+  function handleDeleteTask() {
+    if (!workspace) return
+
+    TaskService.deleteTask(workspace.id, boardId, id as string)
   }
 
   useEffect(() => {
@@ -98,7 +106,7 @@ export default function SortableCardItem({
           return {
             ...board,
             tasks: board.tasks.map((task) =>
-              task.id === updatedTask.id ? updatedTask : task
+              task.id === updatedTask.id ? updatedTask : task,
             ),
           }
         })
@@ -120,7 +128,7 @@ export default function SortableCardItem({
           ref={editTaskRef}
           className={clsx(
             styles.createBoard,
-            editMode && styles.createBoardActive
+            editMode && styles.createBoardActive,
           )}
         >
           <Textarea
@@ -152,15 +160,20 @@ export default function SortableCardItem({
             </div>
           </div>
 
-          <div
-            onMouseDown={() => {
-              setEditMode(true)
-              setEditTaskActive(true)
-              setDragActive(true)
-            }}
-            className={styles.editButton}
-          >
-            <SquarePen />
+          <div className={styles.buttons}>
+            <div
+              onMouseDown={() => {
+                setEditMode(true)
+                setEditTaskActive(true)
+                setDragActive(true)
+              }}
+              className={styles.editButton}
+            >
+              <SquarePen />
+            </div>
+            <div onClick={handleDeleteTask} className={styles.deleteButton}>
+              <Trash2 />
+            </div>
           </div>
         </div>
       )}
