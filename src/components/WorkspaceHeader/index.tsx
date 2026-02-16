@@ -1,20 +1,28 @@
 import { useAtom } from "jotai"
 import styles from "./index.module.scss"
-import { selectedWorkspaceAtom, userAtom, workspaceMembersAtom } from "@/store"
+import {
+  selectedWorkspaceAtom,
+  socketAtom,
+  userAtom,
+  workspaceMembersAtom,
+} from "@/store"
 import ProfileImage from "../ProfileImage"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { WorkspaceMember } from "@/store/types"
 import { useOnClickOutside } from "@/hooks/useOnClickOutside"
 import { WorkspaceService } from "@/services/workspaceService"
 import { useParams } from "next/navigation"
+import clsx from "clsx"
 
 export default function WorkspaceHeader() {
   const memberRef = useRef<HTMLDivElement | null>(null)
   const [user] = useAtom(userAtom)
   const [workspace] = useAtom(selectedWorkspaceAtom)
   const [selectedUser, setSelectedUser] = useState<WorkspaceMember | null>(null)
-
+  const [joinedUser, setJoinedUser] = useState<{ email: string } | null>(null)
   const [workspaceMembers, setWorkspaceMembers] = useState(workspace?.members)
+
+  const [socket] = useAtom(socketAtom)
 
   const params = useParams()
 
@@ -26,13 +34,25 @@ export default function WorkspaceHeader() {
 
       setWorkspaceMembers(() => {
         const updatedMembers = workspaceMembers?.filter(
-          (member) => member.email !== email
+          (member) => member.email !== email,
         )
 
         return updatedMembers
       })
     })
   }
+
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on("user_joined", (data) => {
+      setJoinedUser(data)
+    })
+
+    socket.on("user_left", (data) => {
+      console.log("user-left", data)
+    })
+  }, [socket])
 
   return (
     <div className={styles.container}>
@@ -47,11 +67,17 @@ export default function WorkspaceHeader() {
                 <div
                   onClick={() => setSelectedUser(member)}
                   key={index}
-                  className={styles.imageWrapper}
+                  className={clsx(
+                    styles.imageWrapper,
+                    joinedUser?.email === member.email && styles.active,
+                  )}
                 >
                   <ProfileImage
                     url={member.profileImage}
-                    className={styles.profileImage}
+                    className={clsx(
+                      styles.profileImage,
+                      joinedUser?.email === member.email && styles.active,
+                    )}
                     size={16}
                   />
                 </div>
@@ -74,7 +100,7 @@ export default function WorkspaceHeader() {
                   onClick={() =>
                     removeWorkspaceMember(
                       params.id as string,
-                      selectedUser.email
+                      selectedUser.email,
                     )
                   }
                   className={styles.remove}
